@@ -8,6 +8,7 @@ export const rovers: Rover[] = [
 ] as const;
 
 export const ONE_HOUR_IN_MS = 60 * 60 * 1000;
+export const ONE_DAY_IN_MS = 24 * 60 * 60 * 1000;
 
 // export const CURIOSITY_INFO: RoverInfo = {
 //   name: 'Curiosity',
@@ -113,4 +114,5 @@ export const ONE_HOUR_IN_MS = 60 * 60 * 1000;
 //   NAVCAM: 'Navigation Camera',
 //   PANCAM: 'Panoramic Camera',
 //   MINITES: 'Miniature Thermal Emission Spectrometer (Mini-TES)',
+//   ENTRY: 'Entry, Descent, and Landing Camera',
 // };

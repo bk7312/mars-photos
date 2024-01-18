@@ -3,7 +3,7 @@ export type Rover = 'Perseverance' | 'Curiosity' | 'Opportunity' | 'Spirit';
 export type RoverSearch = {
   rover: Rover;
   sol: number;
-  camera?: string;
+  camera: string | undefined;
 };
 
 export type ManifestPhotos = {
@@ -24,11 +24,9 @@ export type RoverManifest = {
   photos: ManifestPhotos[];
 } | null;
 
-export type RoverPhotos =
-  | {
-      img_src: string;
-    }[]
-  | null;
+export type RoverPhotos = {
+  img_src: string;
+}[];
 
 // export type PerseveranceCameras =
 //   | 'EDL_RUCAM'
@@ -91,4 +89,5 @@ export type RoverPhotos =
 //   | 'MARDI'
 //   | 'NAVCAM'
 //   | 'PANCAM'
-//   | 'MINITES';
+//   | 'MINITES'
+//   | 'ENTRY';

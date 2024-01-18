@@ -12,13 +12,12 @@ import Image from 'next/image';
 
 export default function Home() {
   const [search, setSearch] = React.useState<RoverSearch>({
-    rover: 'Curiosity',
+    rover: 'Perseverance',
     sol: 0,
-    camera: 'ALL',
+    camera: undefined,
   });
   const [roverData, setRoverData] = React.useState<RoverManifest>(null);
-  const [photos, setPhotos] = React.useState<RoverPhotos>(null);
-  const [cameraData, setCameraData] = React.useState<string[]>([]);
+  const [photos, setPhotos] = React.useState<RoverPhotos>([]);
 
   React.useEffect(() => {
     const json = localStorage.getItem(search.rover);
@@ -28,26 +27,40 @@ export default function Home() {
     }
 
     const data = JSON.parse(json);
-    if (!data || data.lastUpdated > Date.now() + ONE_HOUR_IN_MS) {
+    const toUpdate =
+      data.status === 'complete'
+        ? false
+        : data.lastUpdated + ONE_HOUR_IN_MS < Date.now();
+
+    if (!data || toUpdate) {
       fetchManifest(search.rover);
       return;
     }
+
     setRoverData(data);
   }, [search.rover]);
 
   React.useEffect(() => {
-    const photoIndex = roverData?.photos.findIndex(
+    if (!roverData) {
+      return;
+    }
+
+    const photoIndex = roverData.photos.findIndex(
       (p: ManifestPhotos) => p.sol === search.sol
     );
-    if (!photoIndex || !roverData) {
-      return;
-    }
-    console.log(photoIndex);
+
     if (photoIndex === -1) {
-      setCameraData([]);
+      setSearch((prev) => ({ ...prev, camera: undefined }));
       return;
     }
-    setCameraData(roverData.photos[photoIndex].cameras);
+
+    setSearch((prev) => ({
+      ...prev,
+      camera:
+        roverData.photos[photoIndex].cameras.length > 1
+          ? 'ALL'
+          : roverData.photos[photoIndex].cameras[0],
+    }));
   }, [roverData, search.sol]);
 
   const updateSearch = (
@@ -110,6 +123,9 @@ export default function Home() {
     console.log(data);
     setPhotos(data);
   };
+  const photoIndex =
+    roverData?.photos.findIndex((p) => p.sol === search.sol) ?? -1;
+
   return (
     <main className='h-screen flex flex-col items-center'>
       <label>
@@ -128,7 +144,6 @@ export default function Home() {
           ))}
         </select>
       </label>
-
       <label>
         Camera:{' '}
         <select
@@ -137,21 +152,24 @@ export default function Home() {
           value={search.camera}
           onChange={updateSearch}
         >
-          {cameraData.length === 0 ? (
+          {photoIndex === -1 ? (
             <option disabled value=''>
               No photos on this day
             </option>
           ) : (
-            cameraData.length > 1 && <option value='ALL'>ALL</option>
+            roverData &&
+            roverData.photos[photoIndex].cameras.length > 1 && (
+              <option value='ALL'>ALL</option>
+            )
           )}
-          {roverData?.photos[
-            roverData?.photos.findIndex((p) => p.sol === search.sol)
-          ]?.cameras.map((v) => (
-            <option key={v}>{v}</option>
+
+          {roverData?.photos[photoIndex]?.cameras.map((v) => (
+            <option key={v} value={v}>
+              {v}
+            </option>
           ))}
         </select>
       </label>
-
       <label>
         Sol:{' '}
         <input
@@ -161,37 +179,47 @@ export default function Home() {
           onChange={updateSearch}
           value={search.sol}
           min={0}
-          max={roverData?.max_sol}
         />
       </label>
 
-      <button onClick={() => fetchManifest(search.rover)}>Get Manifests</button>
+      <br />
+
       <button onClick={() => fetchPhotos(search)}>Get Photos</button>
       <button onClick={() => fetchLatestPhotos(search)}>
         Get Latest Photos
       </button>
-      <button onClick={() => console.log(search)}>Search</button>
+
+      <br />
 
       <div id='manifests'>
         {roverData &&
           Object.entries(roverData).map(([k, v]) => (
             <p key={k}>
-              {k}: {Array.isArray(v) ? '' : v}
+              {k}: {Array.isArray(v) ? `Array with ${v.length} items` : v}
             </p>
           ))}
+        {<p>currentTime: {Date.now()}</p>}
       </div>
 
-      <div id='photos' className='flex flex-wrap'>
-        {photos &&
+      <br />
+
+      <div
+        id='photos'
+        className='flex flex-wrap gap-2 justify-center items-center'
+      >
+        {photos.length > 0 ? (
           photos.map((p, i) => (
             <Image
               key={i}
               src={p.img_src}
               alt={i.toString()}
-              height={200}
-              width={200}
+              height={300}
+              width={300}
             />
-          ))}
+          ))
+        ) : (
+          <p>No photos</p>
+        )}
       </div>
     </main>
   );

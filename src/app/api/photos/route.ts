@@ -6,7 +6,7 @@ export async function POST(request: Request) {
   const { rover, sol, camera, page = 1 } = await request.json();
   let url = `${process.env.NASA_ENDPOINT}/rovers/${rover}/photos?api_key=${process.env.NASA_API_KEY}&sol=${sol}&page=${page}`;
 
-  if (camera !== 'ALL') {
+  if (camera && camera !== 'ALL') {
     url += `&camera=${camera}`;
   }
 
