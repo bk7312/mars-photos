@@ -6,11 +6,38 @@ export type RoverSearch = {
   camera: string | undefined;
 };
 
+type CameraTypes =
+  | 'EDL_RUCAM'
+  | 'EDL_RDCAM'
+  | 'EDL_DDCAM'
+  | 'EDL_PUCAM1'
+  | 'EDL_PUCAM2'
+  | 'NAVCAM_LEFT'
+  | 'NAVCAM_RIGHT'
+  | 'MCZ_RIGHT'
+  | 'MCZ_LEFT'
+  | 'FRONT_HAZCAM_LEFT_A'
+  | 'FRONT_HAZCAM_RIGHT_A'
+  | 'REAR_HAZCAM_LEFT'
+  | 'REAR_HAZCAM_RIGHT'
+  | 'SKYCAM'
+  | 'SHERLOC_WATSON'
+  | 'FHAZ'
+  | 'RHAZ'
+  | 'MAST'
+  | 'CHEMCAM'
+  | 'MAHLI'
+  | 'MARDI'
+  | 'NAVCAM'
+  | 'PANCAM'
+  | 'MINITES'
+  | 'ENTRY';
+
 export type ManifestPhotos = {
   sol: number;
   earth_date: string;
   total_photos: number;
-  cameras: string[];
+  cameras: CameraTypes[];
 };
 
 export type RoverManifest = {
@@ -54,7 +81,13 @@ export type RoverPhotos = {
 //   | 'MARDI'
 //   | 'NAVCAM';
 
-// type OpportunityCameras = 'FHAZ' | 'RHAZ' | 'NAVCAM' | 'PANCAM' | 'MINITES';
+// type OpportunityCameras =
+//   | 'FHAZ'
+//   | 'RHAZ'
+//   | 'NAVCAM'
+//   | 'PANCAM'
+//   | 'MINITES'
+//   | 'ENTRY';
 
 // type SpiritCameras = OpportunityCameras;
 
@@ -64,30 +97,3 @@ export type RoverPhotos = {
 //   Opportunity: OpportunityCameras;
 //   Spirit: SpiritCameras;
 // };
-
-// export type CameraTypes =
-//   | 'EDL_RUCAM'
-//   | 'EDL_RDCAM'
-//   | 'EDL_DDCAM'
-//   | 'EDL_PUCAM1'
-//   | 'EDL_PUCAM2'
-//   | 'NAVCAM_LEFT'
-//   | 'NAVCAM_RIGHT'
-//   | 'MCZ_RIGHT'
-//   | 'MCZ_LEFT'
-//   | 'FRONT_HAZCAM_LEFT_A'
-//   | 'FRONT_HAZCAM_RIGHT_A'
-//   | 'REAR_HAZCAM_LEFT'
-//   | 'REAR_HAZCAM_RIGHT'
-//   | 'SKYCAM'
-//   | 'SHERLOC_WATSON'
-//   | 'FHAZ'
-//   | 'RHAZ'
-//   | 'MAST'
-//   | 'CHEMCAM'
-//   | 'MAHLI'
-//   | 'MARDI'
-//   | 'NAVCAM'
-//   | 'PANCAM'
-//   | 'MINITES'
-//   | 'ENTRY';

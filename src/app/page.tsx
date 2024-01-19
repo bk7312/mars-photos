@@ -7,7 +7,7 @@ import {
   RoverManifest,
   ManifestPhotos,
 } from '@/lib/types';
-import { rovers, ONE_HOUR_IN_MS } from '@/lib/constants';
+import { rovers, ONE_HOUR_IN_MS, cameraNames } from '@/lib/constants';
 import Image from 'next/image';
 
 export default function Home() {
@@ -159,13 +159,13 @@ export default function Home() {
           ) : (
             roverData &&
             roverData.photos[photoIndex].cameras.length > 1 && (
-              <option value='ALL'>ALL</option>
+              <option value='ALL'>ALL: Show photos from all cameras</option>
             )
           )}
 
           {roverData?.photos[photoIndex]?.cameras.map((v) => (
             <option key={v} value={v}>
-              {v}
+              {v}: {cameraNames[v]}
             </option>
           ))}
         </select>
@@ -198,7 +198,7 @@ export default function Home() {
               {k}: {Array.isArray(v) ? `Array with ${v.length} items` : v}
             </p>
           ))}
-        {<p>currentTime: {Date.now()}</p>}
+        {roverData && <p>currentTime: {Date.now()}</p>}
       </div>
 
       <br />
