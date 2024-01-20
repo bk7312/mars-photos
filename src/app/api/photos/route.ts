@@ -3,8 +3,8 @@ import { RoverPhotos } from '@/lib/types';
 export const dynamic = 'force-dynamic';
 
 export async function POST(request: Request) {
-  const { rover, sol, camera, page = 1 } = await request.json();
-  let url = `${process.env.NASA_ENDPOINT}/rovers/${rover}/photos?api_key=${process.env.NASA_API_KEY}&sol=${sol}&page=${page}`;
+  const { rover, sol, camera } = await request.json();
+  let url = `${process.env.NASA_ENDPOINT}/rovers/${rover}/photos?api_key=${process.env.NASA_API_KEY}&sol=${sol}`;
 
   if (camera && camera !== 'ALL') {
     url += `&camera=${camera}`;

@@ -4,6 +4,8 @@ export type RoverSearch = {
   rover: Rover;
   sol: number;
   camera: string | undefined;
+  currentPage: number;
+  photoPerPage: number;
 };
 
 type CameraTypes =
@@ -49,6 +51,7 @@ export type RoverManifest = {
   max_date: string;
   total_photos: number;
   photos: ManifestPhotos[];
+  lastUdated: number;
 } | null;
 
 export type RoverPhotos = {

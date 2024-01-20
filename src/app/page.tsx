@@ -8,6 +8,7 @@ import {
   ManifestPhotos,
 } from '@/lib/types';
 import { rovers, ONE_HOUR_IN_MS, cameraNames } from '@/lib/constants';
+import { range } from '@/lib/utils';
 import Image from 'next/image';
 
 export default function Home() {
@@ -15,6 +16,8 @@ export default function Home() {
     rover: 'Perseverance',
     sol: 0,
     camera: undefined,
+    currentPage: 1,
+    photoPerPage: 8,
   });
   const [roverData, setRoverData] = React.useState<RoverManifest>(null);
   const [photos, setPhotos] = React.useState<RoverPhotos>([]);
@@ -70,7 +73,12 @@ export default function Home() {
 
     setSearch((prev) => ({
       ...prev,
-      [name]: name === 'sol' ? Math.max(0, parseInt(value)) : value,
+      [name]:
+        name === 'sol'
+          ? Math.max(0, parseInt(value))
+          : name === 'photoPerPage'
+          ? Math.max(1, parseInt(value))
+          : value,
     }));
   };
 
@@ -87,15 +95,15 @@ export default function Home() {
 
     const { data } = await res.json();
     console.log(data);
-    setRoverData(data);
     data.lastUpdated = Date.now();
+    setRoverData(data);
     localStorage.setItem(rover, JSON.stringify(data));
   };
 
-  const fetchPhotos = async (search: RoverSearch, page: number = 1) => {
+  const fetchPhotos = async (search: RoverSearch) => {
     const res = await fetch('/api/photos/', {
       method: 'POST',
-      body: JSON.stringify({ ...search, page }),
+      body: JSON.stringify(search),
     });
 
     if (!res.ok) {
@@ -108,10 +116,10 @@ export default function Home() {
     setPhotos(data);
   };
 
-  const fetchLatestPhotos = async (search: RoverSearch, page: number = 1) => {
+  const fetchLatestPhotos = async (search: RoverSearch) => {
     const res = await fetch('/api/latest/', {
       method: 'POST',
-      body: JSON.stringify({ ...search, page }),
+      body: JSON.stringify(search),
     });
 
     if (!res.ok) {
@@ -125,6 +133,11 @@ export default function Home() {
   };
   const photoIndex =
     roverData?.photos.findIndex((p) => p.sol === search.sol) ?? -1;
+
+  // const pageArr = new Array(
+  //   Math.ceil(photos.length / search.photoPerPage)
+  // ).fill(0);
+  const photoStartIndex = (search.currentPage - 1) * search.photoPerPage;
 
   return (
     <main className='h-screen flex flex-col items-center'>
@@ -181,6 +194,17 @@ export default function Home() {
           min={0}
         />
       </label>
+      <label>
+        Photos per page:{' '}
+        <input
+          type='number'
+          name='photoPerPage'
+          id='photoPerPage'
+          onChange={updateSearch}
+          value={search.photoPerPage}
+          min={1}
+        />
+      </label>
 
       <br />
 
@@ -192,31 +216,57 @@ export default function Home() {
       <br />
 
       <div id='manifests'>
-        {roverData &&
-          Object.entries(roverData).map(([k, v]) => (
-            <p key={k}>
-              {k}: {Array.isArray(v) ? `Array with ${v.length} items` : v}
-            </p>
-          ))}
-        {roverData && <p>currentTime: {Date.now()}</p>}
+        {roverData && (
+          <div>
+            {Object.entries(roverData).map(([k, v]) => (
+              <p key={k}>
+                {k}: {Array.isArray(v) ? `Array with ${v.length} items` : v}
+              </p>
+            ))}
+            <p>Current Time: {Date.now()}</p>
+          </div>
+        )}
       </div>
 
       <br />
 
-      <div
-        id='photos'
-        className='flex flex-wrap gap-2 justify-center items-center'
-      >
+      <div id='photos'>
         {photos.length > 0 ? (
-          photos.map((p, i) => (
-            <Image
-              key={i}
-              src={p.img_src}
-              alt={i.toString()}
-              height={300}
-              width={300}
-            />
-          ))
+          <div className='flex flex-col'>
+            <div className='flex flex-wrap gap-2 justify-center items-center'>
+              {photos
+                .slice(photoStartIndex, photoStartIndex + search.photoPerPage)
+                .map((p, i) => (
+                  <Image
+                    key={i}
+                    src={p.img_src}
+                    alt={i.toString()}
+                    height={300}
+                    width={300}
+                  />
+                ))}
+            </div>
+            <div className='flex gap-2 justify-center my-4'>
+              Page:{' '}
+              {range(Math.ceil(photos.length / search.photoPerPage)).map(
+                (_, i) => (
+                  <button
+                    className={
+                      search.currentPage === i + 1
+                        ? 'bg-slate-700 text-slate-100'
+                        : 'bg-slate-100'
+                    }
+                    key={i}
+                    onClick={() =>
+                      setSearch((prev) => ({ ...prev, currentPage: i + 1 }))
+                    }
+                  >
+                    {i + 1}
+                  </button>
+                )
+              )}
+            </div>
+          </div>
         ) : (
           <p>No photos</p>
         )}
