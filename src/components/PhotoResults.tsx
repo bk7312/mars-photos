@@ -19,7 +19,7 @@ export default function PhotoResults({
   const maxPage = Math.ceil(photos.src.length / photos.photoPerPage) + 1;
 
   return (
-    <section className='flex flex-col items-center'>
+    <section className='flex flex-col items-center border-2 border-slate-500 rounded p-2 m-2'>
       <label>
         Photos per page:{' '}
         <input
@@ -39,7 +39,11 @@ export default function PhotoResults({
           <div className='flex flex-col'>
             <p className='text-center'>
               {photos.src.length} {photos.src.length === 1 ? 'photo' : 'photos'}{' '}
-              found
+              found, showing photos {photoStartIndex + 1} to{' '}
+              {Math.min(
+                photoStartIndex + photos.photoPerPage,
+                photos.src.length
+              )}
             </p>
             <br />
             <div className='flex flex-wrap gap-2 justify-center items-center'>

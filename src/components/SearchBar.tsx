@@ -20,7 +20,7 @@ export default function SearchBar({
     roverData?.photos.findIndex((p) => p.sol === search.sol) ?? -1;
 
   return (
-    <section className='flex flex-col items-center'>
+    <section className='flex flex-col items-start gap-2 border-2 border-slate-500 rounded p-2 m-2'>
       <label>
         Rover:{' '}
         <select
@@ -52,13 +52,13 @@ export default function SearchBar({
           ) : (
             roverData &&
             roverData.photos[photoIndex].cameras.length > 1 && (
-              <option value='ALL'>ALL: Show photos from all cameras</option>
+              <option value='ALL'>All Cameras</option>
             )
           )}
 
           {roverData?.photos[photoIndex]?.cameras.map((v) => (
             <option key={v} value={v}>
-              {v}: {cameraNames[v]}
+              {cameraNames[v]}
             </option>
           ))}
         </select>
@@ -73,6 +73,9 @@ export default function SearchBar({
           value={search.sol}
           min={0}
         />
+        {roverData?.photos[photoIndex]?.earth_date && (
+          <span>(Earth Date: {roverData?.photos[photoIndex]?.earth_date})</span>
+        )}
       </label>
     </section>
   );

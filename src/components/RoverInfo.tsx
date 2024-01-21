@@ -6,7 +6,7 @@ type RoverInfoPropType = { roverData: RoverManifest };
 
 export default function RoverInfo({ roverData }: RoverInfoPropType) {
   return (
-    <section className='flex flex-col items-center'>
+    <section className='flex flex-col items-center border-2 border-slate-500 rounded p-2 m-2'>
       <div id='manifests'>
         {roverData && (
           <div>
