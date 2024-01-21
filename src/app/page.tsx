@@ -7,20 +7,24 @@ import {
   RoverManifest,
   ManifestPhotos,
 } from '@/lib/types';
-import { rovers, ONE_HOUR_IN_MS, cameraNames } from '@/lib/constants';
-import { range } from '@/lib/utils';
-import Image from 'next/image';
+import { ONE_HOUR_IN_MS } from '@/lib/constants';
+
+import SearchBar from '@/components/SearchBar';
+import PhotoResults from '@/components/PhotoResults';
+import RoverInfo from '@/components/RoverInfo';
 
 export default function Home() {
   const [search, setSearch] = React.useState<RoverSearch>({
     rover: 'Perseverance',
     sol: 0,
     camera: undefined,
-    currentPage: 1,
-    photoPerPage: 8,
   });
   const [roverData, setRoverData] = React.useState<RoverManifest>(null);
-  const [photos, setPhotos] = React.useState<RoverPhotos>([]);
+  const [photos, setPhotos] = React.useState<RoverPhotos>({
+    src: [],
+    currentPage: 1,
+    photoPerPage: 4,
+  });
 
   React.useEffect(() => {
     const json = localStorage.getItem(search.rover);
@@ -73,12 +77,26 @@ export default function Home() {
 
     setSearch((prev) => ({
       ...prev,
-      [name]:
-        name === 'sol'
-          ? Math.max(0, parseInt(value))
-          : name === 'photoPerPage'
-          ? Math.max(1, parseInt(value))
-          : value,
+      [name]: name === 'sol' ? Math.max(0, parseInt(value) || 0) : value,
+    }));
+  };
+
+  const updatePhotos = (photoPerPage: number) => {
+    setPhotos((prev) => {
+      photoPerPage = Math.max(1, photoPerPage || 1);
+      const maxPage = Math.ceil(prev.src.length / photoPerPage);
+      return {
+        ...prev,
+        currentPage: prev.currentPage > maxPage ? maxPage : prev.currentPage,
+        photoPerPage,
+      };
+    });
+  };
+
+  const updatePhotoPage = (page: number) => {
+    setPhotos((prev) => ({
+      ...prev,
+      currentPage: page,
     }));
   };
 
@@ -113,164 +131,30 @@ export default function Home() {
 
     const { data } = await res.json();
     console.log(data);
-    setPhotos(data);
+    setPhotos((prev) => ({ ...prev, src: data }));
   };
-
-  const fetchLatestPhotos = async (search: RoverSearch) => {
-    const res = await fetch('/api/latest/', {
-      method: 'POST',
-      body: JSON.stringify(search),
-    });
-
-    if (!res.ok) {
-      console.error(res.statusText);
-      return;
-    }
-
-    const { data } = await res.json();
-    console.log(data);
-    setPhotos(data);
-  };
-  const photoIndex =
-    roverData?.photos.findIndex((p) => p.sol === search.sol) ?? -1;
-
-  // const pageArr = new Array(
-  //   Math.ceil(photos.length / search.photoPerPage)
-  // ).fill(0);
-  const photoStartIndex = (search.currentPage - 1) * search.photoPerPage;
 
   return (
-    <main className='h-screen flex flex-col items-center'>
-      <label>
-        Rover:{' '}
-        <select
-          name='rover'
-          id='rover'
-          value={search.rover}
-          onChange={updateSearch}
-        >
-          <option disabled>-Select a rover-</option>
-          {rovers.map((rover) => (
-            <option key={rover} value={rover}>
-              {rover}
-            </option>
-          ))}
-        </select>
-      </label>
-      <label>
-        Camera:{' '}
-        <select
-          name='camera'
-          id='camera'
-          value={search.camera}
-          onChange={updateSearch}
-        >
-          {photoIndex === -1 ? (
-            <option disabled value=''>
-              No photos on this day
-            </option>
-          ) : (
-            roverData &&
-            roverData.photos[photoIndex].cameras.length > 1 && (
-              <option value='ALL'>ALL: Show photos from all cameras</option>
-            )
-          )}
-
-          {roverData?.photos[photoIndex]?.cameras.map((v) => (
-            <option key={v} value={v}>
-              {v}: {cameraNames[v]}
-            </option>
-          ))}
-        </select>
-      </label>
-      <label>
-        Sol:{' '}
-        <input
-          type='number'
-          name='sol'
-          id='sol'
-          onChange={updateSearch}
-          value={search.sol}
-          min={0}
-        />
-      </label>
-      <label>
-        Photos per page:{' '}
-        <input
-          type='number'
-          name='photoPerPage'
-          id='photoPerPage'
-          onChange={updateSearch}
-          value={search.photoPerPage}
-          min={1}
-        />
-      </label>
-
-      <br />
+    <main className='h-screen flex flex-col items-center '>
+      <SearchBar
+        search={search}
+        roverData={roverData}
+        updateSearch={updateSearch}
+      />
 
       <button onClick={() => fetchPhotos(search)}>Get Photos</button>
-      <button onClick={() => fetchLatestPhotos(search)}>
-        Get Latest Photos
-      </button>
 
       <br />
 
-      <div id='manifests'>
-        {roverData && (
-          <div>
-            {Object.entries(roverData).map(([k, v]) => (
-              <p key={k}>
-                {k}: {Array.isArray(v) ? `Array with ${v.length} items` : v}
-              </p>
-            ))}
-            <p>Current Time: {Date.now()}</p>
-          </div>
-        )}
-      </div>
+      <RoverInfo roverData={roverData} />
 
       <br />
 
-      <div id='photos'>
-        {photos.length > 0 ? (
-          <div className='flex flex-col'>
-            <div className='flex flex-wrap gap-2 justify-center items-center'>
-              {photos
-                .slice(photoStartIndex, photoStartIndex + search.photoPerPage)
-                .map((p, i) => (
-                  <Image
-                    key={i}
-                    src={p.img_src}
-                    alt={i.toString()}
-                    height={300}
-                    width={300}
-                  />
-                ))}
-            </div>
-            <div className='flex gap-2 justify-center my-4'>
-              Page:{' '}
-              {range(Math.ceil(photos.length / search.photoPerPage)).map(
-                (_, i) => (
-                  <button
-                    className={
-                      search.currentPage === i + 1
-                        ? 'bg-slate-700 text-slate-100'
-                        : 'bg-slate-100'
-                    }
-                    key={i}
-                    onClick={() =>
-                      setSearch((prev) => ({ ...prev, currentPage: i + 1 }))
-                    }
-                  >
-                    {i + 1}
-                  </button>
-                )
-              )}
-            </div>
-          </div>
-        ) : (
-          <p>No photos</p>
-        )}
-      </div>
+      <PhotoResults
+        photos={photos}
+        updatePhotos={updatePhotos}
+        updatePhotoPage={updatePhotoPage}
+      />
     </main>
   );
 }

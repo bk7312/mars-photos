@@ -1,4 +1,4 @@
-import { RoverPhotos } from '@/lib/types';
+import { RoverPhotosResponse } from '@/lib/types';
 
 export const dynamic = 'force-dynamic';
 
@@ -19,11 +19,14 @@ export async function POST(request: Request) {
       throw new Error(errors);
     }
 
-    const photoData: RoverPhotos = photos;
+    const photoData: RoverPhotosResponse = photos;
     if (!photoData) {
       return Response.json({ data: [] });
     }
-    const data = photoData.map((p) => ({ img_src: p.img_src }));
+    const data = photoData.map((p) => ({
+      img_src: p.img_src,
+      img_alt: `Photo id ${p.id} taken on sol ${p.sol} (Earth date: ${p.earth_date}) from ${p.rover.name} - ${p.camera.full_name} (${p.camera.name})`,
+    }));
     return Response.json({ data });
   } catch (error) {
     return Response.json(

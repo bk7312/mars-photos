@@ -4,8 +4,6 @@ export type RoverSearch = {
   rover: Rover;
   sol: number;
   camera: string | undefined;
-  currentPage: number;
-  photoPerPage: number;
 };
 
 type CameraTypes =
@@ -54,9 +52,28 @@ export type RoverManifest = {
   lastUdated: number;
 } | null;
 
-export type RoverPhotos = {
+export type RoverPhotosResponse = {
+  id: number;
+  sol: number;
+  earth_date: string;
+  camera: {
+    name: string;
+    full_name: string;
+  };
+  rover: {
+    name: string;
+  };
   img_src: string;
 }[];
+
+export type RoverPhotos = {
+  src: {
+    img_src: string;
+    img_alt: string;
+  }[];
+  currentPage: number;
+  photoPerPage: number;
+};
 
 // export type PerseveranceCameras =
 //   | 'EDL_RUCAM'
