@@ -19,5 +19,11 @@ Usage flow to implement:
 Notes:
 
 - Some days with no photos, i.e. spirit sol 0
-- Some camera types not on mars api page, i.e. spirit sol 1 camera ENTRY
+- Some camera types not on mars api page, i.e. spirit sol 1 ENTRY (Entry, Descent, and Landing Camera), perseverance sol 50 SUPERCAM_RMI (SuperCam Remote Micro Imager)
 - Camera names not on manifest, only code, names on photo[i].camera.full_name
+
+Todo:
+
+- Add styling and layout
+- Add image/form loading state
+- Image zoom when clicked

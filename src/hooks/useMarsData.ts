@@ -8,10 +8,10 @@ import {
 } from '@/lib/types';
 import { ONE_HOUR_IN_MS } from '@/lib/constants';
 
-function useMarsData(rover: Rover) {
+function useMarsData() {
   const [search, setSearch] = React.useState<RoverSearch>({
-    rover: rover,
-    sol: 0,
+    rover: undefined,
+    sol: undefined,
     camera: undefined,
   });
   const [roverData, setRoverData] = React.useState<RoverManifest>(null);
@@ -22,6 +22,10 @@ function useMarsData(rover: Rover) {
   });
 
   React.useEffect(() => {
+    if (typeof search.rover === 'undefined') {
+      return;
+    }
+
     const json = localStorage.getItem(search.rover);
     if (!json) {
       fetchManifest(search.rover);
@@ -52,7 +56,7 @@ function useMarsData(rover: Rover) {
     );
 
     if (photoIndex === -1) {
-      setSearch((prev) => ({ ...prev, camera: undefined }));
+      setSearch((prev) => ({ ...prev, sol: undefined, camera: undefined }));
       return;
     }
 

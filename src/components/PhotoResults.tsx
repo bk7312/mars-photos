@@ -54,8 +54,7 @@ export default function PhotoResults({
                     key={p.img_alt}
                     src={p.img_src}
                     alt={p.img_alt}
-                    height={300}
-                    width={300}
+                    fill={true}
                   />
                 ))}
             </div>

@@ -1,8 +1,8 @@
 export type Rover = 'Perseverance' | 'Curiosity' | 'Opportunity' | 'Spirit';
 
 export type RoverSearch = {
-  rover: Rover;
-  sol: number;
+  rover: Rover | undefined;
+  sol: number | undefined;
   camera: string | undefined;
 };
 
