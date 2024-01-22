@@ -10,13 +10,42 @@ type PhotoResultsPropType = {
   updatePhotoPage: (page: number) => void;
 };
 
+type DisplayType =
+  | {
+      fullscreen: false;
+    }
+  | {
+      fullscreen: true;
+      src: string;
+      alt: string;
+    };
+
 export default function PhotoResults({
   photos,
   updatePhotos,
   updatePhotoPage,
 }: PhotoResultsPropType) {
+  const [display, setDisplay] = React.useState<DisplayType>({
+    fullscreen: false,
+  });
   const photoStartIndex = (photos.currentPage - 1) * photos.photoPerPage;
   const maxPage = Math.ceil(photos.src.length / photos.photoPerPage) + 1;
+
+  const toggleFullscreen = (
+    e: React.MouseEvent<HTMLDivElement, MouseEvent>
+  ) => {
+    if (display.fullscreen === true) {
+      setDisplay({ fullscreen: false });
+      return;
+    }
+
+    const child = e.currentTarget.children[0] as HTMLImageElement;
+    setDisplay({
+      fullscreen: true,
+      src: e.currentTarget.dataset.imgSrc ?? '',
+      alt: child.alt,
+    });
+  };
 
   return (
     <section className='flex flex-col items-center border-2 border-slate-500 rounded p-2 m-2'>
@@ -50,12 +79,19 @@ export default function PhotoResults({
               {photos.src
                 .slice(photoStartIndex, photoStartIndex + photos.photoPerPage)
                 .map((p) => (
-                  <Image
+                  <div
                     key={p.img_alt}
-                    src={p.img_src}
-                    alt={p.img_alt}
-                    fill={true}
-                  />
+                    className='relative w-80 cursor-pointer aspect-square'
+                    data-img-src={p.img_src}
+                    onClick={toggleFullscreen}
+                  >
+                    <Image
+                      src={p.img_src}
+                      alt={p.img_alt}
+                      fill={true}
+                      sizes='300px'
+                    />
+                  </div>
                 ))}
             </div>
             <div className='flex flex-wrap gap-2 justify-center my-4'>
@@ -79,6 +115,21 @@ export default function PhotoResults({
           <p>No photos</p>
         )}
       </div>
+      {display.fullscreen && (
+        <div className='flex justify-center items-center backdrop-blur fixed h-screen w-screen inset-0'>
+          <div
+            className='relative w-[1000px] m-4 sm:m-8 cursor-pointer aspect-square'
+            onClick={toggleFullscreen}
+          >
+            <Image
+              src={display.src}
+              alt={display.alt}
+              fill={true}
+              sizes='300px'
+            />
+          </div>
+        </div>
+      )}
     </section>
   );
 }

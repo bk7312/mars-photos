@@ -18,6 +18,7 @@ export default function Home() {
   } = useMarsData();
 
   const isDev = !process.env.NODE_ENV || process.env.NODE_ENV === 'development';
+  isDev && console.log('main rendered');
 
   return (
     <main className='h-screen flex flex-col items-center gap-2'>

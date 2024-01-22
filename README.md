@@ -22,6 +22,11 @@ Notes:
 - Some camera types not on mars api page, i.e. spirit sol 1 ENTRY (Entry, Descent, and Landing Camera), perseverance sol 50 SUPERCAM_RMI (SuperCam Remote Micro Imager)
 - Camera names not on manifest, only code, names on photo[i].camera.full_name
 
+- Perseverance: ['EDL_DDCAM', 'FRONT_HAZCAM_LEFT_A', 'FRONT_HAZCAM_RIGHT_A', 'REAR_HAZCAM_LEFT', 'REAR_HAZCAM_RIGHT', 'EDL_PUCAM2', 'EDL_RDCAM', 'EDL_RUCAM', 'MCZ_LEFT', 'MCZ_RIGHT', 'NAVCAM_LEFT', 'NAVCAM_RIGHT', 'SKYCAM', 'EDL_PUCAM1', 'SHERLOC_WATSON', 'SUPERCAM_RMI']
+- Curiosity: ['CHEMCAM', 'FHAZ', 'MARDI', 'RHAZ', 'MAHLI', 'MAST', 'NAVCAM']
+- Opportunity: ['ENTRY', 'FHAZ', 'NAVCAM', 'PANCAM', 'RHAZ', 'MINITES']
+- Spirit: ['ENTRY', 'FHAZ', 'NAVCAM', 'PANCAM', 'RHAZ', 'MINITES']
+
 Todo:
 
 - Add styling and layout

@@ -60,6 +60,7 @@ export const ONE_DAY_IN_MS = 24 * 60 * 60 * 1000;
 //   REAR_HAZCAM_RIGHT: 'Rear Hazard Avoidance Camera - Right',
 //   SKYCAM: 'MEDA Skycam',
 //   SHERLOC_WATSON: 'SHERLOC WATSON Camera',
+//   SUPERCAM_RMI: 'SuperCam Remote Micro Imager',
 // };
 
 // const curiosityCameras = {
@@ -106,6 +107,7 @@ export const cameraNames = {
   REAR_HAZCAM_RIGHT: 'Rear Hazard Avoidance Camera - Right',
   SKYCAM: 'MEDA Skycam',
   SHERLOC_WATSON: 'SHERLOC WATSON Camera',
+  SUPERCAM_RMI: 'SuperCam Remote Micro Imager',
   FHAZ: 'Front Hazard Avoidance Camera',
   RHAZ: 'Rear Hazard Avoidance Camera',
   MAST: 'Mast Camera',

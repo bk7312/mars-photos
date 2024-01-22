@@ -22,6 +22,7 @@ type CameraTypes =
   | 'REAR_HAZCAM_RIGHT'
   | 'SKYCAM'
   | 'SHERLOC_WATSON'
+  | 'SUPERCAM_RMI'
   | 'FHAZ'
   | 'RHAZ'
   | 'MAST'
@@ -90,7 +91,8 @@ export type RoverPhotos = {
 //   | 'REAR_HAZCAM_LEFT'
 //   | 'REAR_HAZCAM_RIGHT'
 //   | 'SKYCAM'
-//   | 'SHERLOC_WATSON';
+//   | 'SHERLOC_WATSON'
+//   | 'SUPERCAM_RMI;
 
 // type CuriosityCameras =
 //   | 'FHAZ'
