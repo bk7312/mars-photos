@@ -6,7 +6,7 @@ import {
   RoverManifest,
   ManifestPhotos,
 } from '@/lib/types';
-import { ONE_HOUR_IN_MS } from '@/lib/constants';
+import { ONE_HOUR_IN_MS, isDev } from '@/lib/constants';
 
 function useMarsData() {
   const [search, setSearch] = React.useState<RoverSearch>({
@@ -114,7 +114,7 @@ function useMarsData() {
     }
 
     const { data } = await res.json();
-    console.log(data);
+    isDev && console.log(data);
     data.lastUpdated = Date.now();
     setRoverData(data);
     localStorage.setItem(rover, JSON.stringify(data));
@@ -132,7 +132,7 @@ function useMarsData() {
     }
 
     const { data } = await res.json();
-    console.log(data);
+    isDev && console.log(data);
     setPhotos((prev) => ({ ...prev, src: data, currentPage: 1 }));
   };
 

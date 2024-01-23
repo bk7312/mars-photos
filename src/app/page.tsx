@@ -5,6 +5,7 @@ import PhotoResults from '@/components/PhotoResults';
 import Footer from '@/components/Footer';
 import useMarsData from '@/hooks/useMarsData';
 import Spinner from '@/components/Spinner';
+import { isDev } from '@/lib/constants';
 
 export default function Home() {
   const {
@@ -17,7 +18,6 @@ export default function Home() {
     updatePhotoPage,
   } = useMarsData();
 
-  const isDev = !process.env.NODE_ENV || process.env.NODE_ENV === 'development';
   isDev && console.log('main rendered');
 
   return (
@@ -30,7 +30,7 @@ export default function Home() {
       />
 
       {isDev && (
-        <div className='absolute top-0 right-0 opacity-30 border-2 border-slate-500 rounded p-2'>
+        <div className='absolute top-1/2 -translate-y-1/2 right-0 opacity-30 border-2 border-slate-500 rounded p-2'>
           {roverData ? (
             <>
               {Object.entries(roverData).map(([k, v]) => (
