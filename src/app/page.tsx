@@ -1,5 +1,6 @@
 'use client';
 import React from 'react';
+import Header from '@/components/Header';
 import SearchBar from '@/components/SearchBar';
 import PhotoResults from '@/components/PhotoResults';
 import Footer from '@/components/Footer';
@@ -22,6 +23,7 @@ export default function Home() {
 
   return (
     <main className='h-screen flex flex-col items-center gap-2'>
+      <Header />
       <SearchBar
         search={search}
         roverData={roverData}
@@ -30,7 +32,10 @@ export default function Home() {
       />
 
       {isDev && (
-        <div className='absolute top-1/2 -translate-y-1/2 right-0 opacity-30 border-2 border-slate-500 rounded p-2'>
+        <div
+          className='fixed cursor-pointer transition top-1/2 -translate-y-1/2 right-0 opacity-30 border-2 border-slate-500 rounded p-2'
+          onClick={(e) => e.currentTarget.classList.toggle('translate-x-[85%]')}
+        >
           {roverData ? (
             <>
               {Object.entries(roverData).map(([k, v]) => (

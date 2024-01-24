@@ -22,14 +22,15 @@ export default function SearchBar({
     roverData?.photos.findIndex((p) => p.sol === search.sol) ?? -1;
 
   return (
-    <section className='flex flex-col items-start gap-2 border-2 border-slate-500 rounded p-2 m-2'>
-      <label>
-        Rover:{' '}
+    <section className='flex flex-col items-start gap-4 border-2 border-slate-500 rounded p-4 m-2 w-full max-w-lg'>
+      <label className='flex gap-2 items-center w-full'>
+        <p className='w-20 text-right'>Rover:</p>
         <select
           name='rover'
           id='rover'
           value={search.rover}
           onChange={updateSearch}
+          className='w-full px-1 py-1'
         >
           {!search.rover && <option value=''>Select a rover</option>}
           {rovers.map((rover) => (
@@ -42,14 +43,15 @@ export default function SearchBar({
 
       {search.rover && (
         <>
-          <label>
-            Sol:{' '}
+          <label className='flex gap-2 items-center w-full'>
+            <p className='w-20 text-right'>Sol:</p>
             <input
               type='number'
               list='sol-datalist'
               name='sol'
               onChange={updateSearch}
               min={0}
+              className='w-full px-2 py-1'
             />
             <datalist id='sol-datalist'>
               {roverData?.photos.map(({ sol, earth_date }) => (
@@ -63,13 +65,14 @@ export default function SearchBar({
           {search.sol !== undefined && (
             <>
               {' '}
-              <label>
-                Camera:{' '}
+              <label className='flex gap-2 items-center w-full'>
+                <p className='w-20 text-right'>Camera:</p>
                 <select
                   name='camera'
                   id='camera'
                   value={search.camera}
                   onChange={updateSearch}
+                  className='w-full px-1 py-1'
                 >
                   {photoIndex === -1 ? (
                     <option disabled value=''>
@@ -89,7 +92,7 @@ export default function SearchBar({
                 </select>
               </label>
               <button
-                className='bg-slate-200 border-solid rounded px-2 py-1'
+                className='bg-slate-200 border-solid rounded px-2 py-1 mx-auto'
                 onClick={() => fetchPhotos(search)}
               >
                 Get Photos

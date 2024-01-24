@@ -97,7 +97,7 @@ function useMarsData() {
       const maxPage = Math.ceil(prev.src.length / prev.photoPerPage);
       return {
         ...prev,
-        currentPage: page > maxPage ? maxPage : page,
+        currentPage: page > maxPage ? maxPage : Math.max(1, page || 1),
       };
     });
   };

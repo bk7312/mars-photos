@@ -4,31 +4,50 @@ Project brief: https://github.com/chingu-voyages/soloproject-tier3-mars-photos
 
 Mars Photo API: https://github.com/corincerami/mars-photo-api
 
-Usage flow to implement:
+User workflow:
 
 - User selects a rover
-- App will fetch the rover manifest
-- App will update the sol min/max based on manifest
+- App will show loading state while fetching manifest
+- If error fetching manifest, show error.
+- If no errors, app will update the sol min/max based on manifest
+
 - User selects a sol number
-- App will check the rover manifest and update the available camera options
-- User selects a camera
-- App will fetch the photos and display results in paginated form
-- User clicks on photo, photo will enlarge
-- User clicks on next page, app will fetch next results of next page and display
+- App will check the manifest and update the available camera options
+- User selects a camera and clicks the get photos button
+- App will show loading state while fetching photos
+- If error fetching photos, show error
+- If no errors, display the photo results component
 
-Notes:
+- App will show placeholder image or loading state while fetching the individual images
+- If error fetching image, show placeholder error image with retry or report button?
+- If no errors, display image
 
-- Some days with no photos, i.e. spirit sol 0
-- Some camera types not on mars api page, i.e. spirit sol 1 ENTRY (Entry, Descent, and Landing Camera), perseverance sol 50 SUPERCAM_RMI (SuperCam Remote Micro Imager)
-- Camera names not on manifest, only code, names on photo[i].camera.full_name
-
-- Perseverance: ['EDL_DDCAM', 'FRONT_HAZCAM_LEFT_A', 'FRONT_HAZCAM_RIGHT_A', 'REAR_HAZCAM_LEFT', 'REAR_HAZCAM_RIGHT', 'EDL_PUCAM2', 'EDL_RDCAM', 'EDL_RUCAM', 'MCZ_LEFT', 'MCZ_RIGHT', 'NAVCAM_LEFT', 'NAVCAM_RIGHT', 'SKYCAM', 'EDL_PUCAM1', 'SHERLOC_WATSON', 'SUPERCAM_RMI']
-- Curiosity: ['CHEMCAM', 'FHAZ', 'MARDI', 'RHAZ', 'MAHLI', 'MAST', 'NAVCAM']
-- Opportunity: ['ENTRY', 'FHAZ', 'NAVCAM', 'PANCAM', 'RHAZ', 'MINITES']
-- Spirit: ['ENTRY', 'FHAZ', 'NAVCAM', 'PANCAM', 'RHAZ', 'MINITES']
+- User clicks on image
+- App will show image on fullscreen (currently done by refetch the same image to show a new Image component on fullscreen, to optimize by enlarging the current Image component?), clicking anywhere or pressing escape will exit fullscreen
+- User clicks on next page or update the photos per page, app will update the layout and fetch the new images
 
 Todo:
 
-- Add styling and layout
-- Add image/form loading state
-- Image zoom when clicked
+- Add styling and layout:
+
+  - Choose a color scheme, currently slate
+  - Design a responsive layout
+  - Header/footer styling
+  - Search bar styling, fix inconsistent width issue
+  - Photo results layout and styling, show image by camera if all?
+
+- Work on loading state and error handling:
+
+  - Fetch manifest after selecting rover, and handle fail to fetch error
+  - Fetch photos after clicking get photos, and handle fail to fetch error
+  - Fetch individual images in the photo results component, and handle fail to fetch error
+
+- Optimizations:
+
+  - Optimize fullscreen by eliminating need to refetch image
+  - Optimize fetch photos, if fetched for all cameras, filtering by camera should not require another api call but filter existing data instead, if multiple cameras fetched, data should be combined
+  - Store fetched photos in localStorage to reduce need to refetch photos (similar to manifest)?
+
+- Backend considerations:
+
+  - Currently using route handlers (serverless), to use a BaaS to cache frequently requested manifest/photos data in BE? BE would be required to handle user login and saving/favorite images

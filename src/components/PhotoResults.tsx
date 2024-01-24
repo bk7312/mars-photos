@@ -70,47 +70,46 @@ export default function PhotoResults({
     <section className='flex flex-col border-2 border-slate-500 rounded p-2 m-2'>
       <div id='photos' className=''>
         {photos.src.length > 0 ? (
-          <div className='flex flex-col '>
-            <p className='text-center m-2'>
-              Showing photos {photoStartIndex + 1} to{' '}
-              {Math.min(
-                photoStartIndex + photos.photoPerPage,
-                photos.src.length
-              )}{' '}
-              (Total: {photos.src.length}{' '}
-              {photos.src.length === 1 ? 'photo' : 'photos'})
-            </p>
+          <div className='flex flex-col'>
+            <div className='flex justify-center gap-4 mx-3'>
+              <label className='flex gap-2 justify-center items-center my-2'>
+                <p>Photos per page:</p>
+                <input
+                  type='number'
+                  name='photoPerPage'
+                  id='photoPerPage'
+                  onChange={(e) => updatePhotos(e.target.valueAsNumber)}
+                  value={photos.photoPerPage}
+                  min={1}
+                  className='w-16 px-2 py-1'
+                />{' '}
+              </label>
 
-            <label className='text-center'>
-              Photos per page:{' '}
-              <input
-                type='number'
-                name='photoPerPage'
-                id='photoPerPage'
-                onChange={(e) => updatePhotos(e.target.valueAsNumber)}
-                value={photos.photoPerPage}
-                min={1}
-              />
-            </label>
-
-            <div className='flex flex-wrap gap-2 justify-center my-4'>
-              Page:{' '}
-              {range(1, maxPage).map((i) => (
-                <button
-                  className={
-                    photos.currentPage === i
-                      ? 'bg-slate-700 text-slate-100'
-                      : 'bg-slate-100'
-                  }
-                  key={i}
-                  onClick={() => updatePhotoPage(i)}
-                >
-                  {i}
-                </button>
-              ))}
+              <label className='flex gap-2 justify-center items-center my-2'>
+                <p>Showing page:</p>
+                <input
+                  type='number'
+                  name='currentPage'
+                  id='currentPage'
+                  onChange={(e) => updatePhotoPage(e.target.valueAsNumber)}
+                  value={photos.currentPage}
+                  min={1}
+                  className='w-16 px-2 py-1'
+                />{' '}
+              </label>
             </div>
 
-            <div className='flex flex-wrap gap-2 justify-center border-2'>
+            <p className='text-center m-2'>
+              Showing photo number {photoStartIndex + 1}{' '}
+              {photos.photoPerPage > 1 &&
+                `to ${Math.min(
+                  photoStartIndex + photos.photoPerPage,
+                  photos.src.length
+                )}`}{' '}
+              out of {photos.src.length}{' '}
+            </p>
+
+            <div className='flex flex-wrap gap-2 justify-center border-2 m-2'>
               {photos.src
                 .slice(photoStartIndex, photoStartIndex + photos.photoPerPage)
                 .map((p) => (
@@ -129,6 +128,23 @@ export default function PhotoResults({
                     />
                   </button>
                 ))}
+            </div>
+
+            <div className='flex flex-wrap gap-2 justify-center my-2'>
+              Page:{' '}
+              {range(1, maxPage).map((i) => (
+                <button
+                  className={
+                    photos.currentPage === i
+                      ? 'bg-slate-700 text-slate-100 px-1'
+                      : 'bg-slate-100 px-1'
+                  }
+                  key={i}
+                  onClick={() => updatePhotoPage(i)}
+                >
+                  {i}
+                </button>
+              ))}
             </div>
           </div>
         ) : (
