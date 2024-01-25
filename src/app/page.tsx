@@ -15,14 +15,14 @@ export default function Home() {
     roverData,
     updateSearch,
     fetchPhotos,
-    updatePhotos,
+    updatePhotosPerPage,
     updatePhotoPage,
   } = useMarsData();
 
   isDev && console.log('main rendered');
 
   return (
-    <main className='h-screen flex flex-col items-center gap-2'>
+    <main className='h-screen flex flex-col justify-between items-center gap-2'>
       <Header />
       <SearchBar
         search={search}
@@ -53,7 +53,7 @@ export default function Home() {
 
       <PhotoResults
         photos={photos}
-        updatePhotos={updatePhotos}
+        updatePhotosPerPage={updatePhotosPerPage}
         updatePhotoPage={updatePhotoPage}
       />
 

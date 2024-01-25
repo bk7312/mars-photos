@@ -3,10 +3,11 @@ export type Rover = 'Perseverance' | 'Curiosity' | 'Opportunity' | 'Spirit';
 export type RoverSearch = {
   rover: Rover | undefined;
   sol: number | undefined;
-  camera: string | undefined;
+  camera: CameraTypes | 'ALL' | undefined;
+  photoIndex: number;
 };
 
-type CameraTypes =
+export type CameraTypes =
   | 'EDL_RUCAM'
   | 'EDL_RDCAM'
   | 'EDL_DDCAM'
@@ -53,14 +54,20 @@ export type RoverManifest = {
   lastUdated: number;
 } | null;
 
+type CameraNameAndFullName = {
+  name: CameraTypes;
+  full_name: string;
+};
+
+export type GenericStringNumberObj = {
+  [key: string]: number;
+};
+
 export type RoverPhotosResponse = {
   id: number;
   sol: number;
   earth_date: string;
-  camera: {
-    name: string;
-    full_name: string;
-  };
+  camera: CameraNameAndFullName;
   rover: {
     name: string;
   };
@@ -71,9 +78,14 @@ export type RoverPhotos = {
   src: {
     img_src: string;
     img_alt: string;
+    camera: CameraNameAndFullName;
   }[];
   currentPage: number;
   photoPerPage: number;
+  cameraMap: GenericStringNumberObj;
+  rover: Rover | undefined;
+  sol: number | undefined;
+  currentCamera: CameraTypes | 'ALL' | undefined;
 };
 
 // export type PerseveranceCameras =

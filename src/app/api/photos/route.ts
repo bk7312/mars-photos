@@ -1,4 +1,4 @@
-import { RoverPhotosResponse } from '@/lib/types';
+import { GenericStringNumberObj, RoverPhotosResponse } from '@/lib/types';
 
 export const dynamic = 'force-dynamic';
 
@@ -23,11 +23,27 @@ export async function POST(request: Request) {
     if (!photoData) {
       return Response.json({ data: [] });
     }
-    const data = photoData.map((p) => ({
-      img_src: p.img_src,
-      img_alt: `Photo id ${p.id} taken on sol ${p.sol} (Earth date: ${p.earth_date}) from ${p.rover.name} - ${p.camera.full_name} (${p.camera.name})`,
-    }));
-    return Response.json({ data });
+
+    // cameraMap stores the number of images per camera
+    // keep as is for now, can simplify to set/array?
+    const cameraMap: GenericStringNumberObj = {};
+    const data = photoData.map((p) => {
+      if (!(p.camera.name in cameraMap)) {
+        cameraMap[p.camera.name] = 0;
+      }
+      ++cameraMap[p.camera.name];
+
+      return {
+        img_src: p.img_src,
+        img_alt: `PhotoID: ${p.id}, taken from ${p.rover.name} rover's ${p.camera.full_name} (${p.camera.name}) on sol ${p.sol} (Earth date: ${p.earth_date})`,
+        camera: {
+          name: p.camera.name,
+          full_name: p.camera.full_name,
+        },
+      };
+    });
+
+    return Response.json({ data, cameraMap });
   } catch (error) {
     return Response.json(
       { error },

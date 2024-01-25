@@ -33,7 +33,6 @@ Todo:
   - Choose a color scheme, currently slate
   - Design a responsive layout
   - Header/footer styling
-  - Search bar styling, fix inconsistent width issue
   - Photo results layout and styling, show image by camera if all?
 
 - Work on loading state and error handling:
@@ -44,10 +43,11 @@ Todo:
 
 - Optimizations:
 
-  - Optimize fullscreen by eliminating need to refetch image
-  - Optimize fetch photos, if fetched for all cameras, filtering by camera should not require another api call but filter existing data instead, if multiple cameras fetched, data should be combined
-  - Store fetched photos in localStorage to reduce need to refetch photos (similar to manifest)?
+  - Optimize fullscreen by eliminating need to refetch image (to do)
+  - Optimize fetch photos, if fetched for all cameras, filtering by camera should not require another api call but filter existing data instead, if multiple cameras fetched, data should be combined (done)
+  - Store fetched photos in localStorage to reduce need to refetch photos (similar to manifest)? Might not be worth it, manifest occupies 2MB+ already
+  - Currently images are assumed to be square, to handle images of different aspect ratios (to do)
 
 - Backend considerations:
 
-  - Currently using route handlers (serverless), to use a BaaS to cache frequently requested manifest/photos data in BE? BE would be required to handle user login and saving/favorite images
+  - Currently using route handlers (serverless), to use a BaaS to cache frequently requested manifest/photos data in BE? BE would be required to handle user login and saving/favorite images (to consider)

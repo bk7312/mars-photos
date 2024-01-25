@@ -18,11 +18,8 @@ export default function SearchBar({
   updateSearch,
   fetchPhotos,
 }: SearchBarPropType) {
-  const photoIndex =
-    roverData?.photos.findIndex((p) => p.sol === search.sol) ?? -1;
-
   return (
-    <section className='flex flex-col items-start gap-4 border-2 border-slate-500 rounded p-4 m-2 w-full max-w-lg'>
+    <section className='flex flex-col items-start gap-4 border-2 border-slate-500 rounded p-4 m-4 w-full max-w-xl'>
       <label className='flex gap-2 items-center w-full'>
         <p className='w-20 text-right'>Rover:</p>
         <select
@@ -74,17 +71,17 @@ export default function SearchBar({
                   onChange={updateSearch}
                   className='w-full px-1 py-1'
                 >
-                  {photoIndex === -1 ? (
+                  {search.photoIndex === -1 ? (
                     <option disabled value=''>
                       No photos on this day
                     </option>
                   ) : (
                     roverData &&
-                    roverData.photos[photoIndex].cameras.length > 1 && (
+                    roverData.photos[search.photoIndex].cameras.length > 1 && (
                       <option value='ALL'>All Cameras</option>
                     )
                   )}
-                  {roverData?.photos[photoIndex]?.cameras.map((v) => (
+                  {roverData?.photos[search.photoIndex]?.cameras.map((v) => (
                     <option key={v} value={v}>
                       {cameraNames[v]}
                     </option>

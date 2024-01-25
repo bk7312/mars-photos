@@ -7,25 +7,33 @@ import {
   ManifestPhotos,
 } from '@/lib/types';
 import { ONE_HOUR_IN_MS, isDev } from '@/lib/constants';
+import { isArrayStringInObjectKey, setWithinRange } from '@/lib/utils';
 
 function useMarsData() {
   const [search, setSearch] = React.useState<RoverSearch>({
     rover: undefined,
     sol: undefined,
     camera: undefined,
+    photoIndex: -1,
   });
   const [roverData, setRoverData] = React.useState<RoverManifest>(null);
   const [photos, setPhotos] = React.useState<RoverPhotos>({
     src: [],
     currentPage: 1,
     photoPerPage: 4,
+    cameraMap: {},
+    rover: undefined,
+    sol: undefined,
+    currentCamera: undefined,
   });
 
+  // updates rover manifest on search form rover input change
   React.useEffect(() => {
     if (typeof search.rover === 'undefined') {
       return;
     }
 
+    // checks localStorage first before fetching manifest
     const json = localStorage.getItem(search.rover);
     if (!json) {
       fetchManifest(search.rover);
@@ -38,6 +46,7 @@ function useMarsData() {
         ? false
         : data.lastUpdated + ONE_HOUR_IN_MS < Date.now();
 
+    // fetches manifest if data is outdated
     if (!data || toUpdate) {
       fetchManifest(search.rover);
       return;
@@ -46,6 +55,7 @@ function useMarsData() {
     setRoverData(data);
   }, [search.rover]);
 
+  // updates search form camera options based on sol
   React.useEffect(() => {
     if (!roverData) {
       return;
@@ -56,12 +66,18 @@ function useMarsData() {
     );
 
     if (photoIndex === -1) {
-      setSearch((prev) => ({ ...prev, sol: undefined, camera: undefined }));
+      setSearch((prev) => ({
+        ...prev,
+        sol: undefined,
+        camera: undefined,
+        photoIndex,
+      }));
       return;
     }
 
     setSearch((prev) => ({
       ...prev,
+      photoIndex,
       camera:
         roverData.photos[photoIndex].cameras.length > 1
           ? 'ALL'
@@ -76,28 +92,27 @@ function useMarsData() {
 
     setSearch((prev) => ({
       ...prev,
-      [name]: name === 'sol' ? Math.max(0, parseInt(value) || 0) : value,
+      [name]: name === 'sol' ? setWithinRange(parseInt(value), 0) : value,
     }));
   };
 
-  const updatePhotos = (photoPerPage: number) => {
+  const updatePhotosPerPage = (photoPerPage: number, totalPhotos: number) => {
     setPhotos((prev) => {
-      photoPerPage = Math.max(1, photoPerPage || 1);
-      const maxPage = Math.ceil(prev.src.length / photoPerPage);
+      photoPerPage = setWithinRange(photoPerPage, 1);
+      const maxPage = Math.ceil(totalPhotos / photoPerPage);
       return {
         ...prev,
-        currentPage: prev.currentPage > maxPage ? maxPage : prev.currentPage,
+        currentPage: setWithinRange(prev.currentPage, 1, maxPage),
         photoPerPage,
       };
     });
   };
 
-  const updatePhotoPage = (page: number) => {
+  const updatePhotoPage = (page: number, maxPage: number) => {
     setPhotos((prev) => {
-      const maxPage = Math.ceil(prev.src.length / prev.photoPerPage);
       return {
         ...prev,
-        currentPage: page > maxPage ? maxPage : Math.max(1, page || 1),
+        currentPage: setWithinRange(page, 1, maxPage),
       };
     });
   };
@@ -121,6 +136,33 @@ function useMarsData() {
   };
 
   const fetchPhotos = async (search: RoverSearch) => {
+    const matchingRoverSol =
+      photos.rover &&
+      photos.rover === search.rover &&
+      photos.sol &&
+      photos.sol === search.sol;
+
+    const cameraAvailable =
+      (search.camera && search.camera in photos.cameraMap) ||
+      (search.camera === 'ALL' &&
+        roverData &&
+        isArrayStringInObjectKey(
+          roverData.photos[search.photoIndex].cameras,
+          photos.cameraMap
+        ));
+
+    if (matchingRoverSol && cameraAvailable) {
+      isDev && console.log('data already available, no need to refetch');
+      setPhotos((prev) => {
+        return {
+          ...prev,
+          currentCamera: search.camera,
+          currentPage: 1,
+        };
+      });
+      return;
+    }
+
     const res = await fetch('/api/photos/', {
       method: 'POST',
       body: JSON.stringify(search),
@@ -131,9 +173,34 @@ function useMarsData() {
       return;
     }
 
-    const { data } = await res.json();
-    isDev && console.log(data);
-    setPhotos((prev) => ({ ...prev, src: data, currentPage: 1 }));
+    const { data, cameraMap } = await res.json();
+    isDev && console.log(data, cameraMap);
+
+    setPhotos((prev) => {
+      if (matchingRoverSol && search.camera !== 'ALL') {
+        return {
+          ...prev,
+          src: [...prev.src, ...data],
+          currentPage: 1,
+          cameraMap: {
+            ...prev.cameraMap,
+            ...cameraMap,
+          },
+          rover: search.rover,
+          sol: search.sol,
+          currentCamera: search.camera,
+        };
+      }
+      return {
+        ...prev,
+        src: data,
+        currentPage: 1,
+        cameraMap,
+        rover: search.rover,
+        sol: search.sol,
+        currentCamera: search.camera,
+      };
+    });
   };
 
   return {
@@ -142,7 +209,7 @@ function useMarsData() {
     roverData,
     updateSearch,
     fetchPhotos,
-    updatePhotos,
+    updatePhotosPerPage,
     updatePhotoPage,
   };
 }
