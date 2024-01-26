@@ -1,3 +1,4 @@
+'use client';
 import React from 'react';
 import {
   Rover,
@@ -5,15 +6,16 @@ import {
   RoverPhotos,
   RoverManifest,
   ManifestPhotos,
+  CameraTypes,
 } from '@/lib/types';
 import { ONE_HOUR_IN_MS, isDev } from '@/lib/constants';
 import { isArrayStringInObjectKey, setWithinRange } from '@/lib/utils';
 
 function useMarsData() {
   const [search, setSearch] = React.useState<RoverSearch>({
-    rover: undefined,
-    sol: undefined,
-    camera: undefined,
+    rover: '',
+    sol: '',
+    camera: '',
     photoIndex: -1,
   });
   const [roverData, setRoverData] = React.useState<RoverManifest>(null);
@@ -22,14 +24,14 @@ function useMarsData() {
     currentPage: 1,
     photoPerPage: 4,
     cameraMap: {},
-    rover: undefined,
-    sol: undefined,
-    currentCamera: undefined,
+    rover: '',
+    sol: '',
+    currentCamera: '',
   });
 
   // updates rover manifest on search form rover input change
   React.useEffect(() => {
-    if (typeof search.rover === 'undefined') {
+    if (search.rover === '') {
       return;
     }
 
@@ -53,46 +55,72 @@ function useMarsData() {
     }
 
     setRoverData(data);
+    setSearch((prev) => ({
+      ...prev,
+      sol: data.photos[0].sol,
+    }));
   }, [search.rover]);
 
   // updates search form camera options based on sol
   React.useEffect(() => {
+    if (!search.sol) {
+      return;
+    }
+
     if (!roverData) {
+      setSearch((prev) => ({
+        ...prev,
+        camera: '',
+        photoIndex: -1,
+      }));
       return;
     }
 
     const photoIndex = roverData.photos.findIndex(
       (p: ManifestPhotos) => p.sol === search.sol
     );
-
-    if (photoIndex === -1) {
-      setSearch((prev) => ({
-        ...prev,
-        sol: undefined,
-        camera: undefined,
-        photoIndex,
-      }));
-      return;
-    }
+    const camera =
+      photoIndex === -1
+        ? ''
+        : roverData.photos[photoIndex].cameras.length > 1
+        ? 'ALL'
+        : roverData.photos[photoIndex].cameras[0];
 
     setSearch((prev) => ({
       ...prev,
+      camera,
       photoIndex,
-      camera:
-        roverData.photos[photoIndex].cameras.length > 1
-          ? 'ALL'
-          : roverData.photos[photoIndex].cameras[0],
     }));
-  }, [roverData, search.sol]);
+  }, [search.sol, roverData]);
 
   const updateSearch = (
     e: React.ChangeEvent<HTMLSelectElement | HTMLInputElement>
   ) => {
     const { name, value } = e.target;
 
+    if (name === 'sol') {
+      if (value === '') {
+        setSearch((prev) => ({
+          ...prev,
+          sol: value,
+          camera: '',
+          photoIndex: -1,
+        }));
+        return;
+      }
+
+      const min = roverData?.photos[0].sol ?? 0;
+      const max = roverData?.max_sol;
+      setSearch((prev) => ({
+        ...prev,
+        sol: setWithinRange(parseInt(value), min, max),
+      }));
+      return;
+    }
+
     setSearch((prev) => ({
       ...prev,
-      [name]: name === 'sol' ? setWithinRange(parseInt(value), 0) : value,
+      [name]: value,
     }));
   };
 
@@ -191,6 +219,7 @@ function useMarsData() {
           currentCamera: search.camera,
         };
       }
+
       return {
         ...prev,
         src: data,

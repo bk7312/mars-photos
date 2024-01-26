@@ -51,3 +51,7 @@ Todo:
 - Backend considerations:
 
   - Currently using route handlers (serverless), to use a BaaS to cache frequently requested manifest/photos data in BE? BE would be required to handle user login and saving/favorite images (to consider)
+
+Note:
+
+- Perseverance LCAM (Lander Vision System Camera) on sol 0 not available from upstream api

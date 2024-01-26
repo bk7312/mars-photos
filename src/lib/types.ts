@@ -1,13 +1,13 @@
 export type Rover = 'Perseverance' | 'Curiosity' | 'Opportunity' | 'Spirit';
 
 export type RoverSearch = {
-  rover: Rover | undefined;
-  sol: number | undefined;
-  camera: CameraTypes | 'ALL' | undefined;
+  rover: Rover | '';
+  sol: number | '';
+  camera: CameraTypes | 'ALL' | '';
   photoIndex: number;
 };
 
-export type CameraTypes =
+type PerseveranceCameras =
   | 'EDL_RUCAM'
   | 'EDL_RDCAM'
   | 'EDL_DDCAM'
@@ -23,17 +23,29 @@ export type CameraTypes =
   | 'REAR_HAZCAM_RIGHT'
   | 'SKYCAM'
   | 'SHERLOC_WATSON'
-  | 'SUPERCAM_RMI'
+  | 'SUPERCAM_RMI';
+
+type CuriosityCameras =
   | 'FHAZ'
   | 'RHAZ'
   | 'MAST'
   | 'CHEMCAM'
   | 'MAHLI'
   | 'MARDI'
+  | 'NAVCAM';
+
+type SpiritAndOpportunityCameras =
+  | 'FHAZ'
+  | 'RHAZ'
   | 'NAVCAM'
   | 'PANCAM'
   | 'MINITES'
   | 'ENTRY';
+
+export type CameraTypes =
+  | PerseveranceCameras
+  | CuriosityCameras
+  | SpiritAndOpportunityCameras;
 
 export type ManifestPhotos = {
   sol: number;
@@ -83,12 +95,12 @@ export type RoverPhotos = {
   currentPage: number;
   photoPerPage: number;
   cameraMap: GenericStringNumberObj;
-  rover: Rover | undefined;
-  sol: number | undefined;
-  currentCamera: CameraTypes | 'ALL' | undefined;
+  rover: Rover | '';
+  sol: number | '';
+  currentCamera: CameraTypes | 'ALL' | '';
 };
 
-// export type PerseveranceCameras =
+// export type CameraTypes =
 //   | 'EDL_RUCAM'
 //   | 'EDL_RDCAM'
 //   | 'EDL_DDCAM'
@@ -104,26 +116,17 @@ export type RoverPhotos = {
 //   | 'REAR_HAZCAM_RIGHT'
 //   | 'SKYCAM'
 //   | 'SHERLOC_WATSON'
-//   | 'SUPERCAM_RMI;
-
-// type CuriosityCameras =
+//   | 'SUPERCAM_RMI'
 //   | 'FHAZ'
 //   | 'RHAZ'
 //   | 'MAST'
 //   | 'CHEMCAM'
 //   | 'MAHLI'
 //   | 'MARDI'
-//   | 'NAVCAM';
-
-// type OpportunityCameras =
-//   | 'FHAZ'
-//   | 'RHAZ'
 //   | 'NAVCAM'
 //   | 'PANCAM'
 //   | 'MINITES'
 //   | 'ENTRY';
-
-// type SpiritCameras = OpportunityCameras;
 
 // export type Cameras = {
 //   Perseverance: PerseveranceCameras;

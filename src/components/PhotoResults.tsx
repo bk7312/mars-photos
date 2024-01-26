@@ -1,6 +1,6 @@
 'use client';
 import React from 'react';
-import { RoverPhotos, CameraTypes } from '@/lib/types';
+import { RoverPhotos } from '@/lib/types';
 import Image from 'next/image';
 import { range } from '@/lib/utils';
 import { isDev } from '@/lib/constants';
@@ -56,6 +56,7 @@ export default function PhotoResults({
   const totalPhotos = photoArr.length;
 
   if (totalPhotos === 0) {
+    isDev && console.log('No photos in PhotoResults');
     return <></>;
   }
 
@@ -76,8 +77,10 @@ export default function PhotoResults({
     });
   };
 
+  isDev && console.log({ display, photos, photoArr });
+
   return (
-    <section className='flex flex-col border-2 border-slate-500 rounded p-2 m-2'>
+    <section className='flex flex-col border border-slate-500 rounded p-2 m-2'>
       <div id='photos' className='flex flex-col'>
         <div className='flex justify-center gap-4 mx-3'>
           <label className='flex gap-2 justify-center items-center my-2'>

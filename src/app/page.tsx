@@ -19,7 +19,7 @@ export default function Home() {
     updatePhotoPage,
   } = useMarsData();
 
-  isDev && console.log('main rendered');
+  isDev && console.log('main rendered', roverData);
 
   return (
     <main className='h-screen flex flex-col justify-between items-center gap-2'>
@@ -33,7 +33,7 @@ export default function Home() {
 
       {isDev && (
         <div
-          className='fixed cursor-pointer transition top-1/2 -translate-y-1/2 right-0 opacity-30 border-2 border-slate-500 rounded p-2'
+          className='fixed cursor-pointer transition top-0 right-0 opacity-30 border-2 border-slate-500 rounded p-2'
           onClick={(e) => e.currentTarget.classList.toggle('translate-x-[85%]')}
         >
           {roverData ? (

@@ -1,7 +1,8 @@
 'use client';
 import React from 'react';
 import { RoverSearch, RoverManifest } from '@/lib/types';
-import { rovers, cameraNames } from '@/lib/constants';
+import { rovers, cameraNames, isDev } from '@/lib/constants';
+import Spinner from './Spinner';
 
 type SearchBarPropType = {
   search: RoverSearch;
@@ -18,8 +19,10 @@ export default function SearchBar({
   updateSearch,
   fetchPhotos,
 }: SearchBarPropType) {
+  isDev && console.log(search);
+
   return (
-    <section className='flex flex-col items-start gap-4 border-2 border-slate-500 rounded p-4 m-4 w-full max-w-xl'>
+    <section className='flex flex-col items-start gap-4 border border-slate-500 rounded p-4 m-4 h-52 w-full max-w-xl'>
       <label className='flex gap-2 items-center w-full'>
         <p className='w-20 text-right'>Rover:</p>
         <select
@@ -38,7 +41,7 @@ export default function SearchBar({
         </select>
       </label>
 
-      {search.rover && (
+      {search.rover === '' || search.rover === roverData?.name ? (
         <>
           <label className='flex gap-2 items-center w-full'>
             <p className='w-20 text-right'>Sol:</p>
@@ -46,8 +49,10 @@ export default function SearchBar({
               type='number'
               list='sol-datalist'
               name='sol'
+              value={search.sol}
               onChange={updateSearch}
-              min={0}
+              min={roverData?.photos[0].sol ?? 0}
+              max={roverData?.max_sol}
               className='w-full px-2 py-1'
             />
             <datalist id='sol-datalist'>
@@ -59,44 +64,42 @@ export default function SearchBar({
             </datalist>
           </label>
 
-          {search.sol !== undefined && (
-            <>
-              {' '}
-              <label className='flex gap-2 items-center w-full'>
-                <p className='w-20 text-right'>Camera:</p>
-                <select
-                  name='camera'
-                  id='camera'
-                  value={search.camera}
-                  onChange={updateSearch}
-                  className='w-full px-1 py-1'
-                >
-                  {search.photoIndex === -1 ? (
-                    <option disabled value=''>
-                      No photos on this day
-                    </option>
-                  ) : (
-                    roverData &&
-                    roverData.photos[search.photoIndex].cameras.length > 1 && (
-                      <option value='ALL'>All Cameras</option>
-                    )
-                  )}
-                  {roverData?.photos[search.photoIndex]?.cameras.map((v) => (
-                    <option key={v} value={v}>
-                      {cameraNames[v]}
-                    </option>
-                  ))}
-                </select>
-              </label>
-              <button
-                className='bg-slate-200 border-solid rounded px-2 py-1 mx-auto'
-                onClick={() => fetchPhotos(search)}
-              >
-                Get Photos
-              </button>
-            </>
-          )}
+          <label className='flex gap-2 items-center w-full'>
+            <p className='w-20 text-right'>Camera:</p>
+            <select
+              name='camera'
+              id='camera'
+              value={search.camera}
+              onChange={updateSearch}
+              className='w-full px-1 py-1'
+            >
+              {search.photoIndex === -1 ? (
+                <option value=''>
+                  {search.sol ? 'No photos on this sol' : 'Select a sol'}
+                </option>
+              ) : (
+                roverData &&
+                roverData.photos[search.photoIndex].cameras.length > 1 && (
+                  <option value='ALL'>All Cameras</option>
+                )
+              )}
+              {roverData?.photos[search.photoIndex]?.cameras.map((v) => (
+                <option key={v} value={v}>
+                  {cameraNames[v]}
+                </option>
+              ))}
+            </select>
+          </label>
+          <button
+            className='bg-slate-200 border-solid rounded px-2 py-1 mx-auto disabled:cursor-not-allowed'
+            onClick={() => fetchPhotos(search)}
+            disabled={search.camera === ''}
+          >
+            Get Photos
+          </button>
         </>
+      ) : (
+        <Spinner />
       )}
     </section>
   );

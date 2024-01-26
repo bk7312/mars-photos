@@ -40,3 +40,21 @@ export const isArrayStringInObjectKey = (
   }
   return true;
 };
+
+// export const findNearestUsingBinarySearch = (
+//   arr: any[],
+//   target: number,
+//   evalArr: (para: any) => any
+// ): number => {
+//   let min = 0;
+//   let max = arr.length;
+//   while (min < max) {
+//     const mid = (min + max) >> 1;
+//     const val = evalArr(arr[mid]);
+//     if (val === target) {
+//       return mid;
+//     }
+//     val < target ? (min = mid + 1) : (max = mid);
+//   }
+//   return min;
+// };
