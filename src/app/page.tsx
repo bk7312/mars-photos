@@ -14,7 +14,7 @@ export default function Home() {
     photos,
     roverData,
     updateSearch,
-    fetchPhotos,
+    getPhotos,
     updatePhotosPerPage,
     updatePhotoPage,
   } = useMarsData();
@@ -28,7 +28,7 @@ export default function Home() {
         search={search}
         roverData={roverData}
         updateSearch={updateSearch}
-        fetchPhotos={fetchPhotos}
+        getPhotos={getPhotos}
       />
 
       {isDev && (

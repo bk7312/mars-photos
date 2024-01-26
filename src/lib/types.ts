@@ -98,6 +98,7 @@ export type RoverPhotos = {
   rover: Rover | '';
   sol: number | '';
   currentCamera: CameraTypes | 'ALL' | '';
+  isFetching: boolean;
 };
 
 // export type CameraTypes =

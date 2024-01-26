@@ -10,14 +10,14 @@ type SearchBarPropType = {
   updateSearch: (
     e: React.ChangeEvent<HTMLSelectElement | HTMLInputElement>
   ) => void;
-  fetchPhotos: (rover: RoverSearch) => void;
+  getPhotos: (rover: RoverSearch) => void;
 };
 
 export default function SearchBar({
   search,
   roverData,
   updateSearch,
-  fetchPhotos,
+  getPhotos,
 }: SearchBarPropType) {
   isDev && console.log(search);
 
@@ -92,7 +92,7 @@ export default function SearchBar({
           </label>
           <button
             className='bg-slate-200 border-solid rounded px-2 py-1 mx-auto disabled:cursor-not-allowed'
-            onClick={() => fetchPhotos(search)}
+            onClick={() => getPhotos(search)}
             disabled={search.camera === ''}
           >
             Get Photos
