@@ -2,14 +2,14 @@
 import React from 'react';
 import { RoverPhotos } from '@/lib/types';
 import Image from 'next/image';
-import { range } from '@/lib/utils';
+import { combineClassNames } from '@/lib/utils';
 import { isDev } from '@/lib/constants';
-import Spinner from './Spinner';
 
 type PhotoResultsPropType = {
   photos: RoverPhotos;
   updatePhotosPerPage: (photoPerPage: number, totalPhotos: number) => void;
   updatePhotoPage: (page: number, maxPage: number) => void;
+  className?: string;
 };
 
 type DisplayType =
@@ -26,6 +26,8 @@ export default function PhotoResults({
   photos,
   updatePhotosPerPage,
   updatePhotoPage,
+  className = '',
+  ...delegated
 }: PhotoResultsPropType) {
   const [display, setDisplay] = React.useState<DisplayType>({
     fullscreen: false,
@@ -81,63 +83,77 @@ export default function PhotoResults({
   isDev && console.log({ display, photos, photoArr });
 
   return (
-    <section className='flex flex-col border border-slate-500 rounded p-2 m-2'>
-      {photos.isFetching ? (
-        <Spinner />
-      ) : (
-        <div id='photos' className='flex flex-col'>
-          <div className='flex justify-center gap-4 mx-3'>
-            <label className='flex gap-2 justify-center items-center my-2'>
-              <p>Photos per page:</p>
-              <input
-                type='number'
-                name='photoPerPage'
-                id='photoPerPage'
-                onChange={(e) =>
-                  updatePhotosPerPage(e.target.valueAsNumber, totalPhotos)
-                }
-                value={photos.photoPerPage}
-                min={1}
-                className='w-16 px-2 py-1'
-              />{' '}
-            </label>
+    <section
+      className={combineClassNames(
+        'grow p-4 w-full max-w-screen-xl',
+        className
+      )}
+      {...delegated}
+    >
+      <div
+        id='photos'
+        className='flex flex-col border border-slate-500 rounded p-4 h-full bg-no-repeat bg-center'
+        style={
+          photos.isFetching
+            ? { backgroundImage: "url('/loading-bar.gif')" }
+            : {}
+        }
+      >
+        <div className='flex justify-center gap-4 mx-3'>
+          <label className='flex gap-2 justify-center items-center my-2'>
+            <p>Photos per page:</p>
+            <input
+              type='number'
+              name='photoPerPage'
+              id='photoPerPage'
+              onChange={(e) =>
+                updatePhotosPerPage(e.target.valueAsNumber, totalPhotos)
+              }
+              value={photos.photoPerPage}
+              min={1}
+              className='w-16 px-2 py-1 focus-visible:ring'
+            />{' '}
+          </label>
 
-            <label className='flex gap-2 justify-center items-center my-2'>
-              <p>Showing page:</p>
-              <input
-                type='number'
-                name='currentPage'
-                id='currentPage'
-                onChange={(e) =>
-                  updatePhotoPage(e.target.valueAsNumber, maxPage)
-                }
-                value={photos.currentPage}
-                min={1}
-                className='w-16 px-2 py-1'
-              />{' '}
-            </label>
-          </div>
+          <label className='flex gap-2 justify-center items-center my-2'>
+            <p>Showing page:</p>
+            <input
+              type='number'
+              name='currentPage'
+              id='currentPage'
+              onChange={(e) => updatePhotoPage(e.target.valueAsNumber, maxPage)}
+              value={photos.currentPage}
+              min={1}
+              className='w-16 px-2 py-1 focus-visible:ring'
+            />{' '}
+          </label>
+        </div>
 
-          <p className='text-center m-2'>
-            Showing photo number {photoStartIndex + 1}{' '}
-            {photos.photoPerPage > 1 &&
-              totalPhotos > 1 &&
-              `to ${Math.min(
-                photoStartIndex + photos.photoPerPage,
-                totalPhotos
-              )}`}{' '}
-            out of {totalPhotos}{' '}
-          </p>
+        <p className='text-center m-2'>
+          Showing photo number {photoStartIndex + 1}{' '}
+          {photos.photoPerPage > 1 &&
+            totalPhotos > 1 &&
+            `to ${Math.min(
+              photoStartIndex + photos.photoPerPage,
+              totalPhotos
+            )}`}{' '}
+          out of {totalPhotos}{' '}
+        </p>
 
-          <div className='flex flex-wrap gap-2 justify-center border-2 m-2'>
-            {photoArr
+        <div className='flex flex-wrap gap-2 justify-center m-2 h-full'>
+          {!photos.isFetching &&
+            photoArr
               .slice(photoStartIndex, photoStartIndex + photos.photoPerPage)
               .map((p) => (
                 <button
                   key={p.img_alt}
-                  className='relative max-w-lg w-64 cursor-pointer aspect-square flex-grow'
-                  data-img-src={p.img_src}
+                  className={combineClassNames(
+                    'relative max-w-lg w-64 cursor-zoom-in aspect-square flex-grow focus-visible:ring',
+                    'bg-no-repeat bg-center'
+                  )}
+                  style={{ backgroundImage: "url('/loading-bar.gif')" }}
                   onClick={toggleFullscreen}
+                  data-img-src={p.img_src}
                 >
                   <Image
                     src={p.img_src}
@@ -149,33 +165,33 @@ export default function PhotoResults({
                   />
                 </button>
               ))}
-          </div>
-
-          <div className='flex flex-wrap gap-2 justify-center my-2'>
-            Page:{' '}
-            {range(1, maxPage).map((i) => (
-              <button
-                className={
-                  photos.currentPage === i
-                    ? 'bg-slate-700 text-slate-100 px-1'
-                    : 'bg-slate-100 px-1'
-                }
-                key={i}
-                onClick={() => updatePhotoPage(i, maxPage)}
-              >
-                {i}
-              </button>
-            ))}
-          </div>
         </div>
-      )}
+
+        <label className='flex gap-2 justify-center items-center my-2'>
+          <p>Go to page</p>
+          <input
+            type='number'
+            name='currentPage'
+            id='currentPage-2'
+            onChange={(e) => updatePhotoPage(e.target.valueAsNumber, maxPage)}
+            value={photos.currentPage}
+            min={1}
+            className='w-16 px-2 py-1 focus-visible:ring'
+          />{' '}
+          of {maxPage}
+        </label>
+      </div>
 
       {display.fullscreen && (
-        <button
-          className='flex justify-center items-center backdrop-blur fixed h-screen w-screen inset-0'
-          onClick={toggleFullscreen}
-        >
-          <div className='relative w-[1000px] m-4 sm:m-8 cursor-pointer aspect-square'>
+        <div className='flex justify-center items-center backdrop-blur fixed h-screen w-screen inset-0'>
+          <button
+            className={combineClassNames(
+              'relative w-[1000px] m-4 sm:m-8 cursor-zoom-out aspect-square',
+              'bg-no-repeat bg-center'
+            )}
+            style={{ backgroundImage: "url('/loading-bar.gif')" }}
+            onClick={toggleFullscreen}
+          >
             <Image
               src={display.src}
               alt={display.alt}
@@ -184,8 +200,8 @@ export default function PhotoResults({
               sizes='1000px'
               className='object-contain'
             />
-          </div>
-        </button>
+          </button>
+        </div>
       )}
     </section>
   );

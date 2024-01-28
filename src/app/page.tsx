@@ -7,12 +7,15 @@ import Footer from '@/components/Footer';
 import useMarsData from '@/hooks/useMarsData';
 import Spinner from '@/components/Spinner';
 import { isDev } from '@/lib/constants';
+import Message from '@/components/Message';
 
 export default function Home() {
   const {
     search,
     photos,
     roverData,
+    message,
+    closeMessage,
     updateSearch,
     getPhotos,
     updatePhotosPerPage,
@@ -50,6 +53,8 @@ export default function Home() {
           )}
         </div>
       )}
+
+      <Message message={message} closeMessage={closeMessage} />
 
       <PhotoResults
         photos={photos}

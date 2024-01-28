@@ -1,14 +1,14 @@
-export const range = (start: number, end?: number, step: number = 1) => {
-  const arr = [];
-  if (typeof end === 'undefined') {
-    end = start;
-    start = 0;
-  }
-  for (let i = start; i < end; i += step) {
-    arr.push(i);
-  }
-  return arr;
-};
+// export const range = (start: number, end?: number, step: number = 1) => {
+//   const arr = [];
+//   if (typeof end === 'undefined') {
+//     end = start;
+//     start = 0;
+//   }
+//   for (let i = start; i < end; i += step) {
+//     arr.push(i);
+//   }
+//   return arr;
+// };
 
 export const setWithinRange = (
   num: number,
@@ -58,3 +58,7 @@ export const isArrayStringInObjectKey = (
 //   }
 //   return min;
 // };
+
+export const combineClassNames = (...args: string[]): string => {
+  return args.join(' ');
+};

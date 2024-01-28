@@ -42,7 +42,7 @@ type SpiritAndOpportunityCameras =
   | 'MINITES'
   | 'ENTRY';
 
-export type CameraTypes =
+type CameraTypes =
   | PerseveranceCameras
   | CuriosityCameras
   | SpiritAndOpportunityCameras;
@@ -99,6 +99,12 @@ export type RoverPhotos = {
   sol: number | '';
   currentCamera: CameraTypes | 'ALL' | '';
   isFetching: boolean;
+};
+
+export type MessageType = {
+  text: string;
+  type: 'Error' | 'Info' | 'Warning';
+  shown: boolean;
 };
 
 // export type CameraTypes =

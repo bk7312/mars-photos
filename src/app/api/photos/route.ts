@@ -13,10 +13,12 @@ export async function POST(request: Request) {
   try {
     console.log(url);
     const res = await fetch(url);
-    const { photos, errors } = await res.json();
+    const { photos, error } = await res.json();
 
-    if (errors) {
-      throw new Error(errors);
+    console.log({ photos, error });
+    if (error) {
+      console.warn(error);
+      throw new Error(`${error.code} - ${error.message}`);
     }
 
     const photoData: RoverPhotosResponse = photos;
@@ -45,6 +47,7 @@ export async function POST(request: Request) {
 
     return Response.json({ data, cameraMap });
   } catch (error) {
+    console.log('error caught:', error);
     return Response.json(
       { error },
       { status: 400, statusText: error as string }

@@ -18,11 +18,3 @@ body {
   color: rgb(var(--foreground-rgb));
   background: rgb(var(--background-rgb));
 }
-
-button:focus-visible,
-select:focus-visible,
-datalist:focus-visible,
-input:focus-visible {
-  outline: 3px solid green;
-  outline-offset: 3px;
-}
