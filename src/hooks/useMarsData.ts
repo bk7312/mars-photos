@@ -159,9 +159,10 @@ function useMarsData() {
 
     isDev && console.log(res);
     if (!res.ok) {
-      console.error(res.statusText);
+      const { error } = await res.json();
+      isDev && console.error('error received:', error);
       setMessage({
-        text: res.statusText,
+        text: error,
         type: 'Error',
         shown: true,
       });
@@ -195,10 +196,12 @@ function useMarsData() {
       body: JSON.stringify(search),
     });
 
+    isDev && console.log(res);
     if (!res.ok) {
-      console.error(res.statusText);
+      const { error } = await res.json();
+      isDev && console.error('error received:', error);
       setMessage({
-        text: res.statusText,
+        text: error,
         type: 'Error',
         shown: true,
       });

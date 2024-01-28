@@ -49,8 +49,8 @@ export async function POST(request: Request) {
   } catch (error) {
     console.log('error caught:', error);
     return Response.json(
-      { error },
-      { status: 400, statusText: error as string }
+      { error: 'Looks like something went wrong, please try again later...' },
+      { status: 400 }
     );
   }
 }

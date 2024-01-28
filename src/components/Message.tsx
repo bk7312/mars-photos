@@ -24,7 +24,7 @@ export default function Message({
     if (message.shown === false) {
       return;
     }
-    const timeout = setTimeout(() => closeMessage(), 5000);
+    const timeout = setTimeout(() => closeMessage(), 10000);
     return () => {
       clearInterval(timeout);
     };
@@ -35,7 +35,7 @@ export default function Message({
         'fixed top-3 right-2 w-full max-w-md p-6',
         'font-semibold rounded-lg transition',
         colors[message.type],
-        message.shown ? 'scale-100' : 'scale-0',
+        message.shown ? 'translate-x-0' : 'translate-x-[110%]',
         className
       )}
       {...delegated}
@@ -57,7 +57,7 @@ export default function Message({
           />
         </svg>
       </button>
-      {message.text}
+      {message.type}: {message.text}
     </div>
   );
 }
