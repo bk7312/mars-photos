@@ -89,6 +89,7 @@ export type RoverPhotosResponse = {
 
 export type RoverPhotos = {
   src: {
+    img_id: number;
     img_src: string;
     img_alt: string;
     camera: CameraNameAndFullName;

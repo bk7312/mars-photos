@@ -19,6 +19,7 @@ export default function Home() {
     getPhotos,
     updatePhotosPerPage,
     updatePhotoPage,
+    toggleIsFetching,
   } = useMarsData();
 
   isDev && console.log('main rendered', roverData);
@@ -46,27 +47,42 @@ export default function Home() {
       {isDev && (
         <div
           className='fixed flex flex-col gap-1 transition top-0 right-0 opacity-30 border-2 border-slate-500 pl-6'
-          onClick={(e) => e.currentTarget.classList.toggle('translate-x-3/4')}
+          onClick={(e) => {
+            e.currentTarget.classList.toggle('translate-x-3/4');
+          }}
         >
           <button
-            onClick={() => localStorage.clear()}
+            onClick={(e) => {
+              e.stopPropagation();
+              localStorage.clear();
+            }}
             className='rounded bg-red-300 px-2 cursor-pointer'
           >
             clear localStorage
           </button>
           <button
-            onClick={() =>
+            onClick={(e) => {
+              e.stopPropagation;
               console.log({
                 search,
                 roverData,
                 photos,
                 message,
                 localStorageKeys: Object.keys(localStorage),
-              })
-            }
+              });
+            }}
             className='rounded bg-red-300 px-2 cursor-pointer'
           >
             log state
+          </button>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              toggleIsFetching();
+            }}
+            className='rounded bg-red-300 px-2 cursor-pointer'
+          >
+            toggle isFetching
           </button>
         </div>
       )}

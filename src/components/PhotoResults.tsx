@@ -149,7 +149,7 @@ export default function PhotoResults({
               .slice(photoStartIndex, photoStartIndex + photos.photoPerPage)
               .map((p) => (
                 <button
-                  key={p.img_alt}
+                  key={p.img_id}
                   className={combineClassNames(
                     'relative max-w-lg w-64 cursor-zoom-in aspect-square flex-grow focus-visible:ring',
                     'bg-no-repeat bg-center'

@@ -63,34 +63,33 @@ export default function SearchBar({
               : {}
           }
         >
-          {!search.isFetchingManifest && (
-            <>
-              <p className='w-20 text-right relative'>
-                Sol:
-                <span className='absolute z-10 hidden group-hover:block top-full right-0 w-20 px-2 py-1 rounded bg-white'>
-                  A solar day on Mars
-                </span>
-              </p>
-              <input
-                type='number'
-                list='sol-datalist'
-                name='sol'
-                value={search.sol}
-                onChange={updateSearch}
-                min={roverData?.photos[0].sol ?? 0}
-                max={roverData?.max_sol}
-                className='w-full px-2 py-1 focus-visible:ring peer'
-                disabled={isDisabled}
-              />
-              <datalist id='sol-datalist'>
-                {roverData?.photos.map(({ sol, earth_date }) => (
-                  <option key={sol} value={sol}>
-                    Sol: {sol} (Earth Date: {earth_date})
-                  </option>
-                ))}
-              </datalist>
-            </>
-          )}
+          <p className='w-20 text-right relative'>
+            Sol:
+            <span className='absolute z-10 hidden group-hover:block top-full right-0 w-20 px-2 py-1 rounded bg-white'>
+              A solar day on Mars
+            </span>
+          </p>
+          <input
+            type='number'
+            list='sol-datalist'
+            name='sol'
+            value={search.sol}
+            onChange={updateSearch}
+            min={roverData?.photos[0].sol ?? 0}
+            max={roverData?.max_sol}
+            className={combineClassNames(
+              'w-full px-2 py-1 focus-visible:ring peer',
+              search.isFetchingManifest ? 'invisible' : ''
+            )}
+            disabled={isDisabled}
+          />
+          <datalist id='sol-datalist'>
+            {roverData?.photos.map(({ sol, earth_date }) => (
+              <option key={sol} value={sol}>
+                Sol: {sol} (Earth Date: {earth_date})
+              </option>
+            ))}
+          </datalist>
         </label>
 
         <label
@@ -101,39 +100,38 @@ export default function SearchBar({
               : {}
           }
         >
-          {!search.isFetchingManifest && (
-            <>
-              <p className='w-20 text-right'>Camera:</p>
-              <select
-                name='camera'
-                id='camera'
-                value={search.camera}
-                onChange={updateSearch}
-                className='w-full px-1 py-1 focus-visible:ring'
-                disabled={isDisabled}
-              >
-                {search.photoIndex === -1 ? (
-                  <option value=''>
-                    {search.rover
-                      ? search.sol
-                        ? 'No photos on this sol'
-                        : 'Please select a sol'
-                      : 'Please select a rover first'}
-                  </option>
-                ) : (
-                  roverData &&
-                  roverData.photos[search.photoIndex].cameras.length > 1 && (
-                    <option value='ALL'>All Cameras</option>
-                  )
-                )}
-                {roverData?.photos[search.photoIndex]?.cameras.map((v) => (
-                  <option key={v} value={v}>
-                    {cameraNames[v]}
-                  </option>
-                ))}
-              </select>
-            </>
-          )}
+          <p className='w-20 text-right'>Camera:</p>
+          <select
+            name='camera'
+            id='camera'
+            value={search.camera}
+            onChange={updateSearch}
+            className={combineClassNames(
+              'w-full px-1 py-1 focus-visible:ring',
+              search.isFetchingManifest ? 'invisible' : ''
+            )}
+            disabled={isDisabled}
+          >
+            {search.photoIndex === -1 ? (
+              <option value=''>
+                {search.rover
+                  ? search.sol
+                    ? 'No photos on this sol'
+                    : 'Please select a sol'
+                  : 'Please select a rover first'}
+              </option>
+            ) : (
+              roverData &&
+              roverData.photos[search.photoIndex].cameras.length > 1 && (
+                <option value='ALL'>All Cameras</option>
+              )
+            )}
+            {roverData?.photos[search.photoIndex]?.cameras.map((v) => (
+              <option key={v} value={v}>
+                {cameraNames[v]}
+              </option>
+            ))}
+          </select>
         </label>
         <button
           className='bg-slate-200 border-solid rounded px-2 py-1 mx-auto disabled:cursor-not-allowed focus-visible:ring'
@@ -143,25 +141,6 @@ export default function SearchBar({
           Get Photos
         </button>
       </div>
-
-      {false && (
-        <ol className='list-decimal list-inside '>
-          <li className='mb-2'>
-            Select a rover, there are {rovers.length} to choose from:{' '}
-            {rovers.join(', ')}.
-          </li>
-          <li className='mb-2'>
-            Select a sol, a sol is a Mars solar day. Selecting sol 10 would be
-            the equivalent of day 10 of the rover&apos;s mission. The
-            corresponding Earth date will also be shown in the dropdown.
-          </li>
-          <li className='mb-2'>
-            Select a camera, your selected rover is equipped with several
-            cameras. Which would you like to see? Note that not all cameras will
-            be available on all sols, some sols may not have any photos.
-          </li>
-        </ol>
-      )}
     </section>
   );
 }

@@ -2,6 +2,11 @@ export const dynamic = 'force-dynamic';
 
 export async function POST(request: Request) {
   const { rover } = await request.json();
+
+  if (rover === '') {
+    return Response.json({ error: 'Invalid input' }, { status: 400 });
+  }
+
   const url = `${process.env.NASA_ENDPOINT}/manifests/${rover}?api_key=${process.env.NASA_API_KEY}`;
   try {
     console.log(url);

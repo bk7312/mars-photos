@@ -4,6 +4,11 @@ export const dynamic = 'force-dynamic';
 
 export async function POST(request: Request) {
   const { rover, sol, camera } = await request.json();
+
+  if (rover === '' || sol === '' || camera === '') {
+    return Response.json({ error: 'Invalid input' }, { status: 400 });
+  }
+
   let url = `${process.env.NASA_ENDPOINT}/rovers/${rover}/photos?api_key=${process.env.NASA_API_KEY}&sol=${sol}`;
 
   if (camera && camera !== 'ALL') {
@@ -36,8 +41,9 @@ export async function POST(request: Request) {
       ++cameraMap[p.camera.name];
 
       return {
+        img_id: p.id,
         img_src: p.img_src,
-        img_alt: `PhotoID: ${p.id}, taken from ${p.rover.name} rover's ${p.camera.full_name} (${p.camera.name}) on sol ${p.sol} (Earth date: ${p.earth_date})`,
+        img_alt: `Photo ${p.id} from ${p.rover.name}'s ${p.camera.full_name} (${p.camera.name}) on Sol ${p.sol} (Earth date: ${p.earth_date})`,
         camera: {
           name: p.camera.name,
           full_name: p.camera.full_name,

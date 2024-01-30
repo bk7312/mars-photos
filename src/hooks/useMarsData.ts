@@ -307,6 +307,12 @@ function useMarsData() {
     });
   };
 
+  const toggleIsFetching = () =>
+    setSearch((prev) => ({
+      ...prev,
+      isFetchingManifest: !prev.isFetchingManifest,
+    }));
+
   return {
     search,
     photos,
@@ -317,6 +323,7 @@ function useMarsData() {
     getPhotos,
     updatePhotosPerPage,
     updatePhotoPage,
+    toggleIsFetching,
   };
 }
 
