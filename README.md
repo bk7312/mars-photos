@@ -1,42 +1,45 @@
 # Mars Photos App
 
-Project brief: https://github.com/chingu-voyages/soloproject-tier3-mars-photos
+## Overview
 
-Mars Photo API: https://github.com/corincerami/mars-photo-api
+An app that shows the photos taken by NASA's Mars rover using the [Mars Photo API](https://github.com/corincerami/mars-photo-api). Idea from [chingu's solo project](https://github.com/chingu-voyages/soloproject-tier3-mars-photos)
 
-User workflow:
+Live version: https://api.nasa.gov/index.html
 
-- User selects a rover
-- App will show loading state while fetching manifest
-- If error fetching manifest, show error.
-- If no errors, app will update the sol min/max based on manifest
+## Features
 
-- User selects a sol number
-- App will check the manifest and update the available camera options
-- User selects a camera and clicks the get photos button
-- App will show loading state while fetching photos
-- If error fetching photos, show error
-- If no errors, display the photo results component
+- Users can select a rover to see the available sol (Mars solar day) and camera options.
+- Users can select a sol number on a dropdown which also shows the corresponding Earth date.
+- Users can select a camera to view the pictures from, or choose all cameras.
+- Users can click 'Get Photos' to fetch a list of photos for the respective rover, sol, and camera.
+- Users can choose the number of photos to display per page and navigate between pages.
+- Users can click on any photo to view in fullscreen mode, clicking on the photo again or pressing the 'Esc' key to exit fullscreen mode.
 
-- App will show placeholder image or loading state while fetching the individual images
-- If error fetching image, show placeholder error image with retry or report button?
-- If no errors, display image
+### Todo
 
-- User clicks on image
-- App will show image on fullscreen (currently done by refetch the same image to show a new Image component on fullscreen, to optimize by enlarging the current Image component?), clicking anywhere or pressing escape will exit fullscreen
-- User clicks on next page or update the photos per page, app will update the layout and fetch the new images
-
-Todo:
-
-- Choose a color scheme, currently slate
-- Design a responsive layout
-- Handle fail to fetch manifest and photos error
-
-- Optimize fullscreen by eliminating need to refetch image
-- Currently images are assumed to be square, to handle images of different aspect ratios
-
-- Currently using route handlers (serverless), to use a BaaS to cache frequently requested manifest/photos data in BE? BE would be required to handle user login and saving/favorite images (to consider)
+- [ ] Pick a better color scheme, currently slate
+- [ ] Design a better responsive layout
+- [ ] Optimize fullscreen by eliminating the need to refetch image?
+- [ ] Currently images are assumed to be square, to handle images of different aspect ratios
+- [ ] Currently using route handlers (serverless), need a db to handle user login and saving/favorite images (to consider)
 
 Note:
 
 - Perseverance LCAM (Lander Vision System Camera) on sol 0 not available from upstream api
+
+## How to run locally
+
+To run locally:
+
+1. Fork or clone the repo
+2. Copy and rename `.env.example` to `.env`
+3. Run `npm i` to install the required packages
+4. Run `npm run dev` to run the development server
+5. Open `localhost:3000` in your browser
+
+To use your own API key, change `NASA_API_KEY` in `.env` to your own. API keys can be obtained from https://api.nasa.gov/index.html
+
+## How to contribute
+
+Todo: Guide to raising issues/PR, CONTRIBUTING.md
+Todo: Add license

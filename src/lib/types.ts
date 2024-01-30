@@ -5,6 +5,7 @@ export type RoverSearch = {
   sol: number | '';
   camera: CameraTypes | 'ALL' | '';
   photoIndex: number;
+  isFetchingManifest: boolean;
 };
 
 type PerseveranceCameras =

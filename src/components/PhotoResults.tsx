@@ -34,21 +34,22 @@ export default function PhotoResults({
   });
 
   React.useEffect(() => {
-    const escHandler = (e: KeyboardEvent) => {
+    const handleEsc = (e: KeyboardEvent) => {
       isDev && console.log('User pressed: ', e.key);
       if (display.fullscreen !== true) {
         return;
       }
+      // preventDefault to block keyboard tab navigation while fullscreen
       e.preventDefault();
 
       if (e.key === 'Escape') {
         setDisplay({ fullscreen: false });
       }
     };
-    document.addEventListener('keydown', escHandler);
+    document.addEventListener('keydown', handleEsc);
 
     return () => {
-      document.removeEventListener('keydown', escHandler);
+      document.removeEventListener('keydown', handleEsc);
     };
   }, [display.fullscreen]);
 
@@ -66,7 +67,7 @@ export default function PhotoResults({
   const photoStartIndex = (photos.currentPage - 1) * photos.photoPerPage;
   const maxPage = Math.ceil(totalPhotos / photos.photoPerPage) + 1;
 
-  const toggleFullscreen = (e: React.MouseEvent<HTMLButtonElement>) => {
+  const exitFullscreen = (e: React.MouseEvent<HTMLButtonElement>) => {
     if (display.fullscreen === true) {
       setDisplay({ fullscreen: false });
       return;
@@ -112,7 +113,8 @@ export default function PhotoResults({
               value={photos.photoPerPage}
               min={1}
               className='w-16 px-2 py-1 focus-visible:ring'
-            />{' '}
+              disabled={photos.isFetching || display.fullscreen}
+            />
           </label>
 
           <label className='flex gap-2 justify-center items-center my-2'>
@@ -125,7 +127,8 @@ export default function PhotoResults({
               value={photos.currentPage}
               min={1}
               className='w-16 px-2 py-1 focus-visible:ring'
-            />{' '}
+              disabled={photos.isFetching || display.fullscreen}
+            />
           </label>
         </div>
 
@@ -152,8 +155,9 @@ export default function PhotoResults({
                     'bg-no-repeat bg-center'
                   )}
                   style={{ backgroundImage: "url('/loading-bar.gif')" }}
-                  onClick={toggleFullscreen}
+                  onClick={exitFullscreen}
                   data-img-src={p.img_src}
+                  disabled={photos.isFetching || display.fullscreen}
                 >
                   <Image
                     src={p.img_src}
@@ -177,6 +181,7 @@ export default function PhotoResults({
             value={photos.currentPage}
             min={1}
             className='w-16 px-2 py-1 focus-visible:ring'
+            disabled={photos.isFetching || display.fullscreen}
           />{' '}
           of {maxPage}
         </label>
@@ -190,7 +195,7 @@ export default function PhotoResults({
               'bg-no-repeat bg-center'
             )}
             style={{ backgroundImage: "url('/loading-bar.gif')" }}
-            onClick={toggleFullscreen}
+            onClick={exitFullscreen}
           >
             <Image
               src={display.src}

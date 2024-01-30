@@ -15,11 +15,6 @@ export default function Message({
   className = '',
   ...delegated
 }: MessagePropType) {
-  const colors = {
-    Error: 'bg-red-400',
-    Info: 'bg-green-400',
-    Warning: 'bg-orange-400',
-  };
   React.useEffect(() => {
     if (message.shown === false) {
       return;
@@ -29,8 +24,15 @@ export default function Message({
       clearInterval(timeout);
     };
   }, [message.shown, closeMessage]);
+
+  const colors = {
+    Error: 'bg-red-400',
+    Info: 'bg-green-400',
+    Warning: 'bg-orange-400',
+  };
+
   return (
-    <div
+    <aside
       className={combineClassNames(
         'fixed top-3 right-2 w-full max-w-md p-6',
         'font-semibold rounded-lg transition',
@@ -42,6 +44,7 @@ export default function Message({
     >
       <button
         onClick={closeMessage}
+        disabled={!message.shown}
         className='cursor-pointer absolute top-2 right-2'
       >
         <svg
@@ -58,6 +61,6 @@ export default function Message({
         </svg>
       </button>
       {message.type}: {message.text}
-    </div>
+    </aside>
   );
 }

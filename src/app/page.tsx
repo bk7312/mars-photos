@@ -5,7 +5,6 @@ import SearchBar from '@/components/SearchBar';
 import PhotoResults from '@/components/PhotoResults';
 import Footer from '@/components/Footer';
 import useMarsData from '@/hooks/useMarsData';
-import Spinner from '@/components/Spinner';
 import { isDev } from '@/lib/constants';
 import Message from '@/components/Message';
 
@@ -34,26 +33,6 @@ export default function Home() {
         getPhotos={getPhotos}
       />
 
-      {isDev && (
-        <div
-          className='fixed cursor-pointer transition top-0 right-0 opacity-30 border-2 border-slate-500 rounded p-2'
-          onClick={(e) => e.currentTarget.classList.toggle('translate-x-[85%]')}
-        >
-          {roverData ? (
-            <>
-              {Object.entries(roverData).map(([k, v]) => (
-                <p key={k}>
-                  {k}: {Array.isArray(v) ? `Array(${v.length})` : v}
-                </p>
-              ))}
-              <p>currentTime: {Date.now()}</p>
-            </>
-          ) : (
-            <Spinner />
-          )}
-        </div>
-      )}
-
       <Message message={message} closeMessage={closeMessage} />
 
       <PhotoResults
@@ -63,6 +42,34 @@ export default function Home() {
       />
 
       <Footer />
+
+      {isDev && (
+        <div
+          className='fixed flex flex-col gap-1 transition top-0 right-0 opacity-30 border-2 border-slate-500 pl-6'
+          onClick={(e) => e.currentTarget.classList.toggle('translate-x-3/4')}
+        >
+          <button
+            onClick={() => localStorage.clear()}
+            className='rounded bg-red-300 px-2 cursor-pointer'
+          >
+            clear localStorage
+          </button>
+          <button
+            onClick={() =>
+              console.log({
+                search,
+                roverData,
+                photos,
+                message,
+                localStorageKeys: Object.keys(localStorage),
+              })
+            }
+            className='rounded bg-red-300 px-2 cursor-pointer'
+          >
+            log state
+          </button>
+        </div>
+      )}
     </main>
   );
 }
