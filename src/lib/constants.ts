@@ -11,9 +11,7 @@ export const ONE_HOUR_IN_MS = 60 * 60 * 1000;
 export const ONE_DAY_IN_MS = 24 * 60 * 60 * 1000;
 
 export const isDev =
-  !process.env.NODE_ENV ||
-  process.env.NODE_ENV === 'development' ||
-  process.env.TESTING_MODE === 'true';
+  !process.env.NODE_ENV || process.env.NODE_ENV === 'development';
 
 // export const CURIOSITY_INFO: RoverInfo = {
 //   name: 'Curiosity',

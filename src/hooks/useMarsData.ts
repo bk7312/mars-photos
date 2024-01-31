@@ -36,6 +36,131 @@ function useMarsData() {
     shown: false,
   });
 
+  const fetchManifest = React.useCallback(
+    async (rover: Rover) => {
+      setSearch((prev) => ({ ...prev, isFetchingManifest: true }));
+
+      try {
+        const res = await fetch('/api/manifests/', {
+          method: 'POST',
+          body: JSON.stringify({ rover }),
+        });
+
+        isDev && console.log(res);
+        if (!res.ok) {
+          const { error } = await res.json();
+          isDev && console.error('error received:', error);
+          throw new Error(error);
+        }
+
+        const { data } = await res.json();
+        isDev && console.log({ data });
+
+        data.lastUpdated = Date.now();
+        setRoverData(data);
+        localStorage.setItem(rover, JSON.stringify(data));
+        setSearch((prev) => ({
+          ...prev,
+          sol: data.photos[0].sol,
+        }));
+      } catch (error) {
+        isDev && console.log('caught error', error);
+        const err = error as Error;
+        isDev && console.log(err.name, err.message);
+
+        let errMsg = err?.message ?? 'Something went wrong';
+
+        if (err.message === 'Failed to fetch') {
+          errMsg = 'Failed to fetch, possibly no internet connection.';
+        }
+
+        setMessage({ text: errMsg, type: 'Error', shown: true });
+
+        setSearch((prev) => ({
+          ...prev,
+          rover: roverData?.name ?? '',
+          sol: '',
+          camera: '',
+          photoIndex: -1,
+        }));
+      } finally {
+        setSearch((prev) => ({ ...prev, isFetchingManifest: false }));
+      }
+    },
+    [roverData?.name]
+  );
+
+  const fetchPhotos = async (
+    search: RoverSearch,
+    matchingRoverSol: boolean
+  ) => {
+    setPhotos((prev) => ({ ...prev, isFetching: true }));
+
+    try {
+      const res = await fetch('/api/photos/', {
+        method: 'POST',
+        body: JSON.stringify(search),
+      });
+
+      isDev && console.log(res);
+
+      if (!res.ok) {
+        const { error } = await res.json();
+        isDev && console.error('error received:', error);
+        throw new Error(error);
+      }
+
+      const { data, cameraMap } = await res.json();
+      isDev && console.log({ data, cameraMap });
+
+      if (data.length === 0) {
+        setMessage({ text: 'No photos found', type: 'Info', shown: true });
+        return;
+      }
+
+      setPhotos((prev) => {
+        if (matchingRoverSol && search.camera !== 'ALL') {
+          return {
+            ...prev,
+            src: [...prev.src, ...data],
+            currentPage: 1,
+            cameraMap: {
+              ...prev.cameraMap,
+              ...cameraMap,
+            },
+            rover: search.rover,
+            sol: search.sol,
+            currentCamera: search.camera,
+          };
+        }
+
+        return {
+          ...prev,
+          src: data,
+          currentPage: 1,
+          cameraMap,
+          rover: search.rover,
+          sol: search.sol,
+          currentCamera: search.camera,
+        };
+      });
+    } catch (error) {
+      isDev && console.log('caught error', error);
+      const err = error as Error;
+      isDev && console.log(err.name, err.message);
+
+      let errMsg = err?.message ?? 'Something went wrong';
+
+      if (err.message === 'Failed to fetch') {
+        errMsg = 'Failed to fetch, possibly no internet connection.';
+      }
+
+      setMessage({ text: errMsg, type: 'Error', shown: true });
+    } finally {
+      setPhotos((prev) => ({ ...prev, isFetching: false }));
+    }
+  };
+
   // updates rover manifest on search form rover input change
   React.useEffect(() => {
     isDev && console.log('rover effect ran');
@@ -46,7 +171,6 @@ function useMarsData() {
     // checks localStorage first before fetching manifest
     const json = localStorage.getItem(search.rover);
     if (!json) {
-      setSearch((prev) => ({ ...prev, isFetchingManifest: true }));
       fetchManifest(search.rover);
       return;
     }
@@ -59,7 +183,6 @@ function useMarsData() {
 
     // fetches manifest if data is outdated
     if (!data || toUpdate) {
-      setSearch((prev) => ({ ...prev, isFetchingManifest: true }));
       fetchManifest(search.rover);
       return;
     }
@@ -69,7 +192,7 @@ function useMarsData() {
       ...prev,
       sol: data.photos[0].sol,
     }));
-  }, [search.rover]);
+  }, [search.rover, fetchManifest]);
 
   // updates search form camera options based on sol
   React.useEffect(() => {
@@ -156,120 +279,6 @@ function useMarsData() {
     });
   };
 
-  const fetchManifest = async (rover: Rover) => {
-    try {
-      const res = await fetch('/api/manifests/', {
-        method: 'POST',
-        body: JSON.stringify({ rover }),
-      });
-
-      isDev && console.log(res);
-      if (!res.ok) {
-        const { error } = await res.json();
-        isDev && console.error('error received:', error);
-        throw new Error(error);
-      }
-
-      const { data } = await res.json();
-      isDev && console.log({ data });
-
-      data.lastUpdated = Date.now();
-      setRoverData(data);
-      localStorage.setItem(rover, JSON.stringify(data));
-      setSearch((prev) => ({
-        ...prev,
-        sol: data.photos[0].sol,
-        isFetchingManifest: false,
-      }));
-    } catch (error) {
-      isDev && console.log('caught error', error);
-      setMessage({
-        text: (error as Error)?.message ?? 'Something went wrong',
-        type: 'Error',
-        shown: true,
-      });
-
-      setSearch({
-        rover: '',
-        sol: '',
-        camera: '',
-        photoIndex: -1,
-        isFetchingManifest: false,
-      });
-    }
-  };
-
-  const fetchPhotos = async (
-    search: RoverSearch,
-    matchingRoverSol: boolean
-  ) => {
-    try {
-      const res = await fetch('/api/photos/', {
-        method: 'POST',
-        body: JSON.stringify(search),
-      });
-
-      isDev && console.log(res);
-
-      if (!res.ok) {
-        const { error } = await res.json();
-        isDev && console.error('error received:', error);
-        throw new Error(error);
-      }
-
-      const { data, cameraMap } = await res.json();
-      isDev && console.log({ data, cameraMap });
-
-      if (data.length === 0) {
-        setMessage({
-          text: 'No photos found',
-          type: 'Info',
-          shown: true,
-        });
-        setPhotos((prev) => ({ ...prev, isFetching: false }));
-        return;
-      }
-
-      setPhotos((prev) => {
-        if (matchingRoverSol && search.camera !== 'ALL') {
-          return {
-            ...prev,
-            src: [...prev.src, ...data],
-            currentPage: 1,
-            cameraMap: {
-              ...prev.cameraMap,
-              ...cameraMap,
-            },
-            rover: search.rover,
-            sol: search.sol,
-            currentCamera: search.camera,
-            isFetching: false,
-          };
-        }
-
-        return {
-          ...prev,
-          src: data,
-          currentPage: 1,
-          cameraMap,
-          rover: search.rover,
-          sol: search.sol,
-          currentCamera: search.camera,
-          isFetching: false,
-        };
-      });
-    } catch (error) {
-      isDev && console.log('caught error', error);
-      setMessage({
-        text: (error as Error)?.message ?? 'Something went wrong',
-        type: 'Error',
-        shown: true,
-      });
-
-      setPhotos((prev) => ({ ...prev, isFetching: false }));
-    }
-  };
-
   const getPhotos = (search: RoverSearch) => {
     const matchingRoverSol =
       photos.rover === search.rover && photos.sol === search.sol;
@@ -285,17 +294,14 @@ function useMarsData() {
 
     if (matchingRoverSol && cameraAvailable) {
       isDev && console.log('data already available, no need to refetch');
-      setPhotos((prev) => {
-        return {
-          ...prev,
-          currentCamera: search.camera,
-          currentPage: 1,
-        };
-      });
+      setPhotos((prev) => ({
+        ...prev,
+        currentCamera: search.camera,
+        currentPage: 1,
+      }));
       return;
     }
 
-    setPhotos((prev) => ({ ...prev, isFetching: true }));
     fetchPhotos(search, matchingRoverSol);
   };
 

@@ -34,7 +34,7 @@ export default function Message({
   return (
     <aside
       className={combineClassNames(
-        'fixed top-3 right-2 w-full max-w-md p-6',
+        'fixed bottom-3 right-2 w-full max-w-md p-6',
         'font-semibold rounded-lg transition',
         colors[message.type],
         message.shown ? 'translate-x-0' : 'translate-x-[110%]',

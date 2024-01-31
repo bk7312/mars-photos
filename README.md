@@ -17,9 +17,7 @@ Live version: https://api.nasa.gov/index.html
 
 ### Todo
 
-- [ ] Pick a better color scheme, currently slate
-- [ ] Design a better responsive layout
-- [ ] Optimize fullscreen by eliminating the need to refetch image?
+- [ ] Improve UI/color scheme and responsive layout
 - [ ] Currently images are assumed to be square, to handle images of different aspect ratios
 - [ ] Currently using route handlers (serverless), need a db to handle user login and saving/favorite images (to consider)
 
@@ -52,7 +50,7 @@ _Other_
 - [x] Your repo needs to have a robust README.md
 - [ ] Make sure that there are no errors in the developer console before submitting
 - [x] Your API key **should not** be exposed in your frontend application orin your public GitHub repo. Note that there are ways to protect application secrets without exposing them to the public.
-- [ ] Handle edge cases like page loading and error messages from the API, not allowing API calls when query is empty, putting a timeout on a API call and providing user feedback if it expires, and ensuring that user input is valid.
+- [x] Handle edge cases like page loading and error messages from the API, not allowing API calls when query is empty, putting a timeout on a API call and providing user feedback if it expires, and ensuring that user input is valid.
 
 **Extras (Not Required)**
 

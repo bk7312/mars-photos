@@ -34,8 +34,6 @@ export default function Home() {
         getPhotos={getPhotos}
       />
 
-      <Message message={message} closeMessage={closeMessage} />
-
       <PhotoResults
         photos={photos}
         updatePhotosPerPage={updatePhotosPerPage}
@@ -43,6 +41,8 @@ export default function Home() {
       />
 
       <Footer />
+
+      <Message message={message} closeMessage={closeMessage} />
 
       {isDev && (
         <div
@@ -69,6 +69,7 @@ export default function Home() {
                 photos,
                 message,
                 localStorageKeys: Object.keys(localStorage),
+                node_env: process.env.NODE_ENV,
               });
             }}
             className='rounded bg-red-300 px-2 cursor-pointer'

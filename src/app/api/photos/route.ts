@@ -15,9 +15,17 @@ export async function POST(request: Request) {
     url += `&camera=${camera}`;
   }
 
+  const controller = new AbortController();
+  const signal = controller.signal;
+  const timeout = setTimeout(() => {
+    controller.abort();
+  }, 15000);
+
   try {
     console.log(url);
-    const res = await fetch(url);
+    const res = await fetch(url, { signal });
+    clearTimeout(timeout);
+
     const { photos, error } = await res.json();
 
     console.log({ photos, error });
@@ -54,9 +62,16 @@ export async function POST(request: Request) {
     return Response.json({ data, cameraMap });
   } catch (error) {
     console.log('error caught:', error);
-    return Response.json(
-      { error: 'Looks like something went wrong, please try again later...' },
-      { status: 400 }
-    );
+    const err = error as Error;
+    console.log(err.name, err.message);
+
+    let errMsg =
+      'Looks like something went wrong, please try again later. Please contact the developer if issue presists.';
+
+    if (err.name === 'AbortError') {
+      errMsg = 'Request took too long to respond, please try again later.';
+    }
+
+    return Response.json({ error: errMsg }, { status: 400 });
   }
 }
