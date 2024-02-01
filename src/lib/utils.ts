@@ -62,3 +62,7 @@ export const isArrayStringInObjectKey = (
 export const combineClassNames = (...args: string[]): string => {
   return args.join(' ');
 };
+
+export const sleep = (ms: number) => {
+  return new Promise((res) => setTimeout(res, ms));
+};

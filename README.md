@@ -4,7 +4,7 @@
 
 An app that shows the photos taken by NASA's Mars rover using the [Mars Photo API](https://github.com/corincerami/mars-photo-api). Idea from [chingu's solo project](https://github.com/chingu-voyages/soloproject-tier3-mars-photos)
 
-Live version: https://api.nasa.gov/index.html
+Live version: https://mars-photos-five.vercel.app/
 
 ## Features
 

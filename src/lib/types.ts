@@ -104,9 +104,9 @@ export type RoverPhotos = {
 };
 
 export type MessageType = {
+  id: string;
   text: string;
   type: 'Error' | 'Info' | 'Warning';
-  shown: boolean;
 };
 
 // export type CameraTypes =

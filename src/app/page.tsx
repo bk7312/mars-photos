@@ -7,14 +7,13 @@ import Footer from '@/components/Footer';
 import useMarsData from '@/hooks/useMarsData';
 import { isDev } from '@/lib/constants';
 import Message from '@/components/Message';
+import MessageList from '@/components/MessageList';
 
 export default function Home() {
   const {
     search,
     photos,
     roverData,
-    message,
-    closeMessage,
     updateSearch,
     getPhotos,
     updatePhotosPerPage,
@@ -42,7 +41,7 @@ export default function Home() {
 
       <Footer />
 
-      <Message message={message} closeMessage={closeMessage} />
+      <MessageList />
 
       {isDev && (
         <div
@@ -67,7 +66,6 @@ export default function Home() {
                 search,
                 roverData,
                 photos,
-                message,
                 localStorageKeys: Object.keys(localStorage),
                 node_env: process.env.NODE_ENV,
               });

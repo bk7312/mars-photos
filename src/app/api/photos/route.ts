@@ -1,6 +1,7 @@
-import { GenericStringNumberObj, RoverPhotosResponse } from '@/lib/types';
-
 export const dynamic = 'force-dynamic';
+
+import { GenericStringNumberObj, RoverPhotosResponse } from '@/lib/types';
+import { sleep } from '@/lib/utils';
 
 export async function POST(request: Request) {
   const { rover, sol, camera } = await request.json();

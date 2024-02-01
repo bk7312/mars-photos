@@ -4,47 +4,37 @@ import { combineClassNames } from '@/lib/utils';
 import React from 'react';
 
 type MessagePropType = {
-  message: MessageType;
-  closeMessage: () => void;
+  type: MessageType['type'];
+  children: string;
+  handleDismiss: () => void;
   className?: string;
 };
 
+const COLORS = {
+  Error: 'bg-red-400',
+  Info: 'bg-green-400',
+  Warning: 'bg-orange-400',
+};
+
 export default function Message({
-  message,
-  closeMessage,
+  type,
+  handleDismiss,
   className = '',
+  children,
   ...delegated
 }: MessagePropType) {
-  React.useEffect(() => {
-    if (message.shown === false) {
-      return;
-    }
-    const timeout = setTimeout(() => closeMessage(), 10000);
-    return () => {
-      clearInterval(timeout);
-    };
-  }, [message.shown, closeMessage]);
-
-  const colors = {
-    Error: 'bg-red-400',
-    Info: 'bg-green-400',
-    Warning: 'bg-orange-400',
-  };
-
   return (
     <aside
       className={combineClassNames(
-        'fixed bottom-3 right-2 w-full max-w-md p-6',
+        'relative w-full max-w-md p-6',
         'font-semibold rounded-lg transition',
-        colors[message.type],
-        message.shown ? 'translate-x-0' : 'translate-x-[110%]',
+        COLORS[type],
         className
       )}
       {...delegated}
     >
       <button
-        onClick={closeMessage}
-        disabled={!message.shown}
+        onClick={handleDismiss}
         className='cursor-pointer absolute top-2 right-2'
       >
         <svg
@@ -60,7 +50,7 @@ export default function Message({
           />
         </svg>
       </button>
-      {message.type}: {message.text}
+      {children}
     </aside>
   );
 }

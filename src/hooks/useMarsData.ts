@@ -10,6 +10,7 @@ import {
 } from '@/lib/types';
 import { ONE_HOUR_IN_MS, isDev } from '@/lib/constants';
 import { isArrayStringInObjectKey, setWithinRange } from '@/lib/utils';
+import { MessageContext } from '@/context/MessageContext';
 
 function useMarsData() {
   const [search, setSearch] = React.useState<RoverSearch>({
@@ -30,11 +31,7 @@ function useMarsData() {
     currentCamera: '',
     isFetching: false,
   });
-  const [message, setMessage] = React.useState<MessageType>({
-    text: '',
-    type: 'Info',
-    shown: false,
-  });
+  const messageContext = React.useContext(MessageContext);
 
   const fetchManifest = React.useCallback(
     async (rover: Rover) => {
@@ -74,7 +71,10 @@ function useMarsData() {
           errMsg = 'Failed to fetch, possibly no internet connection.';
         }
 
-        setMessage({ text: errMsg, type: 'Error', shown: true });
+        messageContext?.addMessage({
+          text: errMsg,
+          type: 'Error',
+        });
 
         setSearch((prev) => ({
           ...prev,
@@ -87,7 +87,7 @@ function useMarsData() {
         setSearch((prev) => ({ ...prev, isFetchingManifest: false }));
       }
     },
-    [roverData?.name]
+    [roverData?.name, messageContext]
   );
 
   const fetchPhotos = async (
@@ -114,7 +114,10 @@ function useMarsData() {
       isDev && console.log({ data, cameraMap });
 
       if (data.length === 0) {
-        setMessage({ text: 'No photos found', type: 'Info', shown: true });
+        messageContext?.addMessage({
+          text: 'No photos found',
+          type: 'Info',
+        });
         return;
       }
 
@@ -155,7 +158,10 @@ function useMarsData() {
         errMsg = 'Failed to fetch, possibly no internet connection.';
       }
 
-      setMessage({ text: errMsg, type: 'Error', shown: true });
+      messageContext?.addMessage({
+        text: errMsg,
+        type: 'Error',
+      });
     } finally {
       setPhotos((prev) => ({ ...prev, isFetching: false }));
     }
@@ -305,14 +311,6 @@ function useMarsData() {
     fetchPhotos(search, matchingRoverSol);
   };
 
-  const closeMessage = () => {
-    setMessage({
-      text: '',
-      type: 'Info',
-      shown: false,
-    });
-  };
-
   const toggleIsFetching = () =>
     setSearch((prev) => ({
       ...prev,
@@ -323,8 +321,6 @@ function useMarsData() {
     search,
     photos,
     roverData,
-    message,
-    closeMessage,
     updateSearch,
     getPhotos,
     updatePhotosPerPage,
