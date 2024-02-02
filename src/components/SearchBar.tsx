@@ -1,8 +1,8 @@
 'use client';
 import React from 'react';
 import { RoverSearch, RoverManifest } from '@/lib/types';
-import { rovers, cameraNames, isDev } from '@/lib/constants';
-import { combineClassNames, isReducedMotion } from '@/lib/utils';
+import { ROVERS, cameraNames, isDev } from '@/lib/constants';
+import { combineClassNames, getBackgroundImageStyle } from '@/lib/utils';
 
 type SearchBarPropType = {
   search: RoverSearch;
@@ -48,7 +48,7 @@ export default function SearchBar({
             disabled={isDisabled}
           >
             {!search.rover && <option value=''>Select a rover</option>}
-            {rovers.map((rover) => (
+            {ROVERS.map((rover) => (
               <option key={rover} value={rover}>
                 {rover}
               </option>
@@ -58,19 +58,11 @@ export default function SearchBar({
 
         <label
           className='flex flex-col xs:flex-row gap-1 xs:gap-2 xs:items-center w-full h-full bg-no-repeat bg-center group'
-          style={
-            search.isFetchingManifest
-              ? {
-                  backgroundImage: `url('/loading-bar${
-                    isReducedMotion() ? '-static' : ''
-                  }.gif')`,
-                }
-              : {}
-          }
+          style={search.isFetchingManifest ? getBackgroundImageStyle() : {}}
         >
           <p className='w-20 xs:text-right relative'>
             Sol:
-            <span className='absolute z-10 hidden group-hover:block -top-2 -right-[150%] w-max xs:top-full xs:right-0 xs:w-20 px-2 py-1 rounded bg-white'>
+            <span className='absolute z-10 hidden group-hover:block -top-1 -right-20 w-max xs:top-full xs:right-0 xs:w-20 p-1 text-xs text-center rounded bg-slate-100'>
               A solar day on Mars
             </span>
           </p>
@@ -99,11 +91,7 @@ export default function SearchBar({
 
         <label
           className='flex flex-col xs:flex-row gap-1 xs:gap-2 xs:items-center w-full h-full bg-no-repeat bg-center'
-          style={
-            search.isFetchingManifest
-              ? { backgroundImage: "url('/loading-bar.gif')" }
-              : {}
-          }
+          style={search.isFetchingManifest ? getBackgroundImageStyle() : {}}
         >
           <p className='w-20 xs:text-right'>Camera:</p>
           <select

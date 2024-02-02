@@ -1,6 +1,6 @@
 import { Rover } from './types';
 
-export const rovers: Rover[] = [
+export const ROVERS: Rover[] = [
   'Perseverance',
   'Curiosity',
   'Opportunity',

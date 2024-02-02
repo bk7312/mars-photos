@@ -17,8 +17,8 @@ Live version: https://mars-photos-five.vercel.app/
 
 ### Todo
 
-- [ ] Improve UI/color scheme and responsive layout
-- [ ] Currently images are assumed to be square, to handle images of different aspect ratios (opportunity sol 1, horizontal and vertical image)
+- [x] Improve UI/color scheme and responsive layout (leave as is for now)
+- [ ] Currently images are assumed to be square, to handle images of different aspect ratios (opportunity sol 1, ENTRY - horizontal strips, PANCAM - last few images are vertical strips)
 - [ ] Currently using route handlers (serverless), need a db to handle user login and saving/favorite images (to consider)
 
 _Structure_
@@ -33,7 +33,7 @@ _Structure_
 _Style_
 
 - [x] You may choose your own style for this app, but make sure your style choices follow UI/UX best practices and are consistent throughout the app.
-- [ ] Make your design fully responsive (small/large/portrait/landscape, etc.)
+- [x] Make your design fully responsive (small/large/portrait/landscape, etc.)
 
 _Functionality_
 
@@ -48,14 +48,14 @@ _Functionality_
 _Other_
 
 - [x] Your repo needs to have a robust README.md
-- [ ] Make sure that there are no errors in the developer console before submitting
+- [x] Make sure that there are no errors in the developer console before submitting
 - [x] Your API key **should not** be exposed in your frontend application orin your public GitHub repo. Note that there are ways to protect application secrets without exposing them to the public.
 - [x] Handle edge cases like page loading and error messages from the API, not allowing API calls when query is empty, putting a timeout on a API call and providing user feedback if it expires, and ensuring that user input is valid.
 
 **Extras (Not Required)**
 
 - [ ] Implement a reset button to clear the search criteria and photo display area
-- [ ] Implement the light/dark mode toggle buttons
+- [ ] Implement the light/dark mode toggle buttons (currently based on prefers-color-scheme)
 - [ ] Implement the change display icon so you can flip between a grid layout and a list layout for the photos
 - [ ] User creation and authentication: Add a login button to the page allowing registered users to login, or prompts new users to register. Once a user is authenticated, display that they are logged in in the heading.
 - [ ] Add a favorites feature with back-end persistence: one example of this would be to use cookies to point to the user's favorite list in your database. You'll need to add a "see favorites" button somewhere to toggle between the view of the user's favorite photos and the searches that retrieved them.

@@ -67,5 +67,13 @@ export const sleep = (ms: number) => {
   return new Promise((res) => setTimeout(res, ms));
 };
 
-export const isReducedMotion = () =>
+const isReducedMotion = () =>
   window.matchMedia(`(prefers-reduced-motion: reduce)`).matches === true;
+
+export const getBackgroundImageStyle = () => {
+  return {
+    backgroundImage: isReducedMotion()
+      ? "url('/loading-bar-static.gif')"
+      : "url('/loading-bar.gif')",
+  };
+};

@@ -2,7 +2,7 @@
 import React from 'react';
 import { RoverPhotos } from '@/lib/types';
 import Image from 'next/image';
-import { combineClassNames, isReducedMotion } from '@/lib/utils';
+import { combineClassNames, getBackgroundImageStyle } from '@/lib/utils';
 import { isDev } from '@/lib/constants';
 
 type PhotoResultsPropType = {
@@ -84,6 +84,13 @@ export default function PhotoResults({
 
   isDev && console.log({ display, photos, photoArr });
 
+  const imageLoaded = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+    if (!e.currentTarget.parentElement) {
+      return;
+    }
+    e.currentTarget.parentElement.style.backgroundImage = '';
+  };
+
   const imageError = (
     e: React.SyntheticEvent<HTMLImageElement, Event>,
     url: string = 'img-not-found.png',
@@ -109,15 +116,7 @@ export default function PhotoResults({
       <div
         id='photos'
         className='flex flex-col border border-slate-500 rounded p-4 h-full bg-no-repeat bg-center'
-        style={
-          photos.isFetching
-            ? {
-                backgroundImage: `url('/loading-bar${
-                  isReducedMotion() ? '-static' : ''
-                }.gif')`,
-              }
-            : {}
-        }
+        style={photos.isFetching ? getBackgroundImageStyle() : {}}
       >
         <div className='flex flex-row justify-between gap-8 mx-auto px-2 max-w-lg w-full'>
           <label className='flex flex-col xs:flex-row gap-2 justify-center items-center my-2'>
@@ -173,11 +172,7 @@ export default function PhotoResults({
                     'relative max-w-lg w-full cursor-zoom-in aspect-square focus-visible:ring',
                     'bg-no-repeat bg-center'
                   )}
-                  style={{
-                    backgroundImage: `url('/loading-bar${
-                      isReducedMotion() ? '-static' : ''
-                    }.gif')`,
-                  }}
+                  style={getBackgroundImageStyle()}
                   onClick={toggleFullscreen}
                   data-img-src={p.img_src}
                   disabled={photos.isFetching || display.fullscreen}
@@ -186,6 +181,7 @@ export default function PhotoResults({
                     src={p.img_src}
                     alt={p.img_alt}
                     title={p.img_alt}
+                    onLoad={imageLoaded}
                     onError={imageError}
                     fill={true}
                     sizes='300px'
@@ -195,12 +191,12 @@ export default function PhotoResults({
               ))}
         </div>
 
-        <div className='flex justify-center items-center gap-2'>
-          <label className='flex gap-2 justify-center items-center my-2'>
+        <div className='flex justify-center items-center gap-4'>
+          <label>
             <button
               onClick={() => updatePhotoPage(photos.currentPage - 1, maxPage)}
               value={photos.currentPage}
-              className='px-2 focus-visible:ring cursor-pointer disabled:cursor-not-allowed'
+              className='focus-visible:ring cursor-pointer disabled:cursor-not-allowed'
               disabled={
                 photos.isFetching ||
                 display.fullscreen ||
@@ -223,14 +219,14 @@ export default function PhotoResults({
               className='w-16 px-2 py-1 focus-visible:ring'
               disabled={photos.isFetching || display.fullscreen}
             />{' '}
-            of {maxPage}
+            / {maxPage}
           </label>
 
-          <label className='flex gap-2 justify-center items-center my-2'>
+          <label>
             <button
               onClick={() => updatePhotoPage(photos.currentPage + 1, maxPage)}
               value={photos.currentPage}
-              className='px-2 focus-visible:ring cursor-pointer disabled:cursor-not-allowed'
+              className='focus-visible:ring cursor-pointer disabled:cursor-not-allowed'
               disabled={
                 photos.isFetching ||
                 display.fullscreen ||
@@ -250,17 +246,14 @@ export default function PhotoResults({
               'relative w-screen h-screen cursor-zoom-out',
               'bg-no-repeat bg-center'
             )}
-            style={{
-              backgroundImage: `url('/loading-bar${
-                isReducedMotion() ? '-static' : ''
-              }.gif')`,
-            }}
+            style={getBackgroundImageStyle()}
             onClick={toggleFullscreen}
           >
             <Image
               src={display.src}
               alt={display.alt}
               title={display.alt}
+              onLoad={imageLoaded}
               onError={(e) => imageError(e, 'not-found-full.png', true)}
               fill={true}
               sizes='100vw'
