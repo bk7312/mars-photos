@@ -24,7 +24,7 @@ function useMarsData() {
   const [photos, setPhotos] = React.useState<RoverPhotos>({
     src: [],
     currentPage: 1,
-    photoPerPage: 4,
+    photoPerPage: 12,
     cameraMap: {},
     rover: '',
     sol: '',

@@ -2,7 +2,7 @@
 import React from 'react';
 import { RoverPhotos } from '@/lib/types';
 import Image from 'next/image';
-import { combineClassNames } from '@/lib/utils';
+import { combineClassNames, isReducedMotion } from '@/lib/utils';
 import { isDev } from '@/lib/constants';
 
 type PhotoResultsPropType = {
@@ -10,6 +10,7 @@ type PhotoResultsPropType = {
   updatePhotosPerPage: (photoPerPage: number, totalPhotos: number) => void;
   updatePhotoPage: (page: number, maxPage: number) => void;
   className?: string;
+  [key: string]: any;
 };
 
 type DisplayType =
@@ -65,9 +66,9 @@ export default function PhotoResults({
   }
 
   const photoStartIndex = (photos.currentPage - 1) * photos.photoPerPage;
-  const maxPage = Math.ceil(totalPhotos / photos.photoPerPage) + 1;
+  const maxPage = Math.ceil(totalPhotos / photos.photoPerPage);
 
-  const exitFullscreen = (e: React.MouseEvent<HTMLButtonElement>) => {
+  const toggleFullscreen = (e: React.MouseEvent<HTMLButtonElement>) => {
     if (display.fullscreen === true) {
       setDisplay({ fullscreen: false });
       return;
@@ -83,6 +84,20 @@ export default function PhotoResults({
 
   isDev && console.log({ display, photos, photoArr });
 
+  const imageError = (
+    e: React.SyntheticEvent<HTMLImageElement, Event>,
+    url: string = 'img-not-found.png',
+    contain: boolean = false
+  ) => {
+    if (!e.currentTarget.parentElement) {
+      return;
+    }
+    if (contain) {
+      e.currentTarget.parentElement.classList.add('bg-contain');
+    }
+    e.currentTarget.parentElement.style.backgroundImage = `url(${url})`;
+  };
+
   return (
     <section
       className={combineClassNames(
@@ -96,12 +111,30 @@ export default function PhotoResults({
         className='flex flex-col border border-slate-500 rounded p-4 h-full bg-no-repeat bg-center'
         style={
           photos.isFetching
-            ? { backgroundImage: "url('/loading-bar.gif')" }
+            ? {
+                backgroundImage: `url('/loading-bar${
+                  isReducedMotion() ? '-static' : ''
+                }.gif')`,
+              }
             : {}
         }
       >
-        <div className='flex justify-center gap-4 mx-3'>
-          <label className='flex gap-2 justify-center items-center my-2'>
+        <div className='flex flex-row justify-between gap-8 mx-auto px-2 max-w-lg w-full'>
+          <label className='flex flex-col xs:flex-row gap-2 justify-center items-center my-2'>
+            <p>Showing page:</p>
+            <input
+              type='number'
+              name='currentPage'
+              id='currentPage'
+              onChange={(e) => updatePhotoPage(e.target.valueAsNumber, maxPage)}
+              value={photos.currentPage}
+              min={1}
+              className='w-16 px-2 py-1 focus-visible:ring'
+              disabled={photos.isFetching || display.fullscreen}
+            />
+          </label>
+
+          <label className='flex flex-col xs:flex-row gap-2 justify-center items-center my-2'>
             <p>Photos per page:</p>
             <input
               type='number'
@@ -111,20 +144,6 @@ export default function PhotoResults({
                 updatePhotosPerPage(e.target.valueAsNumber, totalPhotos)
               }
               value={photos.photoPerPage}
-              min={1}
-              className='w-16 px-2 py-1 focus-visible:ring'
-              disabled={photos.isFetching || display.fullscreen}
-            />
-          </label>
-
-          <label className='flex gap-2 justify-center items-center my-2'>
-            <p>Showing page:</p>
-            <input
-              type='number'
-              name='currentPage'
-              id='currentPage'
-              onChange={(e) => updatePhotoPage(e.target.valueAsNumber, maxPage)}
-              value={photos.currentPage}
               min={1}
               className='w-16 px-2 py-1 focus-visible:ring'
               disabled={photos.isFetching || display.fullscreen}
@@ -140,10 +159,10 @@ export default function PhotoResults({
               photoStartIndex + photos.photoPerPage,
               totalPhotos
             )}`}{' '}
-          out of {totalPhotos}{' '}
+          out of {totalPhotos}
         </p>
 
-        <div className='flex flex-wrap gap-2 justify-center m-2 h-full'>
+        <div className='grid auto-cols-fr grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 justify-center m-2 h-full min-h-40'>
           {!photos.isFetching &&
             photoArr
               .slice(photoStartIndex, photoStartIndex + photos.photoPerPage)
@@ -151,11 +170,15 @@ export default function PhotoResults({
                 <button
                   key={p.img_id}
                   className={combineClassNames(
-                    'relative max-w-lg w-64 cursor-zoom-in aspect-square flex-grow focus-visible:ring',
+                    'relative max-w-lg w-full cursor-zoom-in aspect-square focus-visible:ring',
                     'bg-no-repeat bg-center'
                   )}
-                  style={{ backgroundImage: "url('/loading-bar.gif')" }}
-                  onClick={exitFullscreen}
+                  style={{
+                    backgroundImage: `url('/loading-bar${
+                      isReducedMotion() ? '-static' : ''
+                    }.gif')`,
+                  }}
+                  onClick={toggleFullscreen}
                   data-img-src={p.img_src}
                   disabled={photos.isFetching || display.fullscreen}
                 >
@@ -163,6 +186,7 @@ export default function PhotoResults({
                     src={p.img_src}
                     alt={p.img_alt}
                     title={p.img_alt}
+                    onError={imageError}
                     fill={true}
                     sizes='300px'
                     className='object-contain'
@@ -171,38 +195,75 @@ export default function PhotoResults({
               ))}
         </div>
 
-        <label className='flex gap-2 justify-center items-center my-2'>
-          <p>Go to page</p>
-          <input
-            type='number'
-            name='currentPage'
-            id='currentPage-2'
-            onChange={(e) => updatePhotoPage(e.target.valueAsNumber, maxPage)}
-            value={photos.currentPage}
-            min={1}
-            className='w-16 px-2 py-1 focus-visible:ring'
-            disabled={photos.isFetching || display.fullscreen}
-          />{' '}
-          of {maxPage}
-        </label>
+        <div className='flex justify-center items-center gap-2'>
+          <label className='flex gap-2 justify-center items-center my-2'>
+            <button
+              onClick={() => updatePhotoPage(photos.currentPage - 1, maxPage)}
+              value={photos.currentPage}
+              className='px-2 focus-visible:ring cursor-pointer disabled:cursor-not-allowed'
+              disabled={
+                photos.isFetching ||
+                display.fullscreen ||
+                photos.currentPage <= 1
+              }
+            >
+              ←
+            </button>
+          </label>
+
+          <label className='flex gap-2 justify-center items-center my-2'>
+            <p>Page</p>
+            <input
+              type='number'
+              name='currentPage'
+              id='currentPage-2'
+              onChange={(e) => updatePhotoPage(e.target.valueAsNumber, maxPage)}
+              value={photos.currentPage}
+              min={1}
+              className='w-16 px-2 py-1 focus-visible:ring'
+              disabled={photos.isFetching || display.fullscreen}
+            />{' '}
+            of {maxPage}
+          </label>
+
+          <label className='flex gap-2 justify-center items-center my-2'>
+            <button
+              onClick={() => updatePhotoPage(photos.currentPage + 1, maxPage)}
+              value={photos.currentPage}
+              className='px-2 focus-visible:ring cursor-pointer disabled:cursor-not-allowed'
+              disabled={
+                photos.isFetching ||
+                display.fullscreen ||
+                photos.currentPage >= maxPage
+              }
+            >
+              →
+            </button>
+          </label>
+        </div>
       </div>
 
       {display.fullscreen && (
         <div className='flex justify-center items-center backdrop-blur fixed h-screen w-screen inset-0'>
           <button
             className={combineClassNames(
-              'relative w-[1000px] m-4 sm:m-8 cursor-zoom-out aspect-square',
+              'relative w-screen h-screen cursor-zoom-out',
               'bg-no-repeat bg-center'
             )}
-            style={{ backgroundImage: "url('/loading-bar.gif')" }}
-            onClick={exitFullscreen}
+            style={{
+              backgroundImage: `url('/loading-bar${
+                isReducedMotion() ? '-static' : ''
+              }.gif')`,
+            }}
+            onClick={toggleFullscreen}
           >
             <Image
               src={display.src}
               alt={display.alt}
               title={display.alt}
+              onError={(e) => imageError(e, 'not-found-full.png', true)}
               fill={true}
-              sizes='1000px'
+              sizes='100vw'
               className='object-contain'
             />
           </button>

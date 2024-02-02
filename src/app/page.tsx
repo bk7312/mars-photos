@@ -6,8 +6,8 @@ import PhotoResults from '@/components/PhotoResults';
 import Footer from '@/components/Footer';
 import useMarsData from '@/hooks/useMarsData';
 import { isDev } from '@/lib/constants';
-import Message from '@/components/Message';
 import MessageList from '@/components/MessageList';
+import { MessageContext } from '@/context/MessageContext';
 
 export default function Home() {
   const {
@@ -22,6 +22,7 @@ export default function Home() {
   } = useMarsData();
 
   isDev && console.log('main rendered', roverData);
+  const messageContext = React.useContext(MessageContext);
 
   return (
     <main className='h-screen flex flex-col justify-between items-center gap-2'>
@@ -55,7 +56,7 @@ export default function Home() {
               e.stopPropagation();
               localStorage.clear();
             }}
-            className='rounded bg-red-300 px-2 cursor-pointer'
+            className='rounded bg-red-400 px-2 cursor-pointer'
           >
             clear localStorage
           </button>
@@ -70,7 +71,7 @@ export default function Home() {
                 node_env: process.env.NODE_ENV,
               });
             }}
-            className='rounded bg-red-300 px-2 cursor-pointer'
+            className='rounded bg-red-400 px-2 cursor-pointer'
           >
             log state
           </button>
@@ -79,9 +80,33 @@ export default function Home() {
               e.stopPropagation();
               toggleIsFetching();
             }}
-            className='rounded bg-red-300 px-2 cursor-pointer'
+            className='rounded bg-red-400 px-2 cursor-pointer'
           >
             toggle isFetching
+          </button>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              messageContext?.addMessage({
+                text: 'testing message with lots of characters and rather verbose, perhaps excessively so to the point of pointlessly filling multiple lines',
+                type: 'Error',
+              });
+            }}
+            className='rounded bg-red-400 px-2 cursor-pointer'
+          >
+            add long error
+          </button>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              messageContext?.addMessage({
+                text: 'testing info',
+                type: 'Info',
+              });
+            }}
+            className='rounded bg-red-400 px-2 cursor-pointer'
+          >
+            add short info
           </button>
         </div>
       )}

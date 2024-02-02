@@ -25,6 +25,7 @@ export default function MessageProvider({
   children: React.ReactNode;
 }) {
   const [messageList, setMessageList] = React.useState<MessageType[]>([]);
+
   const handleEsc = React.useCallback(() => setMessageList([]), []);
   useEscapeKey(handleEsc);
 
@@ -42,7 +43,7 @@ export default function MessageProvider({
   };
 
   const handleDismiss = (id: string) => {
-    setMessageList((currList) => currList.filter((c) => c.id !== id));
+    setMessageList((prev) => prev.filter((c) => c.id !== id));
   };
 
   const value = {

@@ -18,7 +18,7 @@ Live version: https://mars-photos-five.vercel.app/
 ### Todo
 
 - [ ] Improve UI/color scheme and responsive layout
-- [ ] Currently images are assumed to be square, to handle images of different aspect ratios
+- [ ] Currently images are assumed to be square, to handle images of different aspect ratios (opportunity sol 1, horizontal and vertical image)
 - [ ] Currently using route handlers (serverless), need a db to handle user login and saving/favorite images (to consider)
 
 _Structure_

@@ -2,7 +2,7 @@
 import React from 'react';
 import { RoverSearch, RoverManifest } from '@/lib/types';
 import { rovers, cameraNames, isDev } from '@/lib/constants';
-import { combineClassNames } from '@/lib/utils';
+import { combineClassNames, isReducedMotion } from '@/lib/utils';
 
 type SearchBarPropType = {
   search: RoverSearch;
@@ -12,6 +12,7 @@ type SearchBarPropType = {
   ) => void;
   getPhotos: (rover: RoverSearch) => void;
   className?: string;
+  [key: string]: any;
 };
 
 export default function SearchBar({
@@ -29,14 +30,14 @@ export default function SearchBar({
   return (
     <section
       className={combineClassNames(
-        'p-4 w-full max-h-64 max-w-screen-sm',
+        'p-4 w-full xs:max-h-64 max-w-screen-sm',
         className
       )}
       {...delegated}
     >
       <div className='relative flex flex-col items-start gap-4 border border-slate-500 rounded px-6 py-8 h-full'>
-        <label className='flex gap-2 items-center w-full'>
-          <p className='w-20 text-right'>Rover:</p>
+        <label className='flex flex-col xs:flex-row gap-1 xs:gap-2 xs:items-center w-full'>
+          <p className='w-20 xs:text-right'>Rover:</p>
 
           <select
             name='rover'
@@ -56,16 +57,20 @@ export default function SearchBar({
         </label>
 
         <label
-          className='flex gap-2 items-center w-full h-full bg-no-repeat bg-center group'
+          className='flex flex-col xs:flex-row gap-1 xs:gap-2 xs:items-center w-full h-full bg-no-repeat bg-center group'
           style={
             search.isFetchingManifest
-              ? { backgroundImage: "url('/loading-bar.gif')" }
+              ? {
+                  backgroundImage: `url('/loading-bar${
+                    isReducedMotion() ? '-static' : ''
+                  }.gif')`,
+                }
               : {}
           }
         >
-          <p className='w-20 text-right relative'>
+          <p className='w-20 xs:text-right relative'>
             Sol:
-            <span className='absolute z-10 hidden group-hover:block top-full right-0 w-20 px-2 py-1 rounded bg-white'>
+            <span className='absolute z-10 hidden group-hover:block -top-2 -right-[150%] w-max xs:top-full xs:right-0 xs:w-20 px-2 py-1 rounded bg-white'>
               A solar day on Mars
             </span>
           </p>
@@ -93,14 +98,14 @@ export default function SearchBar({
         </label>
 
         <label
-          className='flex gap-2 items-center w-full h-full bg-no-repeat bg-center'
+          className='flex flex-col xs:flex-row gap-1 xs:gap-2 xs:items-center w-full h-full bg-no-repeat bg-center'
           style={
             search.isFetchingManifest
               ? { backgroundImage: "url('/loading-bar.gif')" }
               : {}
           }
         >
-          <p className='w-20 text-right'>Camera:</p>
+          <p className='w-20 xs:text-right'>Camera:</p>
           <select
             name='camera'
             id='camera'
@@ -134,7 +139,7 @@ export default function SearchBar({
           </select>
         </label>
         <button
-          className='bg-slate-200 border-solid rounded px-2 py-1 mx-auto disabled:cursor-not-allowed focus-visible:ring'
+          className='bg-slate-200 border-solid rounded px-2 py-1 mt-2 xs:mt-0 mx-auto select-none disabled:cursor-not-allowed focus-visible:ring'
           onClick={() => getPhotos(search)}
           disabled={isDisabled || search.camera === ''}
         >

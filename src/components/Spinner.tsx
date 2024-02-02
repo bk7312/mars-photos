@@ -4,6 +4,7 @@ import React from 'react';
 
 type SpinnerPropType = {
   className?: string;
+  [key: string]: any;
 };
 
 export default function Spinner({

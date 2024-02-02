@@ -12,7 +12,7 @@ export default function MessageList() {
   return (
     <ol className='flex flex-col gap-2 p-2 fixed bottom-0 right-0'>
       {messageList.map(({ text, type, id }: MessageType) => (
-        <li className='will-change-transform animate-slide' key={id}>
+        <li className='animate-slide-in' key={id}>
           <Message type={type} handleDismiss={() => handleDismiss(id)}>
             {text}
           </Message>

@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import './globals.css';
 import MessageProvider from '@/context/MessageContext';
+import { combineClassNames } from '@/lib/utils';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -18,7 +19,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang='en'>
-      <body className={inter.className}>
+      <body
+        className={combineClassNames(
+          inter.className,
+          'bg-slate-300 text-slate-900'
+        )}
+      >
         <MessageProvider>{children}</MessageProvider>
         <SpeedInsights />
       </body>

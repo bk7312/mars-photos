@@ -1,15 +1,19 @@
 'use client';
+import React from 'react';
 import { MessageType } from '@/lib/types';
 import { combineClassNames } from '@/lib/utils';
-import React from 'react';
 
 type MessagePropType = {
   type: MessageType['type'];
   children: string;
   handleDismiss: () => void;
   className?: string;
+  [key: string]: any;
 };
 
+// don't put COLORS in constants.ts and import
+// tailwind will not know these classes are in use
+// and thus remove during bundling
 const COLORS = {
   Error: 'bg-red-400',
   Info: 'bg-green-400',
@@ -26,7 +30,7 @@ export default function Message({
   return (
     <aside
       className={combineClassNames(
-        'relative w-full max-w-md p-6',
+        'relative min-w-fit max-w-sm p-6',
         'font-semibold rounded-lg transition',
         COLORS[type],
         className

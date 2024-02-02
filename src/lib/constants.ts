@@ -10,6 +10,12 @@ export const rovers: Rover[] = [
 export const ONE_HOUR_IN_MS = 60 * 60 * 1000;
 export const ONE_DAY_IN_MS = 24 * 60 * 60 * 1000;
 
+export const COLORS = {
+  Error: 'bg-red-400',
+  Info: 'bg-green-400',
+  Warning: 'bg-orange-400',
+};
+
 export const isDev =
   !process.env.NODE_ENV || process.env.NODE_ENV === 'development';
 

@@ -13,13 +13,17 @@ const config: Config = {
         'gradient-conic':
           'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
       },
+      screens: {
+        xs: '480px',
+        sm: '580px',
+      },
       keyframes: {
-        slide: {
+        'slide-in': {
           from: { transform: 'translateX(100%)' },
         },
       },
       animation: {
-        slide: 'slide 150ms ease-out',
+        'slide-in': 'slide-in 150ms ease-out',
       },
     },
   },

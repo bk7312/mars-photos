@@ -66,3 +66,6 @@ export const combineClassNames = (...args: string[]): string => {
 export const sleep = (ms: number) => {
   return new Promise((res) => setTimeout(res, ms));
 };
+
+export const isReducedMotion = () =>
+  window.matchMedia(`(prefers-reduced-motion: reduce)`).matches === true;
