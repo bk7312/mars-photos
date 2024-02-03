@@ -28,10 +28,9 @@ export default function Message({
   ...delegated
 }: MessagePropType) {
   return (
-    <aside
+    <div
       className={combineClassNames(
-        'relative min-w-fit max-w-sm p-6',
-        'font-semibold rounded-lg transition',
+        'relative p-6 font-semibold rounded-lg',
         COLORS[type],
         className
       )}
@@ -54,7 +53,7 @@ export default function Message({
           />
         </svg>
       </button>
-      {children}
-    </aside>
+      <p className='w-full'>{children}</p>
+    </div>
   );
 }

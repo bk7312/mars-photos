@@ -10,12 +10,6 @@ export const ROVERS: Rover[] = [
 export const ONE_HOUR_IN_MS = 60 * 60 * 1000;
 export const ONE_DAY_IN_MS = 24 * 60 * 60 * 1000;
 
-export const COLORS = {
-  Error: 'bg-red-400',
-  Info: 'bg-green-400',
-  Warning: 'bg-orange-400',
-};
-
 export const isDev =
   !process.env.NODE_ENV || process.env.NODE_ENV === 'development';
 
@@ -70,6 +64,7 @@ const perseveranceCameras = {
   SKYCAM: 'MEDA Skycam',
   SHERLOC_WATSON: 'SHERLOC WATSON Camera',
   SUPERCAM_RMI: 'SuperCam Remote Micro Imager',
+  LCAM: 'Lander Vision System Camera',
 };
 
 const curiosityCameras = {
@@ -96,32 +91,3 @@ export const cameraNames = {
   ...curiosityCameras,
   ...spiritAndOpportunityCameras,
 };
-
-// export const cameraNames = {
-//   EDL_RUCAM: 'Rover Up-Look Camera',
-//   EDL_RDCAM: 'Rover Down-Look Camera',
-//   EDL_DDCAM: 'Descent Stage Down-Look Camera',
-//   EDL_PUCAM1: 'Parachute Up-Look Camera A',
-//   EDL_PUCAM2: 'Parachute Up-Look Camera B',
-//   NAVCAM_LEFT: 'Navigation Camera - Left',
-//   NAVCAM_RIGHT: 'Navigation Camera - Right',
-//   MCZ_RIGHT: 'Mast Camera Zoom - Right',
-//   MCZ_LEFT: 'Mast Camera Zoom - Left',
-//   FRONT_HAZCAM_LEFT_A: 'Front Hazard Avoidance Camera - Left',
-//   FRONT_HAZCAM_RIGHT_A: 'Front Hazard Avoidance Camera - Right',
-//   REAR_HAZCAM_LEFT: 'Rear Hazard Avoidance Camera - Left',
-//   REAR_HAZCAM_RIGHT: 'Rear Hazard Avoidance Camera - Right',
-//   SKYCAM: 'MEDA Skycam',
-//   SHERLOC_WATSON: 'SHERLOC WATSON Camera',
-//   SUPERCAM_RMI: 'SuperCam Remote Micro Imager',
-//   FHAZ: 'Front Hazard Avoidance Camera',
-//   RHAZ: 'Rear Hazard Avoidance Camera',
-//   MAST: 'Mast Camera',
-//   CHEMCAM: 'Chemistry and Camera Complex',
-//   MAHLI: 'Mars Hand Lens Imager',
-//   MARDI: 'Mars Descent Imager',
-//   NAVCAM: 'Navigation Camera',
-//   PANCAM: 'Panoramic Camera',
-//   MINITES: 'Miniature Thermal Emission Spectrometer (Mini-TES)',
-//   ENTRY: 'Entry, Descent, and Landing Camera',
-// };

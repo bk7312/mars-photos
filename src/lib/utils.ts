@@ -68,7 +68,7 @@ export const sleep = (ms: number) => {
 };
 
 const isReducedMotion = () =>
-  window.matchMedia(`(prefers-reduced-motion: reduce)`).matches === true;
+  window.matchMedia('(prefers-reduced-motion: reduce)').matches === true;
 
 export const getBackgroundImageStyle = () => {
   return {

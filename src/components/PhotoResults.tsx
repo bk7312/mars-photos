@@ -34,39 +34,45 @@ export default function PhotoResults({
     fullscreen: false,
   });
 
-  React.useEffect(() => {
-    const handleEsc = (e: KeyboardEvent) => {
-      isDev && console.log('User pressed: ', e.key);
-      if (display.fullscreen !== true) {
-        return;
-      }
-      // preventDefault to block keyboard tab navigation while fullscreen
-      e.preventDefault();
-
-      if (e.key === 'Escape') {
-        setDisplay({ fullscreen: false });
-      }
-    };
-    document.addEventListener('keydown', handleEsc);
-
-    return () => {
-      document.removeEventListener('keydown', handleEsc);
-    };
-  }, [display.fullscreen]);
-
   const photoArr =
     photos.currentCamera === 'ALL' || photos.currentCamera === undefined
       ? photos.src
       : photos.src.filter((p) => p.camera.name === photos.currentCamera);
   const totalPhotos = photoArr.length;
 
+  const photoStartIndex = (photos.currentPage - 1) * photos.photoPerPage;
+  const maxPage = Math.ceil(totalPhotos / photos.photoPerPage);
+
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      isDev && console.log('User pressed: ', e.key);
+      if (display.fullscreen !== true) {
+        if (e.key === 'ArrowRight' && photos.currentPage < maxPage) {
+          updatePhotoPage(photos.currentPage + 1, maxPage);
+        } else if (e.key === 'ArrowLeft' && photos.currentPage > 1) {
+          updatePhotoPage(photos.currentPage - 1, maxPage);
+        }
+        return;
+      }
+
+      // preventDefault to block keyboard tab navigation while fullscreen
+      e.preventDefault();
+      if (e.key === 'Escape') {
+        setDisplay({ fullscreen: false });
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [display.fullscreen, updatePhotoPage, photos.currentPage, maxPage]);
+
   if (totalPhotos === 0 && !photos.isFetching) {
     isDev && console.log('Skipped rendering, no photos and not fetching');
     return <></>;
   }
-
-  const photoStartIndex = (photos.currentPage - 1) * photos.photoPerPage;
-  const maxPage = Math.ceil(totalPhotos / photos.photoPerPage);
 
   const toggleFullscreen = (e: React.MouseEvent<HTMLButtonElement>) => {
     if (display.fullscreen === true) {
@@ -81,8 +87,6 @@ export default function PhotoResults({
       alt: child.alt,
     });
   };
-
-  isDev && console.log({ display, photos, photoArr });
 
   const imageLoaded = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
     if (!e.currentTarget.parentElement) {
@@ -108,135 +112,129 @@ export default function PhotoResults({
   return (
     <section
       className={combineClassNames(
-        'grow p-4 w-full max-w-screen-xl',
+        'grow p-4 w-full h-full max-w-screen-xl bg-no-repeat bg-center',
+        'flex flex-col border-2 border-slate-400 rounded',
         className
       )}
       {...delegated}
+      style={photos.isFetching ? getBackgroundImageStyle() : {}}
     >
-      <div
-        id='photos'
-        className='flex flex-col border border-slate-500 rounded p-4 h-full bg-no-repeat bg-center'
-        style={photos.isFetching ? getBackgroundImageStyle() : {}}
-      >
-        <div className='flex flex-row justify-between gap-8 mx-auto px-2 max-w-lg w-full'>
-          <label className='flex flex-col xs:flex-row gap-2 justify-center items-center my-2'>
-            <p>Showing page:</p>
-            <input
-              type='number'
-              name='currentPage'
-              id='currentPage'
-              onChange={(e) => updatePhotoPage(e.target.valueAsNumber, maxPage)}
-              value={photos.currentPage}
-              min={1}
-              className='w-16 px-2 py-1 focus-visible:ring'
-              disabled={photos.isFetching || display.fullscreen}
-            />
-          </label>
+      <div className='flex flex-row justify-between gap-8 mx-auto px-2 max-w-lg w-full'>
+        <label className='flex flex-col xs:flex-row gap-2 justify-center items-center my-2'>
+          <p>Showing page:</p>
+          <input
+            type='number'
+            name='currentPage'
+            id='currentPage'
+            onChange={(e) => updatePhotoPage(e.target.valueAsNumber, maxPage)}
+            value={photos.currentPage}
+            min={1}
+            className='w-16 px-2 py-1 focus-visible:ring'
+            disabled={photos.isFetching || display.fullscreen}
+          />
+        </label>
 
-          <label className='flex flex-col xs:flex-row gap-2 justify-center items-center my-2'>
-            <p>Photos per page:</p>
-            <input
-              type='number'
-              name='photoPerPage'
-              id='photoPerPage'
-              onChange={(e) =>
-                updatePhotosPerPage(e.target.valueAsNumber, totalPhotos)
-              }
-              value={photos.photoPerPage}
-              min={1}
-              className='w-16 px-2 py-1 focus-visible:ring'
-              disabled={photos.isFetching || display.fullscreen}
-            />
-          </label>
-        </div>
+        <label className='flex flex-col xs:flex-row gap-2 justify-center items-center my-2'>
+          <p>Photos per page:</p>
+          <input
+            type='number'
+            name='photoPerPage'
+            id='photoPerPage'
+            onChange={(e) =>
+              updatePhotosPerPage(e.target.valueAsNumber, totalPhotos)
+            }
+            value={photos.photoPerPage}
+            min={1}
+            className='w-16 px-2 py-1 focus-visible:ring'
+            disabled={photos.isFetching || display.fullscreen}
+          />
+        </label>
+      </div>
 
-        <p className='text-center m-2'>
-          Showing photo number {photoStartIndex + 1}{' '}
-          {photos.photoPerPage > 1 &&
-            totalPhotos > 1 &&
-            `to ${Math.min(
-              photoStartIndex + photos.photoPerPage,
-              totalPhotos
-            )}`}{' '}
-          out of {totalPhotos}
-        </p>
+      <p className='text-center m-2'>
+        Showing photo number {photoStartIndex + 1}{' '}
+        {photos.photoPerPage > 1 &&
+          totalPhotos > 1 &&
+          `to ${Math.min(
+            photoStartIndex + photos.photoPerPage,
+            totalPhotos
+          )}`}{' '}
+        out of {totalPhotos}
+      </p>
 
-        <div className='grid auto-cols-fr grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 justify-center m-2 h-full min-h-40'>
-          {!photos.isFetching &&
-            photoArr
-              .slice(photoStartIndex, photoStartIndex + photos.photoPerPage)
-              .map((p) => (
-                <button
-                  key={p.img_id}
-                  className={combineClassNames(
-                    'relative max-w-lg w-full cursor-zoom-in aspect-square focus-visible:ring',
-                    'bg-no-repeat bg-center'
-                  )}
-                  style={getBackgroundImageStyle()}
-                  onClick={toggleFullscreen}
-                  data-img-src={p.img_src}
-                  disabled={photos.isFetching || display.fullscreen}
-                >
-                  <Image
-                    src={p.img_src}
-                    alt={p.img_alt}
-                    title={p.img_alt}
-                    onLoad={imageLoaded}
-                    onError={imageError}
-                    fill={true}
-                    sizes='300px'
-                    className='object-contain'
-                  />
-                </button>
-              ))}
-        </div>
+      <div className='grid auto-cols-fr grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 justify-center m-2 h-full min-h-40'>
+        {!photos.isFetching &&
+          photoArr
+            .slice(photoStartIndex, photoStartIndex + photos.photoPerPage)
+            .map((p) => (
+              <button
+                key={p.img_id}
+                className={combineClassNames(
+                  'relative max-w-lg w-full cursor-zoom-in aspect-square focus-visible:ring',
+                  'bg-no-repeat bg-center'
+                )}
+                style={getBackgroundImageStyle()}
+                onClick={toggleFullscreen}
+                data-img-src={p.img_src}
+                disabled={photos.isFetching || display.fullscreen}
+              >
+                <Image
+                  src={p.img_src}
+                  alt={p.img_alt}
+                  title={p.img_alt}
+                  onLoad={imageLoaded}
+                  onError={imageError}
+                  fill={true}
+                  sizes='300px'
+                  className='object-contain'
+                />
+              </button>
+            ))}
+      </div>
 
-        <div className='flex justify-center items-center gap-4'>
-          <label>
-            <button
-              onClick={() => updatePhotoPage(photos.currentPage - 1, maxPage)}
-              value={photos.currentPage}
-              className='focus-visible:ring cursor-pointer disabled:cursor-not-allowed'
-              disabled={
-                photos.isFetching ||
-                display.fullscreen ||
-                photos.currentPage <= 1
-              }
-            >
-              ←
-            </button>
-          </label>
+      <div className='flex justify-center items-center gap-4'>
+        <label>
+          <button
+            onClick={() => updatePhotoPage(photos.currentPage - 1, maxPage)}
+            value={photos.currentPage}
+            className='focus-visible:ring cursor-pointer disabled:cursor-not-allowed'
+            disabled={
+              photos.isFetching || display.fullscreen || photos.currentPage <= 1
+            }
+          >
+            ←
+          </button>
+        </label>
 
-          <label className='flex gap-2 justify-center items-center my-2'>
-            <p>Page</p>
-            <input
-              type='number'
-              name='currentPage'
-              id='currentPage-2'
-              onChange={(e) => updatePhotoPage(e.target.valueAsNumber, maxPage)}
-              value={photos.currentPage}
-              min={1}
-              className='w-16 px-2 py-1 focus-visible:ring'
-              disabled={photos.isFetching || display.fullscreen}
-            />{' '}
-            / {maxPage}
-          </label>
+        <label className='flex gap-2 justify-center items-center my-2'>
+          <p>Page</p>
+          <input
+            type='number'
+            name='currentPage'
+            id='currentPage-2'
+            onChange={(e) => updatePhotoPage(e.target.valueAsNumber, maxPage)}
+            value={photos.currentPage}
+            min={1}
+            className='w-16 px-2 py-1 focus-visible:ring'
+            disabled={photos.isFetching || display.fullscreen}
+          />{' '}
+          / {maxPage}
+        </label>
 
-          <label>
-            <button
-              onClick={() => updatePhotoPage(photos.currentPage + 1, maxPage)}
-              value={photos.currentPage}
-              className='focus-visible:ring cursor-pointer disabled:cursor-not-allowed'
-              disabled={
-                photos.isFetching ||
-                display.fullscreen ||
-                photos.currentPage >= maxPage
-              }
-            >
-              →
-            </button>
-          </label>
-        </div>
+        <label>
+          <button
+            onClick={() => updatePhotoPage(photos.currentPage + 1, maxPage)}
+            value={photos.currentPage}
+            className='focus-visible:ring cursor-pointer disabled:cursor-not-allowed'
+            disabled={
+              photos.isFetching ||
+              display.fullscreen ||
+              photos.currentPage >= maxPage
+            }
+          >
+            →
+          </button>
+        </label>
       </div>
 
       {display.fullscreen && (

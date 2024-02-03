@@ -26,7 +26,13 @@ export default function MessageProvider({
 }) {
   const [messageList, setMessageList] = React.useState<MessageType[]>([]);
 
-  const handleEsc = React.useCallback(() => setMessageList([]), []);
+  const handleEsc = React.useCallback(() => {
+    // need conditional check, else keydown on PhotoResults won't work
+    // suspect once state updates, it stops processing further keydown events
+    if (messageList.length > 0) {
+      setMessageList([]);
+    }
+  }, [messageList]);
   useEscapeKey(handleEsc);
 
   const addMessage = ({

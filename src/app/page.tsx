@@ -21,24 +21,27 @@ export default function Home() {
     toggleIsFetching,
   } = useMarsData();
 
-  isDev && console.log('main rendered', roverData);
+  isDev && console.log('main rendered');
   const messageContext = React.useContext(MessageContext);
 
   return (
-    <main className='h-screen flex flex-col justify-between items-center gap-2'>
+    <div className='h-screen flex flex-col justify-between items-center gap-2'>
       <Header />
-      <SearchBar
-        search={search}
-        roverData={roverData}
-        updateSearch={updateSearch}
-        getPhotos={getPhotos}
-      />
 
-      <PhotoResults
-        photos={photos}
-        updatePhotosPerPage={updatePhotosPerPage}
-        updatePhotoPage={updatePhotoPage}
-      />
+      <main className='flex flex-col justify-between items-center p-4 gap-6 xs:gap-8 w-full'>
+        <SearchBar
+          search={search}
+          roverData={roverData}
+          updateSearch={updateSearch}
+          getPhotos={getPhotos}
+        />
+
+        <PhotoResults
+          photos={photos}
+          updatePhotosPerPage={updatePhotosPerPage}
+          updatePhotoPage={updatePhotoPage}
+        />
+      </main>
 
       <Footer />
 
@@ -110,6 +113,6 @@ export default function Home() {
           </button>
         </div>
       )}
-    </main>
+    </div>
   );
 }
