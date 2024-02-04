@@ -38,7 +38,7 @@ export default function Message({
     >
       <button
         onClick={handleDismiss}
-        className='cursor-pointer absolute top-2 right-2'
+        className='cursor-pointer absolute top-2 right-2 focus-visible:ring'
       >
         <svg
           width='16px'

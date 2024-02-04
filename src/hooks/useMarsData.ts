@@ -6,7 +6,6 @@ import {
   RoverPhotos,
   RoverManifest,
   ManifestPhotos,
-  MessageType,
 } from '@/lib/types';
 import { ONE_HOUR_IN_MS, isDev } from '@/lib/constants';
 import { isArrayStringInObjectKey, setWithinRange } from '@/lib/utils';

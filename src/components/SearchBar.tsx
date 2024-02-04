@@ -1,8 +1,9 @@
 'use client';
 import React from 'react';
 import { RoverSearch, RoverManifest } from '@/lib/types';
-import { ROVERS, cameraNames, isDev } from '@/lib/constants';
+import { ROVERS, cameraNames } from '@/lib/constants';
 import { combineClassNames, getBackgroundImageStyle } from '@/lib/utils';
+import { MessageContext } from '@/context/MessageContext';
 
 type SearchBarPropType = {
   search: RoverSearch;
@@ -23,12 +24,20 @@ export default function SearchBar({
   className = '',
   ...delegated
 }: SearchBarPropType) {
+  const messageContext = React.useContext(MessageContext);
   const isDisabled = search.isFetchingManifest;
+
+  const showHelp = () => {
+    messageContext?.addMessage({
+      text: `First, select a rover. Next, choose a sol (a Mars solar day, the equivalent Earth date will also be shown in the dropdown). Finally, choose a camera from the dropdown and click 'Get Photos'. (Tip: Press 'Esc' to clear all popups.)`,
+      type: 'Info',
+    });
+  };
 
   return (
     <section
       className={combineClassNames(
-        'relative w-full h-full max-w-screen-sm p-4 xs:p-6',
+        'relative w-full h-full max-w-screen-sm p-4 xs:pb-6 xs:pt-8 xs:pr-8',
         'flex flex-col items-start gap-4 border-2 border-slate-400 rounded',
         className
       )}
@@ -54,15 +63,10 @@ export default function SearchBar({
       </label>
 
       <label
-        className='flex flex-col xs:flex-row gap-1 xs:gap-2 xs:items-center w-full h-full bg-no-repeat bg-center group'
+        className='flex flex-col xs:flex-row gap-1 xs:gap-2 xs:items-center w-full h-full bg-no-repeat bg-center'
         style={search.isFetchingManifest ? getBackgroundImageStyle() : {}}
       >
-        <p className='w-20 xs:text-right relative'>
-          Sol:
-          <span className='absolute z-10 hidden group-hover:block -top-1 -right-20 w-max xs:top-full xs:right-0 xs:w-20 p-1 text-xs text-center rounded bg-slate-100'>
-            A solar day on Mars
-          </span>
-        </p>
+        <p className='w-20 xs:text-right'>Sol:</p>
         <input
           type='number'
           list='sol-datalist'
@@ -130,6 +134,27 @@ export default function SearchBar({
         disabled={isDisabled || search.camera === ''}
       >
         Get Photos
+      </button>
+
+      <button
+        onClick={showHelp}
+        className='cursor-pointer absolute top-1 right-1 focus-visible:ring'
+      >
+        <svg
+          width='24px'
+          height='24px'
+          viewBox='0 0 24 24'
+          fill='none'
+          xmlns='http://www.w3.org/2000/svg'
+        >
+          <path
+            d='M12 17H12.01M12 14C12.8906 12.0938 15 12.2344 15 10C15 8.5 14 7 12 7C10.4521 7 9.50325 7.89844 9.15332 9M12 21C16.9706 21 21 16.9706 21 12C21 7.02944 16.9706 3 12 3C7.02944 3 3 7.02944 3 12C3 16.9706 7.02944 21 12 21Z'
+            stroke='#777'
+            strokeWidth='2'
+            strokeLinecap='round'
+            strokeLinejoin='round'
+          />
+        </svg>
       </button>
     </section>
   );

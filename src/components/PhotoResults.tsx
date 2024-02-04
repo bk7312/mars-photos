@@ -4,6 +4,7 @@ import { RoverPhotos } from '@/lib/types';
 import Image from 'next/image';
 import { combineClassNames, getBackgroundImageStyle } from '@/lib/utils';
 import { isDev } from '@/lib/constants';
+import { MessageContext } from '@/context/MessageContext';
 
 type PhotoResultsPropType = {
   photos: RoverPhotos;
@@ -69,6 +70,8 @@ export default function PhotoResults({
     };
   }, [display.fullscreen, updatePhotoPage, photos.currentPage, maxPage]);
 
+  const messageContext = React.useContext(MessageContext);
+
   if (totalPhotos === 0 && !photos.isFetching) {
     isDev && console.log('Skipped rendering, no photos and not fetching');
     return <></>;
@@ -109,11 +112,18 @@ export default function PhotoResults({
     e.currentTarget.parentElement.style.backgroundImage = `url(${url})`;
   };
 
+  const showHelp = () => {
+    messageContext?.addMessage({
+      text: `Click on an image to view it in fullscreen, click on the fullscreen image or press the 'Esc' key to exit fullscreen. (Tip: You can use the left/right arrow keys to navigate between pages.)`,
+      type: 'Info',
+    });
+  };
+
   return (
     <section
       className={combineClassNames(
         'grow p-4 w-full h-full max-w-screen-xl bg-no-repeat bg-center',
-        'flex flex-col border-2 border-slate-400 rounded',
+        'relative flex flex-col border-2 border-slate-400 rounded',
         className
       )}
       {...delegated}
@@ -235,6 +245,27 @@ export default function PhotoResults({
             →
           </button>
         </label>
+
+        <button
+          onClick={showHelp}
+          className='cursor-pointer absolute top-1 right-1 focus-visible:ring'
+        >
+          <svg
+            width='24px'
+            height='24px'
+            viewBox='0 0 24 24'
+            fill='none'
+            xmlns='http://www.w3.org/2000/svg'
+          >
+            <path
+              d='M12 17H12.01M12 14C12.8906 12.0938 15 12.2344 15 10C15 8.5 14 7 12 7C10.4521 7 9.50325 7.89844 9.15332 9M12 21C16.9706 21 21 16.9706 21 12C21 7.02944 16.9706 3 12 3C7.02944 3 3 7.02944 3 12C3 16.9706 7.02944 21 12 21Z'
+              stroke='#777'
+              strokeWidth='2'
+              strokeLinecap='round'
+              strokeLinejoin='round'
+            />
+          </svg>
+        </button>
       </div>
 
       {display.fullscreen && (
