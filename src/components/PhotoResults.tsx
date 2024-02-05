@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { combineClassNames, getBackgroundImageStyle } from '@/lib/utils';
 import { isDev } from '@/lib/constants';
 import { MessageContext } from '@/context/MessageContext';
+import { useSession } from 'next-auth/react';
 
 type PhotoResultsPropType = {
   photos: RoverPhotos;
@@ -72,6 +73,8 @@ export default function PhotoResults({
 
   const messageContext = React.useContext(MessageContext);
 
+  // const { data: session } = useSession();
+
   if (totalPhotos === 0 && !photos.isFetching) {
     isDev && console.log('Skipped rendering, no photos and not fetching');
     return <></>;
@@ -117,6 +120,13 @@ export default function PhotoResults({
       text: `Click on an image to view it in fullscreen, click on the fullscreen image or press the 'Esc' key to exit fullscreen. (Tip: You can use the left/right arrow keys to navigate between pages.)`,
       type: 'Info',
     });
+  };
+
+  const toggleFavorites = async (id: number) => {
+    // check db if favorite or not
+    // post to add to fav
+    // delete to remove from fav
+    console.log(id);
   };
 
   return (

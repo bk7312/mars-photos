@@ -22,7 +22,9 @@ export default function MessageList() {
     }
   }, [messageContext?.messageList, lastMessageId]);
 
-  if (!messageContext || messageContext.messageList.length === 0) return <></>;
+  if (!messageContext || messageContext.messageList.length === 0) {
+    return <></>;
+  }
 
   return (
     <ol

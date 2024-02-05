@@ -1,9 +1,7 @@
 'use client';
 import React from 'react';
-import Header from '@/components/Header';
 import SearchBar from '@/components/SearchBar';
 import PhotoResults from '@/components/PhotoResults';
-import Footer from '@/components/Footer';
 import useMarsData from '@/hooks/useMarsData';
 import { isDev } from '@/lib/constants';
 import MessageList from '@/components/MessageList';
@@ -25,25 +23,19 @@ export default function Home() {
   const messageContext = React.useContext(MessageContext);
 
   return (
-    <div className='h-screen flex flex-col justify-between items-center gap-2'>
-      <Header />
+    <main className='flex flex-col justify-between items-center p-4 gap-6 xs:gap-8 w-full'>
+      <SearchBar
+        search={search}
+        roverData={roverData}
+        updateSearch={updateSearch}
+        getPhotos={getPhotos}
+      />
 
-      <main className='flex flex-col justify-between items-center p-4 gap-6 xs:gap-8 w-full'>
-        <SearchBar
-          search={search}
-          roverData={roverData}
-          updateSearch={updateSearch}
-          getPhotos={getPhotos}
-        />
-
-        <PhotoResults
-          photos={photos}
-          updatePhotosPerPage={updatePhotosPerPage}
-          updatePhotoPage={updatePhotoPage}
-        />
-      </main>
-
-      <Footer />
+      <PhotoResults
+        photos={photos}
+        updatePhotosPerPage={updatePhotosPerPage}
+        updatePhotoPage={updatePhotoPage}
+      />
 
       <MessageList />
 
@@ -113,6 +105,6 @@ export default function Home() {
           </button>
         </div>
       )}
-    </div>
+    </main>
   );
 }
