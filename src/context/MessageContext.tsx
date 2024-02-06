@@ -15,9 +15,11 @@ type MessageContextType = {
   handleDismiss: (id: string) => void;
 };
 
-export const MessageContext = React.createContext<MessageContextType | null>(
-  null
-);
+export const MessageContext = React.createContext<MessageContextType>({
+  messageList: [],
+  addMessage: () => {},
+  handleDismiss: () => {},
+});
 
 export default function MessageProvider({
   children,

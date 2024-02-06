@@ -44,7 +44,7 @@ type SpiritAndOpportunityCameras =
   | 'MINITES'
   | 'ENTRY';
 
-type CameraTypes =
+export type CameraTypes =
   | PerseveranceCameras
   | CuriosityCameras
   | SpiritAndOpportunityCameras;

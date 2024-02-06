@@ -82,7 +82,7 @@ export default function Home() {
           <button
             onClick={(e) => {
               e.stopPropagation();
-              messageContext?.addMessage({
+              messageContext.addMessage({
                 text: 'testing message with lots of characters and rather verbose, perhaps excessively so to the point of pointlessly filling multiple lines',
                 type: 'Error',
               });
@@ -94,7 +94,7 @@ export default function Home() {
           <button
             onClick={(e) => {
               e.stopPropagation();
-              messageContext?.addMessage({
+              messageContext.addMessage({
                 text: 'testing info',
                 type: 'Info',
               });

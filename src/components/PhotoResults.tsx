@@ -1,11 +1,13 @@
 'use client';
 import React from 'react';
-import { RoverPhotos } from '@/lib/types';
+import { Rover, RoverPhotos, CameraTypes } from '@/lib/types';
 import Image from 'next/image';
 import { combineClassNames, getBackgroundImageStyle } from '@/lib/utils';
 import { isDev } from '@/lib/constants';
 import { MessageContext } from '@/context/MessageContext';
 import { useSession } from 'next-auth/react';
+import HeartIcon from './HeartIcon';
+import HelpIcon from './HelpIcon';
 
 type PhotoResultsPropType = {
   photos: RoverPhotos;
@@ -35,6 +37,54 @@ export default function PhotoResults({
   const [display, setDisplay] = React.useState<DisplayType>({
     fullscreen: false,
   });
+
+  const [favorites, setFavorites] = React.useState<number[]>([]);
+  const messageContext = React.useContext(MessageContext);
+  const { data: session } = useSession();
+
+  const fetchFavorites = React.useCallback(async () => {
+    console.log('fetch favorites');
+    try {
+      const res = await fetch('/api/favorites/');
+
+      if (!res.ok) {
+        const { error } = await res.json();
+        isDev && console.error('error received:', error);
+        throw new Error(error);
+      }
+
+      const { data } = await res.json();
+      isDev && console.log({ data });
+      if (data) {
+        console.log(data);
+        setFavorites(data.map((d: { photoid: number }) => d.photoid));
+      }
+    } catch (error) {
+      isDev && console.log('caught error', error);
+      const err = error as Error;
+      isDev && console.log(err.name, err.message);
+
+      let errMsg = err?.message ?? 'Something went wrong';
+
+      if (err.message === 'Failed to fetch') {
+        errMsg = 'Failed to fetch, possibly no internet connection.';
+      }
+
+      messageContext.addMessage({
+        text: errMsg,
+        type: 'Error',
+      });
+    }
+  }, [messageContext]);
+
+  React.useEffect(() => {
+    if (!session) {
+      return;
+    }
+    fetchFavorites();
+  }, [fetchFavorites, session]);
+
+  isDev && console.log(favorites);
 
   const photoArr =
     photos.currentCamera === 'ALL' || photos.currentCamera === undefined
@@ -71,11 +121,7 @@ export default function PhotoResults({
     };
   }, [display.fullscreen, updatePhotoPage, photos.currentPage, maxPage]);
 
-  const messageContext = React.useContext(MessageContext);
-
-  // const { data: session } = useSession();
-
-  if (totalPhotos === 0 && !photos.isFetching) {
+  if (!photos.isFetching && totalPhotos === 0) {
     isDev && console.log('Skipped rendering, no photos and not fetching');
     return <></>;
   }
@@ -116,17 +162,69 @@ export default function PhotoResults({
   };
 
   const showHelp = () => {
-    messageContext?.addMessage({
+    messageContext.addMessage({
       text: `Click on an image to view it in fullscreen, click on the fullscreen image or press the 'Esc' key to exit fullscreen. (Tip: You can use the left/right arrow keys to navigate between pages.)`,
       type: 'Info',
     });
   };
 
-  const toggleFavorites = async (id: number) => {
-    // check db if favorite or not
-    // post to add to fav
-    // delete to remove from fav
-    console.log(id);
+  const toggleFavorites = async (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    photo: {
+      photoId: number;
+      src: string;
+      rover: '' | Rover;
+      sol: number | '';
+      camera: CameraTypes;
+    },
+    isFavorite: boolean
+  ) => {
+    e.stopPropagation();
+
+    if (!session) {
+      messageContext.addMessage({
+        text: 'Please login first.',
+        type: 'Warning',
+      });
+      return;
+    }
+
+    console.log(photo);
+    const { photoId } = photo;
+
+    try {
+      const options = isFavorite
+        ? { method: 'DELETE', body: JSON.stringify({ photoId }) }
+        : { method: 'POST', body: JSON.stringify(photo) };
+
+      const res = await fetch('/api/favorites', options);
+
+      if (!res.ok) {
+        const { error } = await res.json();
+        isDev && console.error('error received:', error);
+        throw new Error(error);
+      }
+
+      const { data } = await res.json();
+      isDev && console.log({ data });
+    } catch (error) {
+      isDev && console.log('caught error', error);
+      const err = error as Error;
+      isDev && console.log(err.name, err.message);
+
+      let errMsg = err?.message ?? 'Something went wrong';
+
+      if (err.message === 'Failed to fetch') {
+        errMsg = 'Failed to fetch, possibly no internet connection.';
+      }
+
+      messageContext.addMessage({
+        text: errMsg,
+        type: 'Error',
+      });
+    } finally {
+      fetchFavorites();
+    }
   };
 
   return (
@@ -186,30 +284,48 @@ export default function PhotoResults({
         {!photos.isFetching &&
           photoArr
             .slice(photoStartIndex, photoStartIndex + photos.photoPerPage)
-            .map((p) => (
-              <button
-                key={p.img_id}
-                className={combineClassNames(
-                  'relative max-w-lg w-full cursor-zoom-in aspect-square focus-visible:ring',
-                  'bg-no-repeat bg-center'
-                )}
-                style={getBackgroundImageStyle()}
-                onClick={toggleFullscreen}
-                data-img-src={p.img_src}
-                disabled={photos.isFetching || display.fullscreen}
-              >
-                <Image
-                  src={p.img_src}
-                  alt={p.img_alt}
-                  title={p.img_alt}
-                  onLoad={imageLoaded}
-                  onError={imageError}
-                  fill={true}
-                  sizes='300px'
-                  className='object-contain'
-                />
-              </button>
-            ))}
+            .map((p) => {
+              const isFavorite = favorites.includes(p.img_id);
+              const photo = {
+                photoId: p.img_id,
+                src: p.img_src,
+                rover: photos.rover,
+                sol: photos.sol,
+                camera: p.camera.name,
+              };
+              return (
+                <div className='relative' key={p.img_id}>
+                  <button
+                    className={combineClassNames(
+                      'relative max-w-lg w-full cursor-zoom-in aspect-square',
+                      'ring-offset-2 focus-visible:ring-4',
+                      'bg-no-repeat bg-center'
+                    )}
+                    style={getBackgroundImageStyle()}
+                    onClick={toggleFullscreen}
+                    data-img-src={p.img_src}
+                    disabled={photos.isFetching || display.fullscreen}
+                  >
+                    <Image
+                      src={p.img_src}
+                      alt={p.img_alt}
+                      title={p.img_alt}
+                      onLoad={imageLoaded}
+                      onError={imageError}
+                      fill={true}
+                      sizes='300px'
+                      className='object-contain'
+                    />
+                  </button>
+                  <button
+                    onClick={(e) => toggleFavorites(e, photo, isFavorite)}
+                    className='bg-slate-100 rounded-xl p-0.5 cursor-pointer absolute top-1 right-1 focus-visible:ring'
+                  >
+                    <HeartIcon isFavorite={isFavorite} />
+                  </button>
+                </div>
+              );
+            })}
       </div>
 
       <div className='flex justify-center items-center gap-4'>
@@ -260,21 +376,7 @@ export default function PhotoResults({
           onClick={showHelp}
           className='cursor-pointer absolute top-1 right-1 focus-visible:ring'
         >
-          <svg
-            width='24px'
-            height='24px'
-            viewBox='0 0 24 24'
-            fill='none'
-            xmlns='http://www.w3.org/2000/svg'
-          >
-            <path
-              d='M12 17H12.01M12 14C12.8906 12.0938 15 12.2344 15 10C15 8.5 14 7 12 7C10.4521 7 9.50325 7.89844 9.15332 9M12 21C16.9706 21 21 16.9706 21 12C21 7.02944 16.9706 3 12 3C7.02944 3 3 7.02944 3 12C3 16.9706 7.02944 21 12 21Z'
-              stroke='#777'
-              strokeWidth='2'
-              strokeLinecap='round'
-              strokeLinejoin='round'
-            />
-          </svg>
+          <HelpIcon />
         </button>
       </div>
 

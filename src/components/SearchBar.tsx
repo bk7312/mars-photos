@@ -4,6 +4,7 @@ import { RoverSearch, RoverManifest } from '@/lib/types';
 import { ROVERS, cameraNames } from '@/lib/constants';
 import { combineClassNames, getBackgroundImageStyle } from '@/lib/utils';
 import { MessageContext } from '@/context/MessageContext';
+import HelpIcon from './HelpIcon';
 
 type SearchBarPropType = {
   search: RoverSearch;
@@ -28,7 +29,7 @@ export default function SearchBar({
   const isDisabled = search.isFetchingManifest;
 
   const showHelp = () => {
-    messageContext?.addMessage({
+    messageContext.addMessage({
       text: `First, select a rover. Next, choose a sol (a Mars solar day, the equivalent Earth date will also be shown in the dropdown). Finally, choose a camera from the dropdown and click 'Get Photos'. (Tip: Press 'Esc' to clear all popups.)`,
       type: 'Info',
     });
@@ -140,21 +141,7 @@ export default function SearchBar({
         onClick={showHelp}
         className='cursor-pointer absolute top-1 right-1 focus-visible:ring'
       >
-        <svg
-          width='24px'
-          height='24px'
-          viewBox='0 0 24 24'
-          fill='none'
-          xmlns='http://www.w3.org/2000/svg'
-        >
-          <path
-            d='M12 17H12.01M12 14C12.8906 12.0938 15 12.2344 15 10C15 8.5 14 7 12 7C10.4521 7 9.50325 7.89844 9.15332 9M12 21C16.9706 21 21 16.9706 21 12C21 7.02944 16.9706 3 12 3C7.02944 3 3 7.02944 3 12C3 16.9706 7.02944 21 12 21Z'
-            stroke='#777'
-            strokeWidth='2'
-            strokeLinecap='round'
-            strokeLinejoin='round'
-          />
-        </svg>
+        <HelpIcon />
       </button>
     </section>
   );

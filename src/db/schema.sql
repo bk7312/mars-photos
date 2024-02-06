@@ -46,16 +46,43 @@ CREATE TABLE users
   PRIMARY KEY (id)
 );
 
-
-CREATE TABLE favorites 
+CREATE TABLE favorites
 (
-  id SERIAL,
   userId INTEGER NOT NULL,
   photoId INTEGER NOT NULL,
   src TEXT NOT NULL,
   rover VARCHAR(15) NOT NULL,
   sol INTEGER NOT NULL,
   camera VARCHAR(25),
+  PRIMARY KEY (userId, photoId)
+);
 
-  PRIMARY KEY (id)
+INSERT INTO favorites (userId, photoId, src, rover, sol, camera) 
+VALUES (
+  1, 
+  290673, 
+  'http://mars.nasa.gov/mer/gallery/all/2/r/001/2R126468012EDN0000P1002L0M1-BR.JPG', 
+  'Spirit', 
+  1, 
+  'RHAZ'
+);
+
+INSERT INTO favorites (userId, photoId, src, rover, sol, camera) 
+VALUES (
+  1, 
+  318422, 
+  'http://mars.nasa.gov/mer/gallery/all/2/n/001/2N126468305EDN0000P1502L0M1-BR.JPG', 
+  'Spirit', 
+  1, 
+  'NAVCAM'
+);
+
+INSERT INTO favorites (userId, photoId, src, rover, sol, camera) 
+VALUES (
+  2, 
+  318422, 
+  'http://mars.nasa.gov/mer/gallery/all/2/n/001/2N126468305EDN0000P1502L0M1-BR.JPG', 
+  'Spirit', 
+  1, 
+  'NAVCAM'
 );
