@@ -4,7 +4,6 @@ import SearchBar from '@/components/SearchBar';
 import PhotoResults from '@/components/PhotoResults';
 import useMarsData from '@/hooks/useMarsData';
 import { isDev } from '@/lib/constants';
-import MessageList from '@/components/MessageList';
 import { MessageContext } from '@/context/MessageContext';
 
 export default function Home() {
@@ -36,8 +35,6 @@ export default function Home() {
         updatePhotosPerPage={updatePhotosPerPage}
         updatePhotoPage={updatePhotoPage}
       />
-
-      <MessageList />
 
       {isDev && (
         <div

@@ -37,18 +37,15 @@ export default function MessageProvider({
   }, [messageList]);
   useEscapeKey(handleEsc);
 
-  const addMessage = ({
-    text,
-    type,
-  }: {
-    text: string;
-    type: MessageType['type'];
-  }) => {
-    setMessageList((prev) => [
-      ...prev,
-      { text, type, id: crypto.randomUUID() },
-    ]);
-  };
+  const addMessage = React.useCallback(
+    ({ text, type }: { text: string; type: MessageType['type'] }) => {
+      setMessageList((prev) => [
+        ...prev,
+        { text, type, id: crypto.randomUUID() },
+      ]);
+    },
+    []
+  );
 
   const handleDismiss = (id: string) => {
     setMessageList((prev) => prev.filter((c) => c.id !== id));

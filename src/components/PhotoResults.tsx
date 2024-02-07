@@ -75,14 +75,15 @@ export default function PhotoResults({
         type: 'Error',
       });
     }
-  }, [messageContext]);
+  }, [messageContext.addMessage]);
 
   React.useEffect(() => {
+    console.log('photores effect', session);
     if (!session) {
       return;
     }
     fetchFavorites();
-  }, [fetchFavorites, session]);
+  }, [fetchFavorites]);
 
   isDev && console.log(favorites);
 
@@ -223,6 +224,7 @@ export default function PhotoResults({
         type: 'Error',
       });
     } finally {
+      console.log('photores finally');
       fetchFavorites();
     }
   };
@@ -319,7 +321,7 @@ export default function PhotoResults({
                   </button>
                   <button
                     onClick={(e) => toggleFavorites(e, photo, isFavorite)}
-                    className='bg-slate-100 rounded-xl p-0.5 cursor-pointer absolute top-1 right-1 focus-visible:ring'
+                    className='bg-slate-300 border border-slate-600 rounded-xl p-0.5 cursor-pointer absolute top-1 right-1 focus-visible:ring'
                   >
                     <HeartIcon isFavorite={isFavorite} />
                   </button>

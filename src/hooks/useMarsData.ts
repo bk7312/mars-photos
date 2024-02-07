@@ -87,7 +87,7 @@ function useMarsData() {
         setSearch((prev) => ({ ...prev, isFetchingManifest: false }));
       }
     },
-    [roverData?.name, messageContext]
+    [roverData?.name, messageContext.addMessage]
   );
 
   const fetchPhotos = async (

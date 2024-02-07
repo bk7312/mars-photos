@@ -8,6 +8,7 @@ import { SessionProvider } from 'next-auth/react';
 import { auth } from '@/app/api/auth/auth';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import MessageList from '@/components/MessageList';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -36,6 +37,7 @@ export default async function RootLayout({
             <Header />
             {children}
             <Footer />
+            <MessageList />
           </MessageProvider>
         </SessionProvider>
         <SpeedInsights />

@@ -7,6 +7,8 @@ import { combineClassNames } from '@/lib/utils';
 import GoogleIcon from './icons/GoogleIcon';
 import GithubIcon from './icons/GithubIcon';
 import useEscapeKey from '@/hooks/useEscapeKey';
+import icon from '@/app/icon.png';
+import HeartIcon from './icons/HeartIcon';
 
 export default function Header() {
   console.log('header rendered');
@@ -46,17 +48,19 @@ export default function Header() {
 
   return (
     <header className='mb-2 py-4 bg-slate-400 w-full'>
-      <div className='flex flex-col xs:flex-row justify-between items-center gap-4 max-w-screen-lg mx-auto px-8'>
-        <Link href='/'>
-          <h2 className='text-3xl font-semibold'>Mars Photo</h2>
+      <div className='flex flex-col xs:flex-row justify-between items-center gap-4 max-w-screen-lg mx-auto px-4 xs:px-8'>
+        <Link href='/' className='flex items-center gap-2'>
+          <Image src={icon} alt='logo' height={42} width={42} className='' />
+          <h2 className='text-3xl font-semibold text-orange-800'>Mars Photo</h2>
         </Link>
         <div className='flex items-center gap-4'>
           {session ? (
             <>
               <Link
                 href='/favorites'
-                className='underline underline-offset-2 rounded px-2 py-1 focus-visible:ring'
+                className='flex items-center gap-2 bg-slate-300 rounded px-2 py-1 focus-visible:ring'
               >
+                <HeartIcon isFavorite={true} />
                 Favorites
               </Link>
               <button
@@ -65,7 +69,7 @@ export default function Header() {
               >
                 Sign out
               </button>
-              <div className='relative h-8 w-8 rounded-full overflow-clip border'>
+              {/* <div className='hidden sm:block relative h-8 w-8 rounded-full overflow-clip border'>
                 <Image
                   src={session?.user?.image ?? '/stock-user.jpg'}
                   alt={session?.user?.name ?? 'User'}
@@ -74,7 +78,7 @@ export default function Header() {
                   sizes='300px'
                   className='object-cover'
                 />
-              </div>
+              </div> */}
             </>
           ) : (
             <div className='relative'>

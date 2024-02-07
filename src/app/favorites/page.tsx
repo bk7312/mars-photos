@@ -99,14 +99,15 @@ export default function Favorites() {
     } finally {
       setPhotos((prev) => ({ ...prev, isFetching: false }));
     }
-  }, [messageContext]);
+  }, [messageContext.addMessage]);
 
   React.useEffect(() => {
+    console.log('favPage effect', session);
     if (!session) {
       return;
     }
     fetchFavorites();
-  }, [fetchFavorites, session]);
+  }, [fetchFavorites]);
 
   isDev && console.log('logging favorites', photos.favorites);
 
@@ -202,6 +203,7 @@ export default function Favorites() {
   };
 
   const showHelp = () => {
+    console.log('help');
     messageContext.addMessage({
       text: `Click on an image to view it in fullscreen, click on the fullscreen image or press the 'Esc' key to exit fullscreen. (Tip: You can use the left/right arrow keys to navigate between pages.)`,
       type: 'Info',
@@ -337,7 +339,7 @@ export default function Favorites() {
                 </button>
                 <button
                   onClick={(e) => removeFromFavorites(e, p.photoid)}
-                  className='bg-slate-100 rounded-xl p-0.5 cursor-pointer absolute top-1 right-1 focus-visible:ring'
+                  className='bg-slate-300 border border-slate-600 rounded-xl p-0.5 cursor-pointer absolute top-1 right-1 focus-visible:ring'
                 >
                   <CloseIcon />
                 </button>
