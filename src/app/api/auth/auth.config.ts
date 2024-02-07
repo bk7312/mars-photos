@@ -14,16 +14,8 @@ export const authConfig = {
     authorized({ auth, request: { nextUrl } }) {
       const isLoggedIn = !!auth?.user;
       const isOnProtectedRoute = nextUrl.pathname.startsWith('/favorites');
-      const isOnLoginPage = nextUrl.pathname.startsWith('/login');
 
-      if (isOnProtectedRoute) {
-        // if user not logged in, return false to redirect to login page
-        return isLoggedIn ? true : false;
-      }
-
-      if (isOnLoginPage && isLoggedIn) {
-        // redirects to home page if user is already logged in
-        // to use search params to send a message notifying user already logged in?
+      if (isOnProtectedRoute && !isLoggedIn) {
         return Response.redirect(new URL('/', nextUrl));
       }
 

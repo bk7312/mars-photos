@@ -1,9 +1,8 @@
 'use client';
 import React from 'react';
+import { IconPropType } from '@/lib/types';
 
-type HeartIconPropType = {
-  height?: number;
-  width?: number;
+type HeartIconPropType = IconPropType & {
   isFavorite: boolean;
 };
 

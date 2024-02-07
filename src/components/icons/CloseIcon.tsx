@@ -1,15 +1,8 @@
 'use client';
 import React from 'react';
+import { IconPropType } from '@/lib/types';
 
-type CloseIconPropType = {
-  height?: number;
-  width?: number;
-};
-
-export default function CloseIcon({
-  height = 16,
-  width = 16,
-}: CloseIconPropType) {
+export default function CloseIcon({ height = 16, width = 16 }: IconPropType) {
   return (
     <svg
       width={`${width}px`}

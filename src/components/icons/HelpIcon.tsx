@@ -1,15 +1,8 @@
 'use client';
 import React from 'react';
+import { IconPropType } from '@/lib/types';
 
-type HelpIconPropType = {
-  height?: number;
-  width?: number;
-};
-
-export default function HelpIcon({
-  height = 24,
-  width = 24,
-}: HelpIconPropType) {
+export default function HelpIcon({ height = 16, width = 16 }: IconPropType) {
   return (
     <svg
       width={`${width}px`}

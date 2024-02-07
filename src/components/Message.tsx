@@ -2,7 +2,7 @@
 import React from 'react';
 import { MessageType } from '@/lib/types';
 import { combineClassNames } from '@/lib/utils';
-import CloseIcon from './CloseIcon';
+import CloseIcon from './icons/CloseIcon';
 
 type MessagePropType = {
   type: MessageType['type'];

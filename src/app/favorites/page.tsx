@@ -9,8 +9,8 @@ import {
 import { isDev } from '@/lib/constants';
 import { MessageContext } from '@/context/MessageContext';
 import { useSession } from 'next-auth/react';
-import HelpIcon from '@/components/HelpIcon';
-import CloseIcon from '@/components/CloseIcon';
+import HelpIcon from '@/components/icons/HelpIcon';
+import CloseIcon from '@/components/icons/CloseIcon';
 
 // type PhotoResultsPropType = {
 //   photos: RoverPhotos;
@@ -62,7 +62,7 @@ export default function Favorites() {
 
   const fetchFavorites = React.useCallback(async () => {
     setPhotos((prev) => ({ ...prev, isFetching: true }));
-    console.log('fetch favorites');
+    console.log('fetch favorites favpage');
     try {
       const res = await fetch('/api/favorites/');
 

@@ -5,7 +5,7 @@ import './globals.css';
 import MessageProvider from '@/context/MessageContext';
 import { combineClassNames } from '@/lib/utils';
 import { SessionProvider } from 'next-auth/react';
-import { auth } from '@/auth/auth';
+import { auth } from '@/app/api/auth/auth';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 

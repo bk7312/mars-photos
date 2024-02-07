@@ -1,7 +1,7 @@
 export const dynamic = 'force-dynamic';
 
 import { pool } from '@/db/db';
-import { auth } from '@/auth/auth';
+import { auth } from '@/app/api/auth/auth';
 
 export async function GET(request: Request) {
   // get list of favorites for user

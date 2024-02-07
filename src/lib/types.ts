@@ -116,3 +116,8 @@ export type MessageType = {
 //   Opportunity: OpportunityCameras;
 //   Spirit: SpiritCameras;
 // };
+
+export type IconPropType = {
+  height?: number;
+  width?: number;
+};

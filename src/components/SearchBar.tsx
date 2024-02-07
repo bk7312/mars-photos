@@ -4,7 +4,7 @@ import { RoverSearch, RoverManifest } from '@/lib/types';
 import { ROVERS, cameraNames } from '@/lib/constants';
 import { combineClassNames, getBackgroundImageStyle } from '@/lib/utils';
 import { MessageContext } from '@/context/MessageContext';
-import HelpIcon from './HelpIcon';
+import HelpIcon from './icons/HelpIcon';
 
 type SearchBarPropType = {
   search: RoverSearch;
@@ -130,7 +130,7 @@ export default function SearchBar({
       </label>
 
       <button
-        className='bg-slate-200 border-solid rounded px-2 py-1 xs:mt-2 mx-auto select-none disabled:cursor-not-allowed focus-visible:ring'
+        className='bg-slate-200 rounded px-2 py-1 xs:mt-2 mx-auto select-none disabled:cursor-not-allowed focus-visible:ring'
         onClick={() => getPhotos(search)}
         disabled={isDisabled || search.camera === ''}
       >

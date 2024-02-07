@@ -41,9 +41,9 @@ export default function Home() {
 
       {isDev && (
         <div
-          className='fixed flex flex-col gap-1 transition top-0 right-0 opacity-30 border-2 border-slate-500 pl-6'
+          className='fixed flex flex-col gap-1 transition top-0 right-0 opacity-30 border-2 border-slate-500 pl-6 cursor-context-menu translate-x-[95%]'
           onClick={(e) => {
-            e.currentTarget.classList.toggle('translate-x-3/4');
+            e.currentTarget.classList.toggle('translate-x-[95%]');
           }}
         >
           <button

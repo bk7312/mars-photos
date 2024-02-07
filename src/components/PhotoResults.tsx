@@ -6,8 +6,8 @@ import { combineClassNames, getBackgroundImageStyle } from '@/lib/utils';
 import { isDev } from '@/lib/constants';
 import { MessageContext } from '@/context/MessageContext';
 import { useSession } from 'next-auth/react';
-import HeartIcon from './HeartIcon';
-import HelpIcon from './HelpIcon';
+import HeartIcon from './icons/HeartIcon';
+import HelpIcon from './icons/HelpIcon';
 
 type PhotoResultsPropType = {
   photos: RoverPhotos;
@@ -43,7 +43,7 @@ export default function PhotoResults({
   const { data: session } = useSession();
 
   const fetchFavorites = React.useCallback(async () => {
-    console.log('fetch favorites');
+    console.log('fetch favorites photoresults');
     try {
       const res = await fetch('/api/favorites/');
 
@@ -173,7 +173,7 @@ export default function PhotoResults({
     photo: {
       photoId: number;
       src: string;
-      rover: '' | Rover;
+      rover: Rover | '';
       sol: number | '';
       camera: CameraTypes;
     },

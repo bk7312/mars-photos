@@ -5,7 +5,7 @@ export default function Footer() {
     <footer className='mt-2 p-6 bg-slate-400 w-full text-center'>
       Made by{' '}
       <a
-        className='underline text-blue-600'
+        className='underline underline-offset-2 text-blue-600'
         href='https://github.com/bk7312/'
         target='_blank'
       >
@@ -13,7 +13,7 @@ export default function Footer() {
       </a>
       . See the{' '}
       <a
-        className='underline text-blue-600'
+        className='underline underline-offset-2 text-blue-600'
         href='https://github.com/bk7312/mars-photos'
         target='_blank'
       >
