@@ -44,7 +44,7 @@ type SpiritAndOpportunityCameras =
   | 'MINITES'
   | 'ENTRY';
 
-type CameraTypes =
+export type CameraTypes =
   | PerseveranceCameras
   | CuriosityCameras
   | SpiritAndOpportunityCameras;
@@ -116,3 +116,8 @@ export type MessageType = {
 //   Opportunity: OpportunityCameras;
 //   Spirit: SpiritCameras;
 // };
+
+export type IconPropType = {
+  height?: number;
+  width?: number;
+};

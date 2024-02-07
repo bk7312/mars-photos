@@ -30,6 +30,7 @@ function useMarsData() {
     currentCamera: '',
     isFetching: false,
   });
+
   const messageContext = React.useContext(MessageContext);
 
   const fetchManifest = React.useCallback(
@@ -70,7 +71,7 @@ function useMarsData() {
           errMsg = 'Failed to fetch, possibly no internet connection.';
         }
 
-        messageContext?.addMessage({
+        messageContext.addMessage({
           text: errMsg,
           type: 'Error',
         });
@@ -113,7 +114,7 @@ function useMarsData() {
       isDev && console.log({ data, cameraMap });
 
       if (data.length === 0) {
-        messageContext?.addMessage({
+        messageContext.addMessage({
           text: 'No photos found',
           type: 'Info',
         });
@@ -157,7 +158,7 @@ function useMarsData() {
         errMsg = 'Failed to fetch, possibly no internet connection.';
       }
 
-      messageContext?.addMessage({
+      messageContext.addMessage({
         text: errMsg,
         type: 'Error',
       });
@@ -275,14 +276,14 @@ function useMarsData() {
     });
   };
 
-  const updatePhotoPage = (page: number, maxPage: number) => {
+  const updatePhotoPage = React.useCallback((page: number, maxPage: number) => {
     setPhotos((prev) => {
       return {
         ...prev,
         currentPage: setWithinRange(page, 1, maxPage),
       };
     });
-  };
+  }, []);
 
   const getPhotos = (search: RoverSearch) => {
     const matchingRoverSol =

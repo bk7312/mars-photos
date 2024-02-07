@@ -1,20 +1,38 @@
 'use client';
 import React from 'react';
-import { Rover, RoverPhotos, CameraTypes } from '@/lib/types';
 import Image from 'next/image';
-import { combineClassNames, getBackgroundImageStyle } from '@/lib/utils';
+import {
+  combineClassNames,
+  getBackgroundImageStyle,
+  setWithinRange,
+} from '@/lib/utils';
 import { isDev } from '@/lib/constants';
 import { MessageContext } from '@/context/MessageContext';
 import { useSession } from 'next-auth/react';
-import HeartIcon from './icons/HeartIcon';
-import HelpIcon from './icons/HelpIcon';
+import HelpIcon from '@/components/icons/HelpIcon';
+import CloseIcon from '@/components/icons/CloseIcon';
 
-type PhotoResultsPropType = {
-  photos: RoverPhotos;
-  updatePhotosPerPage: (photoPerPage: number, totalPhotos: number) => void;
-  updatePhotoPage: (page: number, maxPage: number) => void;
-  className?: string;
-  [key: string]: any;
+// type PhotoResultsPropType = {
+//   photos: RoverPhotos;
+//   updatePhotosPerPage: (photoPerPage: number, totalPhotos: number) => void;
+//   updatePhotoPage: (page: number, maxPage: number) => void;
+//   className?: string;
+//   [key: string]: any;
+// };
+
+type FavoritesType = {
+  photoid: number;
+  src: string;
+  rover: string;
+  sol: number;
+  camera: string;
+};
+
+type PhotosType = {
+  favorites: FavoritesType[];
+  currentPage: number;
+  photoPerPage: number;
+  isFetching: boolean;
 };
 
 type DisplayType =
@@ -27,23 +45,24 @@ type DisplayType =
       alt: string;
     };
 
-export default function PhotoResults({
-  photos,
-  updatePhotosPerPage,
-  updatePhotoPage,
-  className = '',
-  ...delegated
-}: PhotoResultsPropType) {
+export default function Favorites() {
   const [display, setDisplay] = React.useState<DisplayType>({
     fullscreen: false,
   });
 
-  const [favorites, setFavorites] = React.useState<number[]>([]);
+  const [photos, setPhotos] = React.useState<PhotosType>({
+    favorites: [],
+    currentPage: 1,
+    photoPerPage: 12,
+    isFetching: false,
+  });
+
   const messageContext = React.useContext(MessageContext);
   const { data: session } = useSession();
 
   const fetchFavorites = React.useCallback(async () => {
-    console.log('fetch favorites photoresults');
+    setPhotos((prev) => ({ ...prev, isFetching: true }));
+    console.log('fetch favorites favpage');
     try {
       const res = await fetch('/api/favorites/');
 
@@ -57,7 +76,10 @@ export default function PhotoResults({
       isDev && console.log({ data });
       if (data) {
         console.log(data);
-        setFavorites(data.map((d: { photoid: number }) => d.photoid));
+        setPhotos((prev) => ({
+          ...prev,
+          favorites: data,
+        }));
       }
     } catch (error) {
       isDev && console.log('caught error', error);
@@ -74,6 +96,8 @@ export default function PhotoResults({
         text: errMsg,
         type: 'Error',
       });
+    } finally {
+      setPhotos((prev) => ({ ...prev, isFetching: false }));
     }
   }, [messageContext]);
 
@@ -84,16 +108,33 @@ export default function PhotoResults({
     fetchFavorites();
   }, [fetchFavorites, session]);
 
-  isDev && console.log(favorites);
+  isDev && console.log('logging favorites', photos.favorites);
 
-  const photoArr =
-    photos.currentCamera === 'ALL' || photos.currentCamera === undefined
-      ? photos.src
-      : photos.src.filter((p) => p.camera.name === photos.currentCamera);
-  const totalPhotos = photoArr.length;
+  const totalPhotos = photos.favorites.length;
 
   const photoStartIndex = (photos.currentPage - 1) * photos.photoPerPage;
   const maxPage = Math.ceil(totalPhotos / photos.photoPerPage);
+
+  const updatePhotosPerPage = (photoPerPage: number, totalPhotos: number) => {
+    setPhotos((prev) => {
+      photoPerPage = setWithinRange(photoPerPage, 1);
+      const maxPage = Math.ceil(totalPhotos / photoPerPage);
+      return {
+        ...prev,
+        currentPage: setWithinRange(prev.currentPage, 1, maxPage),
+        photoPerPage,
+      };
+    });
+  };
+
+  const updatePhotoPage = React.useCallback((page: number, maxPage: number) => {
+    setPhotos((prev) => {
+      return {
+        ...prev,
+        currentPage: setWithinRange(page, 1, maxPage),
+      };
+    });
+  }, []);
 
   React.useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -122,8 +163,7 @@ export default function PhotoResults({
   }, [display.fullscreen, updatePhotoPage, photos.currentPage, maxPage]);
 
   if (!photos.isFetching && totalPhotos === 0) {
-    isDev && console.log('Skipped rendering, no photos and not fetching');
-    return <></>;
+    return <>No photos yet</>;
   }
 
   const toggleFullscreen = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -168,16 +208,9 @@ export default function PhotoResults({
     });
   };
 
-  const toggleFavorites = async (
+  const removeFromFavorites = async (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
-    photo: {
-      photoId: number;
-      src: string;
-      rover: Rover | '';
-      sol: number | '';
-      camera: CameraTypes;
-    },
-    isFavorite: boolean
+    photoId: number
   ) => {
     e.stopPropagation();
 
@@ -189,15 +222,11 @@ export default function PhotoResults({
       return;
     }
 
-    console.log(photo);
-    const { photoId } = photo;
-
     try {
-      const options = isFavorite
-        ? { method: 'DELETE', body: JSON.stringify({ photoId }) }
-        : { method: 'POST', body: JSON.stringify(photo) };
-
-      const res = await fetch('/api/favorites', options);
+      const res = await fetch('/api/favorites', {
+        method: 'DELETE',
+        body: JSON.stringify({ photoId }),
+      });
 
       if (!res.ok) {
         const { error } = await res.json();
@@ -231,10 +260,8 @@ export default function PhotoResults({
     <section
       className={combineClassNames(
         'grow p-4 w-full h-full max-w-screen-xl bg-no-repeat bg-center',
-        'relative flex flex-col border-2 border-slate-400 rounded',
-        className
+        'relative flex flex-col border-2 border-slate-400 rounded'
       )}
-      {...delegated}
       style={photos.isFetching ? getBackgroundImageStyle() : {}}
     >
       <div className='flex flex-row justify-between gap-8 mx-auto px-2 max-w-lg w-full'>
@@ -281,51 +308,42 @@ export default function PhotoResults({
       </p>
 
       <div className='grid auto-cols-fr grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 justify-center m-2 h-full min-h-40'>
-        {!photos.isFetching &&
-          photoArr
-            .slice(photoStartIndex, photoStartIndex + photos.photoPerPage)
-            .map((p) => {
-              const isFavorite = favorites.includes(p.img_id);
-              const photo = {
-                photoId: p.img_id,
-                src: p.img_src,
-                rover: photos.rover,
-                sol: photos.sol,
-                camera: p.camera.name,
-              };
-              return (
-                <div className='relative' key={p.img_id}>
-                  <button
-                    className={combineClassNames(
-                      'relative max-w-lg w-full cursor-zoom-in aspect-square',
-                      'ring-offset-2 focus-visible:ring-4',
-                      'bg-no-repeat bg-center'
-                    )}
-                    style={getBackgroundImageStyle()}
-                    onClick={toggleFullscreen}
-                    data-img-src={p.img_src}
-                    disabled={photos.isFetching || display.fullscreen}
-                  >
-                    <Image
-                      src={p.img_src}
-                      alt={p.img_alt}
-                      title={p.img_alt}
-                      onLoad={imageLoaded}
-                      onError={imageError}
-                      fill={true}
-                      sizes='300px'
-                      className='object-contain'
-                    />
-                  </button>
-                  <button
-                    onClick={(e) => toggleFavorites(e, photo, isFavorite)}
-                    className='bg-slate-100 rounded-xl p-0.5 cursor-pointer absolute top-1 right-1 focus-visible:ring'
-                  >
-                    <HeartIcon isFavorite={isFavorite} />
-                  </button>
-                </div>
-              );
-            })}
+        {photos.favorites
+          .slice(photoStartIndex, photoStartIndex + photos.photoPerPage)
+          .map((p) => {
+            return (
+              <div className='relative' key={p.photoid}>
+                <button
+                  className={combineClassNames(
+                    'relative max-w-lg w-full cursor-zoom-in aspect-square',
+                    'ring-offset-2 focus-visible:ring-4',
+                    'bg-no-repeat bg-center'
+                  )}
+                  style={getBackgroundImageStyle()}
+                  onClick={toggleFullscreen}
+                  data-img-src={p.src}
+                  disabled={photos.isFetching || display.fullscreen}
+                >
+                  <Image
+                    src={p.src}
+                    alt={'alt text placeholder, todo'}
+                    title={'title text placeholder, todo'}
+                    onLoad={imageLoaded}
+                    onError={imageError}
+                    fill={true}
+                    sizes='300px'
+                    className='object-contain'
+                  />
+                </button>
+                <button
+                  onClick={(e) => removeFromFavorites(e, p.photoid)}
+                  className='bg-slate-100 rounded-xl p-0.5 cursor-pointer absolute top-1 right-1 focus-visible:ring'
+                >
+                  <CloseIcon />
+                </button>
+              </div>
+            );
+          })}
       </div>
 
       <div className='flex justify-center items-center gap-4'>

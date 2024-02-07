@@ -12,17 +12,19 @@ export default function MessageList() {
 
   // scroll to last message if last message is new
   React.useEffect(() => {
-    if (messageContext?.messageList.at(-1)?.id === lastMessageId) {
+    if (messageContext.messageList.at(-1)?.id === lastMessageId) {
       return;
     }
-    setLastMessageId(messageContext?.messageList.at(-1)?.id ?? '');
+    setLastMessageId(messageContext.messageList.at(-1)?.id ?? '');
     if (listRef.current) {
       listRef.current.scrollTop =
         listRef.current.scrollHeight - listRef.current.clientHeight;
     }
-  }, [messageContext?.messageList, lastMessageId]);
+  }, [messageContext.messageList, lastMessageId]);
 
-  if (!messageContext || messageContext.messageList.length === 0) return <></>;
+  if (messageContext.messageList.length === 0) {
+    return <></>;
+  }
 
   return (
     <ol

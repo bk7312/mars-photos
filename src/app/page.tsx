@@ -1,9 +1,7 @@
 'use client';
 import React from 'react';
-import Header from '@/components/Header';
 import SearchBar from '@/components/SearchBar';
 import PhotoResults from '@/components/PhotoResults';
-import Footer from '@/components/Footer';
 import useMarsData from '@/hooks/useMarsData';
 import { isDev } from '@/lib/constants';
 import MessageList from '@/components/MessageList';
@@ -25,33 +23,27 @@ export default function Home() {
   const messageContext = React.useContext(MessageContext);
 
   return (
-    <div className='h-screen flex flex-col justify-between items-center gap-2'>
-      <Header />
+    <main className='flex flex-col justify-between items-center p-4 gap-6 xs:gap-8 w-full'>
+      <SearchBar
+        search={search}
+        roverData={roverData}
+        updateSearch={updateSearch}
+        getPhotos={getPhotos}
+      />
 
-      <main className='flex flex-col justify-between items-center p-4 gap-6 xs:gap-8 w-full'>
-        <SearchBar
-          search={search}
-          roverData={roverData}
-          updateSearch={updateSearch}
-          getPhotos={getPhotos}
-        />
-
-        <PhotoResults
-          photos={photos}
-          updatePhotosPerPage={updatePhotosPerPage}
-          updatePhotoPage={updatePhotoPage}
-        />
-      </main>
-
-      <Footer />
+      <PhotoResults
+        photos={photos}
+        updatePhotosPerPage={updatePhotosPerPage}
+        updatePhotoPage={updatePhotoPage}
+      />
 
       <MessageList />
 
       {isDev && (
         <div
-          className='fixed flex flex-col gap-1 transition top-0 right-0 opacity-30 border-2 border-slate-500 pl-6'
+          className='fixed flex flex-col gap-1 transition top-0 right-0 opacity-30 border-2 border-slate-500 pl-6 cursor-context-menu translate-x-[95%]'
           onClick={(e) => {
-            e.currentTarget.classList.toggle('translate-x-3/4');
+            e.currentTarget.classList.toggle('translate-x-[95%]');
           }}
         >
           <button
@@ -90,7 +82,7 @@ export default function Home() {
           <button
             onClick={(e) => {
               e.stopPropagation();
-              messageContext?.addMessage({
+              messageContext.addMessage({
                 text: 'testing message with lots of characters and rather verbose, perhaps excessively so to the point of pointlessly filling multiple lines',
                 type: 'Error',
               });
@@ -102,7 +94,7 @@ export default function Home() {
           <button
             onClick={(e) => {
               e.stopPropagation();
-              messageContext?.addMessage({
+              messageContext.addMessage({
                 text: 'testing info',
                 type: 'Info',
               });
@@ -113,6 +105,6 @@ export default function Home() {
           </button>
         </div>
       )}
-    </div>
+    </main>
   );
 }
