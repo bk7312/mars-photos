@@ -261,13 +261,13 @@ export default function Favorites() {
   return (
     <section
       className={combineClassNames(
-        'grow p-4 w-full h-full max-w-screen-xl bg-no-repeat bg-center',
-        'relative flex flex-col border-2 border-slate-400 rounded'
+        'h-full w-full max-w-screen-xl grow bg-center bg-no-repeat p-4',
+        'relative flex flex-col rounded border-2 border-slate-400'
       )}
       style={photos.isFetching ? getBackgroundImageStyle() : {}}
     >
-      <div className='flex flex-row justify-between gap-8 mx-auto px-2 max-w-lg w-full'>
-        <label className='flex flex-col xs:flex-row gap-2 justify-center items-center my-2'>
+      <div className='mx-auto flex w-full max-w-lg flex-row justify-between gap-8 px-2'>
+        <label className='my-2 flex flex-col items-center justify-center gap-2 xs:flex-row'>
           <p>Showing page:</p>
           <input
             type='number'
@@ -281,7 +281,7 @@ export default function Favorites() {
           />
         </label>
 
-        <label className='flex flex-col xs:flex-row gap-2 justify-center items-center my-2'>
+        <label className='my-2 flex flex-col items-center justify-center gap-2 xs:flex-row'>
           <p>Photos per page:</p>
           <input
             type='number'
@@ -298,7 +298,7 @@ export default function Favorites() {
         </label>
       </div>
 
-      <p className='text-center m-2'>
+      <p className='m-2 text-center'>
         Showing photo number {photoStartIndex + 1}{' '}
         {photos.photoPerPage > 1 &&
           totalPhotos > 1 &&
@@ -309,7 +309,7 @@ export default function Favorites() {
         out of {totalPhotos}
       </p>
 
-      <div className='grid auto-cols-fr grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 justify-center m-2 h-full min-h-40'>
+      <div className='m-2 grid h-full min-h-40 auto-cols-fr grid-cols-1 justify-center gap-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4'>
         {photos.favorites
           .slice(photoStartIndex, photoStartIndex + photos.photoPerPage)
           .map((p) => {
@@ -317,9 +317,9 @@ export default function Favorites() {
               <div className='relative' key={p.photoid}>
                 <button
                   className={combineClassNames(
-                    'relative max-w-lg w-full cursor-zoom-in aspect-square',
+                    'relative aspect-square w-full max-w-lg cursor-zoom-in',
                     'ring-offset-2 focus-visible:ring-4',
-                    'bg-no-repeat bg-center'
+                    'bg-center bg-no-repeat'
                   )}
                   style={getBackgroundImageStyle()}
                   onClick={toggleFullscreen}
@@ -339,7 +339,7 @@ export default function Favorites() {
                 </button>
                 <button
                   onClick={(e) => removeFromFavorites(e, p.photoid)}
-                  className='bg-slate-300 border border-slate-600 rounded-xl p-0.5 cursor-pointer absolute top-1 right-1 focus-visible:ring'
+                  className='absolute right-1 top-1 cursor-pointer rounded-xl border border-slate-600 bg-slate-300 p-0.5 focus-visible:ring'
                 >
                   <CloseIcon />
                 </button>
@@ -348,12 +348,12 @@ export default function Favorites() {
           })}
       </div>
 
-      <div className='flex justify-center items-center gap-4'>
+      <div className='flex items-center justify-center gap-4'>
         <label>
           <button
             onClick={() => updatePhotoPage(photos.currentPage - 1, maxPage)}
             value={photos.currentPage}
-            className='focus-visible:ring cursor-pointer disabled:cursor-not-allowed'
+            className='cursor-pointer focus-visible:ring disabled:cursor-not-allowed'
             disabled={
               photos.isFetching || display.fullscreen || photos.currentPage <= 1
             }
@@ -362,7 +362,7 @@ export default function Favorites() {
           </button>
         </label>
 
-        <label className='flex gap-2 justify-center items-center my-2'>
+        <label className='my-2 flex items-center justify-center gap-2'>
           <p>Page</p>
           <input
             type='number'
@@ -381,7 +381,7 @@ export default function Favorites() {
           <button
             onClick={() => updatePhotoPage(photos.currentPage + 1, maxPage)}
             value={photos.currentPage}
-            className='focus-visible:ring cursor-pointer disabled:cursor-not-allowed'
+            className='cursor-pointer focus-visible:ring disabled:cursor-not-allowed'
             disabled={
               photos.isFetching ||
               display.fullscreen ||
@@ -394,18 +394,18 @@ export default function Favorites() {
 
         <button
           onClick={showHelp}
-          className='cursor-pointer absolute top-1 right-1 focus-visible:ring'
+          className='absolute right-1 top-1 cursor-pointer focus-visible:ring'
         >
           <HelpIcon />
         </button>
       </div>
 
       {display.fullscreen && (
-        <div className='flex justify-center items-center backdrop-blur fixed h-screen w-screen inset-0'>
+        <div className='fixed inset-0 flex h-screen w-screen items-center justify-center backdrop-blur'>
           <button
             className={combineClassNames(
-              'relative w-screen h-screen cursor-zoom-out',
-              'bg-no-repeat bg-center'
+              'relative h-screen w-screen cursor-zoom-out',
+              'bg-center bg-no-repeat'
             )}
             style={getBackgroundImageStyle()}
             onClick={toggleFullscreen}

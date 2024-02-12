@@ -22,7 +22,7 @@ export default function Home() {
   const messageContext = React.useContext(MessageContext);
 
   return (
-    <main className='flex flex-col justify-between items-center p-4 gap-6 xs:gap-8 w-full'>
+    <main className='flex w-full flex-col items-center justify-between gap-6 p-4 xs:gap-8'>
       <SearchBar
         search={search}
         roverData={roverData}
@@ -38,7 +38,7 @@ export default function Home() {
 
       {isDev && (
         <div
-          className='fixed flex flex-col gap-1 transition top-0 right-0 opacity-30 border-2 border-slate-500 pl-6 cursor-context-menu translate-x-[95%]'
+          className='fixed right-0 top-0 flex translate-x-[95%] cursor-context-menu flex-col gap-1 border-2 border-slate-500 pl-6 opacity-30 transition'
           onClick={(e) => {
             e.currentTarget.classList.toggle('translate-x-[95%]');
           }}
@@ -48,7 +48,7 @@ export default function Home() {
               e.stopPropagation();
               localStorage.clear();
             }}
-            className='rounded bg-red-400 px-2 cursor-pointer'
+            className='cursor-pointer rounded bg-red-400 px-2'
           >
             clear localStorage
           </button>
@@ -63,7 +63,7 @@ export default function Home() {
                 node_env: process.env.NODE_ENV,
               });
             }}
-            className='rounded bg-red-400 px-2 cursor-pointer'
+            className='cursor-pointer rounded bg-red-400 px-2'
           >
             log state
           </button>
@@ -72,7 +72,7 @@ export default function Home() {
               e.stopPropagation();
               toggleIsFetching();
             }}
-            className='rounded bg-red-400 px-2 cursor-pointer'
+            className='cursor-pointer rounded bg-red-400 px-2'
           >
             toggle isFetching
           </button>
@@ -84,7 +84,7 @@ export default function Home() {
                 type: 'Error',
               });
             }}
-            className='rounded bg-red-400 px-2 cursor-pointer'
+            className='cursor-pointer rounded bg-red-400 px-2'
           >
             add long error
           </button>
@@ -96,7 +96,7 @@ export default function Home() {
                 type: 'Info',
               });
             }}
-            className='rounded bg-red-400 px-2 cursor-pointer'
+            className='cursor-pointer rounded bg-red-400 px-2'
           >
             add short info
           </button>

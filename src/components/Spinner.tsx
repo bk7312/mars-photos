@@ -14,13 +14,13 @@ export default function Spinner({
   return (
     <div
       className={combineClassNames(
-        'flex justify-center items-center h-full w-full max-w-sm p-4 mx-auto',
+        'mx-auto flex h-full w-full max-w-sm items-center justify-center p-4',
         className
       )}
       {...delegated}
     >
-      <div className='motion-safe:animate-spin motion-reduce:hidden h-5 w-5 mx-auto bg-slate-500'></div>
-      <div className='motion-safe:hidden ml-2'>Loading...</div>
+      <div className='mx-auto h-5 w-5 bg-slate-500 motion-safe:animate-spin motion-reduce:hidden'></div>
+      <div className='ml-2 motion-safe:hidden'>Loading...</div>
     </div>
   );
 }

@@ -47,8 +47,8 @@ export default function Header() {
   };
 
   return (
-    <header className='mb-2 py-4 bg-slate-400 w-full'>
-      <div className='flex flex-col xs:flex-row justify-between items-center gap-4 max-w-screen-lg mx-auto px-4 xs:px-8'>
+    <header className='mb-2 w-full bg-slate-400 py-4'>
+      <div className='mx-auto flex max-w-screen-lg flex-col items-center justify-between gap-4 px-4 xs:flex-row xs:px-8'>
         <Link href='/' className='flex items-center gap-2'>
           <Image src={icon} alt='logo' height={42} width={42} className='' />
           <h2 className='text-3xl font-semibold text-orange-800'>Mars Photo</h2>
@@ -58,13 +58,13 @@ export default function Header() {
             <>
               <Link
                 href='/favorites'
-                className='flex items-center gap-2 bg-slate-300 rounded px-2 py-1 focus-visible:ring'
+                className='flex items-center gap-2 rounded bg-slate-300 px-2 py-1 focus-visible:ring'
               >
                 <HeartIcon isFavorite={true} />
                 Favorites
               </Link>
               <button
-                className='bg-slate-300 rounded px-2 py-1 focus-visible:ring'
+                className='rounded bg-slate-300 px-2 py-1 focus-visible:ring'
                 onClick={() => signOut()}
               >
                 Sign out
@@ -83,7 +83,7 @@ export default function Header() {
           ) : (
             <div className='relative'>
               <button
-                className='bg-slate-300 rounded px-2 py-1 focus-visible:ring'
+                className='rounded bg-slate-300 px-2 py-1 focus-visible:ring'
                 onClick={() => setShowSignin((prev) => !prev)}
               >
                 Sign in
@@ -91,22 +91,22 @@ export default function Header() {
               {showSignin && (
                 <div
                   className={combineClassNames(
-                    'absolute -right-2 top-10 translate-x-1/3 xs:translate-x-0 z-10',
-                    'flex flex-col gap-2 justify-center',
-                    'bg-slate-200 w-56 rounded-lg p-2'
+                    'absolute -right-2 top-10 z-10 translate-x-1/3 xs:translate-x-0',
+                    'flex flex-col justify-center gap-2',
+                    'w-56 rounded-lg bg-slate-200 p-2'
                   )}
                   id='signIn'
                 >
-                  <div className='absolute h-3 w-3 bg-slate-200 -top-1 right-28 xs:right-8 rotate-45 xs:-translate-x-1/2'></div>
+                  <div className='absolute -top-1 right-28 h-3 w-3 rotate-45 bg-slate-200 xs:right-8 xs:-translate-x-1/2'></div>
                   <button
-                    className='relative flex justify-between items-center p-2 gap-2 border rounded-lg bg-slate-100 focus-visible:ring'
+                    className='relative flex items-center justify-between gap-2 rounded-lg border bg-slate-100 p-2 focus-visible:ring'
                     onClick={(e) => handleSignin(e, 'google')}
                   >
                     <GoogleIcon />
                     Sign in with Google
                   </button>
                   <button
-                    className='relative flex justify-between items-center p-2 gap-2 border rounded-lg bg-slate-100 focus-visible:ring'
+                    className='relative flex items-center justify-between gap-2 rounded-lg border bg-slate-100 p-2 focus-visible:ring'
                     onClick={(e) => handleSignin(e, 'github')}
                   >
                     <GithubIcon />

@@ -223,8 +223,8 @@ function useMarsData() {
       photoIndex === -1
         ? ''
         : roverData.photos[photoIndex].cameras.length > 1
-        ? 'ALL'
-        : roverData.photos[photoIndex].cameras[0];
+          ? 'ALL'
+          : roverData.photos[photoIndex].cameras[0];
 
     setSearch((prev) => ({
       ...prev,

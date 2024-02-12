@@ -29,13 +29,13 @@ export default function MessageList() {
   return (
     <ol
       className={combineClassNames(
-        'flex flex-col gap-2 p-2 fixed bottom-0 right-0 min-w-fit max-w-sm w-full',
-        'min-h-fit max-h-full hide-scrollbar overflow-y-scroll overscroll-contain scroll-smooth'
+        'fixed bottom-0 right-0 flex w-full min-w-fit max-w-sm flex-col gap-2 p-2',
+        'hide-scrollbar max-h-full min-h-fit overflow-y-scroll overscroll-contain scroll-smooth'
       )}
       ref={listRef}
     >
       {messageContext.messageList.map(({ text, type, id }: MessageType) => (
-        <li className='animate-slide-in min-w-fit max-w-sm w-full' key={id}>
+        <li className='w-full min-w-fit max-w-sm animate-slide-in' key={id}>
           <Message
             type={type}
             handleDismiss={() => messageContext.handleDismiss(id)}
