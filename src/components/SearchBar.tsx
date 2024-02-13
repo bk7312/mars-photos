@@ -25,11 +25,11 @@ export default function SearchBar({
   className = '',
   ...delegated
 }: SearchBarPropType) {
-  const messageContext = React.useContext(MessageContext);
+  const { addMessage } = React.useContext(MessageContext);
   const isDisabled = search.isFetchingManifest;
 
   const showHelp = () => {
-    messageContext.addMessage({
+    addMessage({
       text: `First, select a rover. Next, choose a sol (a Mars solar day, the equivalent Earth date will also be shown in the dropdown). Finally, choose a camera from the dropdown and click 'Get Photos'. (Tip: Press 'Esc' to clear all popups.)`,
       type: 'Info',
     });
@@ -130,7 +130,7 @@ export default function SearchBar({
       </label>
 
       <button
-        className='mx-auto select-none rounded bg-slate-200 px-2 py-1 focus-visible:ring disabled:cursor-not-allowed xs:mt-2'
+        className='mx-auto select-none rounded bg-slate-200 px-2 py-1 hover:underline focus-visible:ring disabled:cursor-not-allowed disabled:opacity-50 xs:mt-2'
         onClick={() => getPhotos(search)}
         disabled={isDisabled || search.camera === ''}
       >
@@ -139,7 +139,7 @@ export default function SearchBar({
 
       <button
         onClick={showHelp}
-        className='absolute right-1 top-1 cursor-pointer focus-visible:ring'
+        className='absolute right-1 top-1 cursor-pointer hover:scale-125 focus-visible:ring'
       >
         <HelpIcon />
       </button>

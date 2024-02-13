@@ -39,7 +39,7 @@ export default function PhotoResults({
   });
 
   const [favorites, setFavorites] = React.useState<number[]>([]);
-  const messageContext = React.useContext(MessageContext);
+  const { addMessage } = React.useContext(MessageContext);
   const { data: session } = useSession();
 
   const fetchFavorites = React.useCallback(async () => {
@@ -70,12 +70,12 @@ export default function PhotoResults({
         errMsg = 'Failed to fetch, possibly no internet connection.';
       }
 
-      messageContext.addMessage({
+      addMessage({
         text: errMsg,
         type: 'Error',
       });
     }
-  }, [messageContext.addMessage]);
+  }, [addMessage]);
 
   React.useEffect(() => {
     console.log('photores effect', session);
@@ -83,7 +83,7 @@ export default function PhotoResults({
       return;
     }
     fetchFavorites();
-  }, [fetchFavorites]);
+  }, [fetchFavorites, session]);
 
   isDev && console.log(favorites);
 
@@ -163,7 +163,7 @@ export default function PhotoResults({
   };
 
   const showHelp = () => {
-    messageContext.addMessage({
+    addMessage({
       text: `Click on an image to view it in fullscreen, click on the fullscreen image or press the 'Esc' key to exit fullscreen. (Tip: You can use the left/right arrow keys to navigate between pages.)`,
       type: 'Info',
     });
@@ -174,6 +174,7 @@ export default function PhotoResults({
     photo: {
       photoId: number;
       src: string;
+      alt: string;
       rover: Rover | '';
       sol: number | '';
       camera: CameraTypes;
@@ -183,7 +184,7 @@ export default function PhotoResults({
     e.stopPropagation();
 
     if (!session) {
-      messageContext.addMessage({
+      addMessage({
         text: 'Please login first.',
         type: 'Warning',
       });
@@ -219,7 +220,7 @@ export default function PhotoResults({
         errMsg = 'Failed to fetch, possibly no internet connection.';
       }
 
-      messageContext.addMessage({
+      addMessage({
         text: errMsg,
         type: 'Error',
       });
@@ -291,6 +292,7 @@ export default function PhotoResults({
               const photo = {
                 photoId: p.img_id,
                 src: p.img_src,
+                alt: p.img_alt,
                 rover: photos.rover,
                 sol: photos.sol,
                 camera: p.camera.name,
@@ -321,7 +323,7 @@ export default function PhotoResults({
                   </button>
                   <button
                     onClick={(e) => toggleFavorites(e, photo, isFavorite)}
-                    className='absolute right-1 top-1 cursor-pointer rounded-xl border border-slate-600 bg-slate-300 p-0.5 focus-visible:ring'
+                    className='absolute right-1 top-1 cursor-pointer rounded-xl border border-slate-600 bg-slate-300 p-0.5 hover:scale-125 focus-visible:ring'
                   >
                     <HeartIcon isFavorite={isFavorite} />
                   </button>
@@ -376,7 +378,7 @@ export default function PhotoResults({
 
         <button
           onClick={showHelp}
-          className='absolute right-1 top-1 cursor-pointer focus-visible:ring'
+          className='absolute right-1 top-1 cursor-pointer hover:scale-125 focus-visible:ring'
         >
           <HelpIcon />
         </button>

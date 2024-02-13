@@ -29,7 +29,7 @@ export default async function RootLayout({
         className={combineClassNames(
           inter.className,
           'bg-slate-300 text-slate-900',
-          'flex h-screen flex-col items-center justify-between gap-2'
+          'flex min-h-screen flex-col items-center justify-between gap-2'
         )}
       >
         <SessionProvider session={session}>

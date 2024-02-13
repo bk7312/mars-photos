@@ -39,7 +39,7 @@ export default function Message({
     >
       <button
         onClick={handleDismiss}
-        className='absolute right-2 top-2 cursor-pointer focus-visible:ring'
+        className='absolute right-2 top-2 cursor-pointer hover:scale-125 focus-visible:ring'
       >
         <CloseIcon />
       </button>

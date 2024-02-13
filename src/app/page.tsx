@@ -19,7 +19,7 @@ export default function Home() {
   } = useMarsData();
 
   isDev && console.log('main rendered');
-  const messageContext = React.useContext(MessageContext);
+  const { addMessage } = React.useContext(MessageContext);
 
   return (
     <main className='flex w-full flex-col items-center justify-between gap-6 p-4 xs:gap-8'>
@@ -54,7 +54,7 @@ export default function Home() {
           </button>
           <button
             onClick={(e) => {
-              e.stopPropagation;
+              e.stopPropagation();
               console.log({
                 search,
                 roverData,
@@ -79,7 +79,7 @@ export default function Home() {
           <button
             onClick={(e) => {
               e.stopPropagation();
-              messageContext.addMessage({
+              addMessage({
                 text: 'testing message with lots of characters and rather verbose, perhaps excessively so to the point of pointlessly filling multiple lines',
                 type: 'Error',
               });
@@ -91,7 +91,7 @@ export default function Home() {
           <button
             onClick={(e) => {
               e.stopPropagation();
-              messageContext.addMessage({
+              addMessage({
                 text: 'testing info',
                 type: 'Info',
               });

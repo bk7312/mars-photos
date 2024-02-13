@@ -12,7 +12,8 @@ import HeartIcon from './icons/HeartIcon';
 
 export default function Header() {
   console.log('header rendered');
-  const [showSignin, setShowSignin] = React.useState<boolean>(false);
+  type signInType = 'show' | 'hide' | 'loading';
+  const [showSignin, setShowSignin] = React.useState<signInType>('hide');
   const { data: session } = useSession();
   console.log(session);
 
@@ -22,8 +23,8 @@ export default function Header() {
       const isPopup =
         target.id === 'signIn' || target.parentElement?.id === 'signIn';
 
-      if (showSignin && !isPopup) {
-        setShowSignin(false);
+      if (showSignin === 'show' && !isPopup) {
+        setShowSignin('hide');
       }
     };
     document.addEventListener('click', handleClick);
@@ -31,8 +32,8 @@ export default function Header() {
   }, [showSignin]);
 
   const handleEsc = React.useCallback(() => {
-    if (showSignin) {
-      setShowSignin(false);
+    if (showSignin === 'show') {
+      setShowSignin('hide');
     }
   }, [showSignin]);
   useEscapeKey(handleEsc);
@@ -43,7 +44,7 @@ export default function Header() {
   ) => {
     e.stopPropagation();
     signIn(provider);
-    setShowSignin(false);
+    setShowSignin('loading');
   };
 
   return (
@@ -58,13 +59,13 @@ export default function Header() {
             <>
               <Link
                 href='/favorites'
-                className='flex items-center gap-2 rounded bg-slate-300 px-2 py-1 focus-visible:ring'
+                className='flex items-center gap-2 rounded bg-slate-300 px-2 py-1 hover:underline focus-visible:ring'
               >
                 <HeartIcon isFavorite={true} />
                 Favorites
               </Link>
               <button
-                className='rounded bg-slate-300 px-2 py-1 focus-visible:ring'
+                className='rounded bg-slate-300 px-2 py-1 hover:underline focus-visible:ring'
                 onClick={() => signOut()}
               >
                 Sign out
@@ -83,12 +84,15 @@ export default function Header() {
           ) : (
             <div className='relative'>
               <button
-                className='rounded bg-slate-300 px-2 py-1 focus-visible:ring'
-                onClick={() => setShowSignin((prev) => !prev)}
+                className='rounded bg-slate-300 px-2 py-1 hover:underline focus-visible:ring disabled:cursor-progress disabled:opacity-50'
+                onClick={() =>
+                  setShowSignin((prev) => (prev === 'show' ? 'hide' : 'show'))
+                }
+                disabled={showSignin === 'loading'}
               >
-                Sign in
+                {showSignin === 'loading' ? 'Signing in...' : 'Sign in'}
               </button>
-              {showSignin && (
+              {showSignin === 'show' && (
                 <div
                   className={combineClassNames(
                     'absolute -right-2 top-10 z-10 translate-x-1/3 xs:translate-x-0',
@@ -99,14 +103,14 @@ export default function Header() {
                 >
                   <div className='absolute -top-1 right-28 h-3 w-3 rotate-45 bg-slate-200 xs:right-8 xs:-translate-x-1/2'></div>
                   <button
-                    className='relative flex items-center justify-between gap-2 rounded-lg border bg-slate-100 p-2 focus-visible:ring'
+                    className='relative flex items-center gap-3 rounded-lg border bg-slate-100 p-2 pl-3 hover:bg-slate-300 focus-visible:ring'
                     onClick={(e) => handleSignin(e, 'google')}
                   >
                     <GoogleIcon />
                     Sign in with Google
                   </button>
                   <button
-                    className='relative flex items-center justify-between gap-2 rounded-lg border bg-slate-100 p-2 focus-visible:ring'
+                    className='relative flex items-center gap-3 rounded-lg border bg-slate-100 p-2 pl-3 hover:bg-slate-300 focus-visible:ring'
                     onClick={(e) => handleSignin(e, 'github')}
                   >
                     <GithubIcon />

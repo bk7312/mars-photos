@@ -1,4 +1,4 @@
-CREATE TABLE verification_token
+CREATE TABLE IF NOT EXISTS verification_token
 (
   identifier TEXT NOT NULL,
   expires TIMESTAMPTZ NOT NULL,
@@ -7,7 +7,7 @@ CREATE TABLE verification_token
   PRIMARY KEY (identifier, token)
 );
 
-CREATE TABLE accounts
+CREATE TABLE IF NOT EXISTS accounts
 (
   id SERIAL,
   "userId" INTEGER NOT NULL,
@@ -25,7 +25,7 @@ CREATE TABLE accounts
   PRIMARY KEY (id)
 );
 
-CREATE TABLE sessions
+CREATE TABLE IF NOT EXISTS sessions
 (
   id SERIAL,
   "userId" INTEGER NOT NULL,
@@ -35,7 +35,7 @@ CREATE TABLE sessions
   PRIMARY KEY (id)
 );
 
-CREATE TABLE users
+CREATE TABLE IF NOT EXISTS users
 (
   id SERIAL,
   name VARCHAR(255),
@@ -46,43 +46,16 @@ CREATE TABLE users
   PRIMARY KEY (id)
 );
 
-CREATE TABLE favorites
+CREATE TABLE IF NOT EXISTS favorites
 (
   userId INTEGER NOT NULL,
   photoId INTEGER NOT NULL,
   src TEXT NOT NULL,
+  alt TEXT NOT NULL,
   rover VARCHAR(15) NOT NULL,
   sol INTEGER NOT NULL,
   camera VARCHAR(25),
+  note TEXT,
   PRIMARY KEY (userId, photoId)
 );
 
-INSERT INTO favorites (userId, photoId, src, rover, sol, camera) 
-VALUES (
-  1, 
-  290673, 
-  'http://mars.nasa.gov/mer/gallery/all/2/r/001/2R126468012EDN0000P1002L0M1-BR.JPG', 
-  'Spirit', 
-  1, 
-  'RHAZ'
-);
-
-INSERT INTO favorites (userId, photoId, src, rover, sol, camera) 
-VALUES (
-  1, 
-  318422, 
-  'http://mars.nasa.gov/mer/gallery/all/2/n/001/2N126468305EDN0000P1502L0M1-BR.JPG', 
-  'Spirit', 
-  1, 
-  'NAVCAM'
-);
-
-INSERT INTO favorites (userId, photoId, src, rover, sol, camera) 
-VALUES (
-  2, 
-  318422, 
-  'http://mars.nasa.gov/mer/gallery/all/2/n/001/2N126468305EDN0000P1502L0M1-BR.JPG', 
-  'Spirit', 
-  1, 
-  'NAVCAM'
-);

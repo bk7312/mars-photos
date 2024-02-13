@@ -23,9 +23,11 @@ import CloseIcon from '@/components/icons/CloseIcon';
 type FavoritesType = {
   photoid: number;
   src: string;
+  alt: string;
   rover: string;
   sol: number;
   camera: string;
+  note?: string;
 };
 
 type PhotosType = {
@@ -57,7 +59,7 @@ export default function Favorites() {
     isFetching: false,
   });
 
-  const messageContext = React.useContext(MessageContext);
+  const { addMessage } = React.useContext(MessageContext);
   const { data: session } = useSession();
 
   const fetchFavorites = React.useCallback(async () => {
@@ -92,14 +94,14 @@ export default function Favorites() {
         errMsg = 'Failed to fetch, possibly no internet connection.';
       }
 
-      messageContext.addMessage({
+      addMessage({
         text: errMsg,
         type: 'Error',
       });
     } finally {
       setPhotos((prev) => ({ ...prev, isFetching: false }));
     }
-  }, [messageContext.addMessage]);
+  }, [addMessage]);
 
   React.useEffect(() => {
     console.log('favPage effect', session);
@@ -107,7 +109,7 @@ export default function Favorites() {
       return;
     }
     fetchFavorites();
-  }, [fetchFavorites]);
+  }, [fetchFavorites, session]);
 
   isDev && console.log('logging favorites', photos.favorites);
 
@@ -204,7 +206,7 @@ export default function Favorites() {
 
   const showHelp = () => {
     console.log('help');
-    messageContext.addMessage({
+    addMessage({
       text: `Click on an image to view it in fullscreen, click on the fullscreen image or press the 'Esc' key to exit fullscreen. (Tip: You can use the left/right arrow keys to navigate between pages.)`,
       type: 'Info',
     });
@@ -217,7 +219,7 @@ export default function Favorites() {
     e.stopPropagation();
 
     if (!session) {
-      messageContext.addMessage({
+      addMessage({
         text: 'Please login first.',
         type: 'Warning',
       });
@@ -249,12 +251,67 @@ export default function Favorites() {
         errMsg = 'Failed to fetch, possibly no internet connection.';
       }
 
-      messageContext.addMessage({
+      addMessage({
         text: errMsg,
         type: 'Error',
       });
     } finally {
       fetchFavorites();
+    }
+  };
+
+  const updateNote = async (
+    e: React.FormEvent<HTMLFormElement>,
+    photoId: number
+  ) => {
+    // PUT request to /api/favorites
+    e.preventDefault();
+    const form = e.currentTarget;
+    const formData = new FormData(form);
+    const note = formData.get('note');
+    console.log({ photoId, note });
+
+    if (!session) {
+      addMessage({
+        text: 'Please login first.',
+        type: 'Warning',
+      });
+      return;
+    }
+
+    try {
+      const res = await fetch('/api/favorites', {
+        method: 'PUT',
+        body: JSON.stringify({ photoId, note }),
+      });
+
+      if (!res.ok) {
+        const { error } = await res.json();
+        isDev && console.error('error received:', error);
+        throw new Error(error);
+      }
+
+      const { data } = await res.json();
+      isDev && console.log({ data });
+      addMessage({
+        text: 'Note saved!',
+        type: 'Info',
+      });
+    } catch (error) {
+      isDev && console.log('caught error', error);
+      const err = error as Error;
+      isDev && console.log(err.name, err.message);
+
+      let errMsg = err?.message ?? 'Something went wrong';
+
+      if (err.message === 'Failed to fetch') {
+        errMsg = 'Failed to fetch, possibly no internet connection.';
+      }
+
+      addMessage({
+        text: errMsg,
+        type: 'Error',
+      });
     }
   };
 
@@ -309,40 +366,58 @@ export default function Favorites() {
         out of {totalPhotos}
       </p>
 
-      <div className='m-2 grid h-full min-h-40 auto-cols-fr grid-cols-1 justify-center gap-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4'>
+      <div className='m-2 flex flex-col justify-center gap-2'>
         {photos.favorites
           .slice(photoStartIndex, photoStartIndex + photos.photoPerPage)
           .map((p) => {
             return (
-              <div className='relative' key={p.photoid}>
-                <button
-                  className={combineClassNames(
-                    'relative aspect-square w-full max-w-lg cursor-zoom-in',
-                    'ring-offset-2 focus-visible:ring-4',
-                    'bg-center bg-no-repeat'
-                  )}
-                  style={getBackgroundImageStyle()}
-                  onClick={toggleFullscreen}
-                  data-img-src={p.src}
-                  disabled={photos.isFetching || display.fullscreen}
+              <div className='flex h-60 w-full gap-4' key={p.photoid}>
+                <div className='relative aspect-square min-w-60'>
+                  <button
+                    className={combineClassNames(
+                      'relative aspect-square w-full max-w-lg cursor-zoom-in',
+                      'ring-offset-2 focus-visible:ring-4',
+                      'bg-center bg-no-repeat'
+                    )}
+                    style={getBackgroundImageStyle()}
+                    onClick={toggleFullscreen}
+                    data-img-src={p.src}
+                    disabled={photos.isFetching || display.fullscreen}
+                  >
+                    <Image
+                      src={p.src}
+                      alt={p.alt}
+                      title={p.alt}
+                      onLoad={imageLoaded}
+                      onError={imageError}
+                      fill={true}
+                      sizes='300px'
+                      className='object-contain'
+                    />
+                  </button>
+                  <button
+                    onClick={(e) => removeFromFavorites(e, p.photoid)}
+                    className='absolute right-1 top-1 cursor-pointer rounded-xl border border-slate-600 bg-slate-300 p-0.5 hover:scale-125 focus-visible:ring'
+                  >
+                    <CloseIcon />
+                  </button>
+                </div>
+                <form
+                  className='flex w-full flex-col gap-2'
+                  onSubmit={(e) => updateNote(e, p.photoid)}
+                  method='POST'
                 >
-                  <Image
-                    src={p.src}
-                    alt={'alt text placeholder, todo'}
-                    title={'title text placeholder, todo'}
-                    onLoad={imageLoaded}
-                    onError={imageError}
-                    fill={true}
-                    sizes='300px'
-                    className='object-contain'
-                  />
-                </button>
-                <button
-                  onClick={(e) => removeFromFavorites(e, p.photoid)}
-                  className='absolute right-1 top-1 cursor-pointer rounded-xl border border-slate-600 bg-slate-300 p-0.5 focus-visible:ring'
-                >
-                  <CloseIcon />
-                </button>
+                  <label className=''>
+                    Notes:
+                    <textarea
+                      rows={3}
+                      name='note'
+                      className='h-full w-full px-2 py-1'
+                      defaultValue={p.note ? p.note : ''}
+                    />
+                  </label>
+                  <button type='submit'>Update Note</button>
+                </form>
               </div>
             );
           })}
@@ -394,7 +469,7 @@ export default function Favorites() {
 
         <button
           onClick={showHelp}
-          className='absolute right-1 top-1 cursor-pointer focus-visible:ring'
+          className='absolute right-1 top-1 cursor-pointer hover:scale-125 focus-visible:ring'
         >
           <HelpIcon />
         </button>
