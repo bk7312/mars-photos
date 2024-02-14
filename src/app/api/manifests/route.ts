@@ -16,7 +16,6 @@ export async function POST(request: Request) {
   }, 15000);
 
   try {
-    console.log(url);
     const res = await fetch(url, { signal });
     clearTimeout(timeout);
 

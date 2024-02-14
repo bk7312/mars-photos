@@ -60,7 +60,7 @@ export default function Favorites() {
 
   const fetchFavorites = React.useCallback(async () => {
     setPhotos((prev) => ({ ...prev, isFetching: true }));
-    console.log('fetch favorites favpage');
+    isDev && console.log('fetch favorites favpage');
     try {
       const res = await fetch('/api/favorites/');
 
@@ -73,7 +73,6 @@ export default function Favorites() {
       const { data } = await res.json();
       isDev && console.log({ data });
       if (data) {
-        console.log(data);
         setPhotos((prev) => ({
           ...prev,
           favorites: data,
@@ -100,7 +99,6 @@ export default function Favorites() {
   }, [addMessage]);
 
   React.useEffect(() => {
-    console.log('favPage effect', session);
     if (!session) {
       return;
     }
@@ -227,7 +225,6 @@ export default function Favorites() {
   };
 
   const showHelp = () => {
-    console.log('help');
     addMessage({
       text: `You can add notes to your favorited photos, just remember to click save once you're done. Note that removing a photo from favorites will delete your note.`,
       type: 'Info',
@@ -290,7 +287,6 @@ export default function Favorites() {
     const form = e.currentTarget;
     const formData = new FormData(form);
     const note = formData.get('note');
-    console.log({ photoId, note });
 
     if (!session) {
       addMessage({
@@ -425,7 +421,7 @@ export default function Favorites() {
                         prev === p.photoid ? '' : p.photoid
                       )
                     }
-                    className='absolute right-1 top-1 cursor-pointer rounded-xl border border-slate-600 bg-slate-300 p-0.5 hover:scale-125 focus-visible:ring'
+                    className='absolute right-1 top-1 cursor-pointer rounded-xl border border-slate-600 bg-slate-300 p-0.5 hover:scale-125 focus-visible:ring dark:bg-slate-500'
                   >
                     <CloseIcon />
                   </button>

@@ -32,8 +32,8 @@ export default function Profile() {
         />
       </div>
       <div className='flex flex-col items-start gap-2 text-lg'>
-        <p>{session?.user?.name}</p>
-        <p>{session?.user?.email}</p>
+        <p className='px-1'>{session?.user?.name}</p>
+        <p className='px-1'>{session?.user?.email}</p>
         <button
           className='rounded bg-slate-200 px-2 py-1 hover:underline focus-visible:ring dark:bg-slate-800'
           onClick={handleSignOut}

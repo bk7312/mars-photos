@@ -43,7 +43,7 @@ export default function PhotoResults({
   const { data: session } = useSession();
 
   const fetchFavorites = React.useCallback(async () => {
-    console.log('fetch favorites photoresults');
+    isDev && console.log('fetch favorites photoresults');
     try {
       const res = await fetch('/api/favorites/');
 
@@ -56,7 +56,6 @@ export default function PhotoResults({
       const { data } = await res.json();
       isDev && console.log({ data });
       if (data) {
-        console.log(data);
         setFavorites(data.map((d: { photoid: number }) => d.photoid));
       }
     } catch (error) {
@@ -78,7 +77,6 @@ export default function PhotoResults({
   }, [addMessage]);
 
   React.useEffect(() => {
-    console.log('photores effect', session);
     if (!session) {
       return;
     }
@@ -191,7 +189,6 @@ export default function PhotoResults({
       return;
     }
 
-    console.log(photo);
     const { photoId } = photo;
 
     try {
@@ -225,7 +222,6 @@ export default function PhotoResults({
         type: 'Error',
       });
     } finally {
-      console.log('photores finally');
       fetchFavorites();
     }
   };

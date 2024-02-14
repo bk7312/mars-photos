@@ -11,11 +11,9 @@ import icon from '@/app/icon.png';
 import HeartIcon from './icons/HeartIcon';
 
 export default function Header() {
-  console.log('header rendered');
   type signInType = 'show' | 'hide' | 'loading';
   const [showSignin, setShowSignin] = React.useState<signInType>('hide');
   const { data: session } = useSession();
-  console.log(session);
 
   React.useEffect(() => {
     const handleClick = (e: MouseEvent) => {
@@ -113,14 +111,14 @@ export default function Header() {
                 >
                   <div className='absolute -top-1 right-28 h-3 w-3 rotate-45 bg-slate-200 xs:right-8 xs:-translate-x-1/2 dark:bg-slate-600'></div>
                   <button
-                    className='relative flex items-center gap-3 rounded-lg border bg-slate-100 p-2 pl-3 hover:bg-slate-600 focus-visible:ring dark:bg-slate-700'
+                    className='relative flex items-center gap-3 rounded-lg border bg-slate-100 p-2 pl-3 hover:bg-slate-300 focus-visible:ring dark:bg-slate-700 dark:hover:bg-slate-900'
                     onClick={(e) => handleSignin(e, 'google')}
                   >
                     <GoogleIcon />
                     Sign in with Google
                   </button>
                   <button
-                    className='relative flex items-center gap-3 rounded-lg border bg-slate-100 p-2 pl-3 hover:bg-slate-600 focus-visible:ring dark:bg-slate-700'
+                    className='relative flex items-center gap-3 rounded-lg border bg-slate-100 p-2 pl-3 hover:bg-slate-300 focus-visible:ring dark:bg-slate-700 dark:hover:bg-slate-900'
                     onClick={(e) => handleSignin(e, 'github')}
                   >
                     <GithubIcon />
