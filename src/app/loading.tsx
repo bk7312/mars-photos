@@ -1,5 +1,4 @@
 import Spinner from '@/components/Spinner';
-import { isReducedMotion } from '@/lib/utils';
 
 export default function Loading() {
   return (

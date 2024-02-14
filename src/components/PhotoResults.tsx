@@ -250,7 +250,7 @@ export default function PhotoResults({
             onChange={(e) => updatePhotoPage(e.target.valueAsNumber, maxPage)}
             value={photos.currentPage}
             min={1}
-            className='w-16 px-2 py-1 focus-visible:ring'
+            className='w-16 px-2 py-1 focus-visible:ring dark:bg-slate-800'
             disabled={photos.isFetching || display.fullscreen}
           />
         </label>
@@ -266,7 +266,7 @@ export default function PhotoResults({
             }
             value={photos.photoPerPage}
             min={1}
-            className='w-16 px-2 py-1 focus-visible:ring'
+            className='w-16 px-2 py-1 focus-visible:ring dark:bg-slate-800'
             disabled={photos.isFetching || display.fullscreen}
           />
         </label>
@@ -355,7 +355,7 @@ export default function PhotoResults({
             onChange={(e) => updatePhotoPage(e.target.valueAsNumber, maxPage)}
             value={photos.currentPage}
             min={1}
-            className='w-16 px-2 py-1 focus-visible:ring'
+            className='w-16 px-2 py-1 focus-visible:ring dark:bg-slate-800'
             disabled={photos.isFetching || display.fullscreen}
           />{' '}
           / {maxPage}

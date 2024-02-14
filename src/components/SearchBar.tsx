@@ -51,7 +51,7 @@ export default function SearchBar({
           id='rover'
           value={search.rover}
           onChange={updateSearch}
-          className='w-full px-1 py-1 focus-visible:ring'
+          className='w-full px-1 py-1 focus-visible:ring dark:bg-slate-800'
           disabled={isDisabled}
         >
           {!search.rover && <option value=''>Select a rover</option>}
@@ -77,7 +77,7 @@ export default function SearchBar({
           min={roverData?.photos[0].sol ?? 0}
           max={roverData?.max_sol}
           className={combineClassNames(
-            'peer w-full px-2 py-1 focus-visible:ring',
+            'peer w-full px-2 py-1 focus-visible:ring dark:bg-slate-800',
             search.isFetchingManifest ? 'invisible' : ''
           )}
           disabled={isDisabled}
@@ -102,7 +102,7 @@ export default function SearchBar({
           value={search.camera}
           onChange={updateSearch}
           className={combineClassNames(
-            'w-full px-1 py-1 focus-visible:ring',
+            'w-full px-1 py-1 focus-visible:ring dark:bg-slate-800',
             search.isFetchingManifest ? 'invisible' : ''
           )}
           disabled={isDisabled}
@@ -130,7 +130,7 @@ export default function SearchBar({
       </label>
 
       <button
-        className='mx-auto select-none rounded bg-slate-200 px-2 py-1 hover:underline focus-visible:ring disabled:cursor-not-allowed disabled:opacity-50 xs:mt-2'
+        className='mx-auto select-none rounded bg-slate-200 px-2 py-1 hover:underline focus-visible:ring disabled:cursor-not-allowed disabled:opacity-50 xs:mt-2 dark:bg-slate-800'
         onClick={() => getPhotos(search)}
         disabled={isDisabled || search.camera === ''}
       >

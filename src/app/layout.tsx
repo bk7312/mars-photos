@@ -28,7 +28,7 @@ export default async function RootLayout({
       <body
         className={combineClassNames(
           inter.className,
-          'bg-slate-300 text-slate-900',
+          'bg-slate-300 text-slate-900 dark:bg-slate-700 dark:text-slate-100',
           'flex min-h-screen flex-col items-center justify-between gap-2'
         )}
       >

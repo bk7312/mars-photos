@@ -354,7 +354,7 @@ export default function Favorites() {
             onChange={(e) => updatePhotoPage(e.target.valueAsNumber, maxPage)}
             value={photos.currentPage}
             min={1}
-            className='w-16 px-2 py-1 focus-visible:ring'
+            className='w-16 px-2 py-1 focus-visible:ring dark:bg-slate-800'
             disabled={photos.isFetching || display.fullscreen}
           />
         </label>
@@ -370,7 +370,7 @@ export default function Favorites() {
             }
             value={photos.photoPerPage}
             min={1}
-            className='w-16 px-2 py-1 focus-visible:ring'
+            className='w-16 px-2 py-1 focus-visible:ring dark:bg-slate-800'
             disabled={photos.isFetching || display.fullscreen}
           />
         </label>
@@ -454,13 +454,13 @@ export default function Favorites() {
                       <textarea
                         rows={3}
                         name='note'
-                        className='w-full px-2 py-1 sm:h-28 md:h-48 lg:h-60'
+                        className='w-full px-2 py-1 sm:h-28 md:h-48 lg:h-60 dark:bg-slate-800'
                         defaultValue={p.note ? p.note : ''}
                       />
                     </label>
                     <button
                       type='submit'
-                      className='absolute right-0 top-0 rounded bg-slate-200 px-2 py-1'
+                      className='absolute right-0 top-0 rounded bg-slate-200 px-2 py-1 dark:bg-slate-800'
                     >
                       Save
                     </button>
@@ -494,7 +494,7 @@ export default function Favorites() {
             onChange={(e) => updatePhotoPage(e.target.valueAsNumber, maxPage)}
             value={photos.currentPage}
             min={1}
-            className='w-16 px-2 py-1 focus-visible:ring'
+            className='w-16 px-2 py-1 focus-visible:ring dark:bg-slate-800'
             disabled={photos.isFetching || display.fullscreen}
           />{' '}
           / {maxPage}

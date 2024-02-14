@@ -3,17 +3,14 @@ import React from 'react';
 import Image from 'next/image';
 import { combineClassNames } from '@/lib/utils';
 import { useSession, signOut } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
 
 export default function Profile() {
   const { data: session } = useSession();
-  const router = useRouter();
 
   const handleSignOut = (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
     e.stopPropagation();
-    router.push('/');
     signOut();
   };
 
@@ -38,7 +35,7 @@ export default function Profile() {
         <p>{session?.user?.name}</p>
         <p>{session?.user?.email}</p>
         <button
-          className='rounded bg-slate-200 px-2 py-1 hover:underline focus-visible:ring'
+          className='rounded bg-slate-200 px-2 py-1 hover:underline focus-visible:ring dark:bg-slate-800'
           onClick={handleSignOut}
         >
           Sign out
