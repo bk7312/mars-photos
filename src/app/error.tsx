@@ -13,10 +13,10 @@ export default function Error({
   }, [error]);
 
   return (
-    <div className='h-screen flex flex-col justify-center items-center gap-6'>
+    <div className='flex h-screen flex-col items-center justify-center gap-6'>
       <h2 className='text-2xl'>Looks like something went wrong!</h2>
       <button
-        className='py-2 px-4 border-2 rounded bg-slate-100'
+        className='rounded border-2 bg-slate-100 px-4 py-2'
         onClick={() => reset()}
       >
         Try again

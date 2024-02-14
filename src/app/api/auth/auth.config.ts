@@ -13,7 +13,9 @@ export const authConfig = {
   callbacks: {
     authorized({ auth, request: { nextUrl } }) {
       const isLoggedIn = !!auth?.user;
-      const isOnProtectedRoute = nextUrl.pathname.startsWith('/favorites');
+      const isOnProtectedRoute =
+        nextUrl.pathname.startsWith('/favorites') ||
+        nextUrl.pathname.startsWith('/profile');
 
       if (isOnProtectedRoute && !isLoggedIn) {
         return Response.redirect(new URL('/', nextUrl));

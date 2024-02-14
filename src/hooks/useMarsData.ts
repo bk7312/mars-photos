@@ -31,7 +31,7 @@ function useMarsData() {
     isFetching: false,
   });
 
-  const messageContext = React.useContext(MessageContext);
+  const { addMessage } = React.useContext(MessageContext);
 
   const fetchManifest = React.useCallback(
     async (rover: Rover) => {
@@ -71,7 +71,7 @@ function useMarsData() {
           errMsg = 'Failed to fetch, possibly no internet connection.';
         }
 
-        messageContext.addMessage({
+        addMessage({
           text: errMsg,
           type: 'Error',
         });
@@ -87,7 +87,7 @@ function useMarsData() {
         setSearch((prev) => ({ ...prev, isFetchingManifest: false }));
       }
     },
-    [roverData?.name, messageContext]
+    [roverData?.name, addMessage]
   );
 
   const fetchPhotos = async (
@@ -114,7 +114,7 @@ function useMarsData() {
       isDev && console.log({ data, cameraMap });
 
       if (data.length === 0) {
-        messageContext.addMessage({
+        addMessage({
           text: 'No photos found',
           type: 'Info',
         });
@@ -158,7 +158,7 @@ function useMarsData() {
         errMsg = 'Failed to fetch, possibly no internet connection.';
       }
 
-      messageContext.addMessage({
+      addMessage({
         text: errMsg,
         type: 'Error',
       });
@@ -223,8 +223,8 @@ function useMarsData() {
       photoIndex === -1
         ? ''
         : roverData.photos[photoIndex].cameras.length > 1
-        ? 'ALL'
-        : roverData.photos[photoIndex].cameras[0];
+          ? 'ALL'
+          : roverData.photos[photoIndex].cameras[0];
 
     setSearch((prev) => ({
       ...prev,

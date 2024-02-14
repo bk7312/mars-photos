@@ -25,11 +25,11 @@ export default function SearchBar({
   className = '',
   ...delegated
 }: SearchBarPropType) {
-  const messageContext = React.useContext(MessageContext);
+  const { addMessage } = React.useContext(MessageContext);
   const isDisabled = search.isFetchingManifest;
 
   const showHelp = () => {
-    messageContext.addMessage({
+    addMessage({
       text: `First, select a rover. Next, choose a sol (a Mars solar day, the equivalent Earth date will also be shown in the dropdown). Finally, choose a camera from the dropdown and click 'Get Photos'. (Tip: Press 'Esc' to clear all popups.)`,
       type: 'Info',
     });
@@ -38,20 +38,20 @@ export default function SearchBar({
   return (
     <section
       className={combineClassNames(
-        'relative w-full h-full max-w-screen-sm p-4 xs:pb-6 xs:pt-8 xs:pr-8',
-        'flex flex-col items-start gap-4 border-2 border-slate-400 rounded',
+        'relative h-full w-full max-w-screen-sm p-4 xs:pb-6 xs:pr-8 xs:pt-8',
+        'flex flex-col items-start gap-4 rounded border-2 border-slate-400',
         className
       )}
       {...delegated}
     >
-      <label className='flex flex-col xs:flex-row gap-1 xs:gap-2 xs:items-center w-full'>
+      <label className='flex w-full flex-col gap-1 xs:flex-row xs:items-center xs:gap-2'>
         <p className='w-20 xs:text-right'>Rover:</p>
         <select
           name='rover'
           id='rover'
           value={search.rover}
           onChange={updateSearch}
-          className='w-full px-1 py-1 focus-visible:ring'
+          className='w-full px-1 py-1 focus-visible:ring dark:bg-slate-800'
           disabled={isDisabled}
         >
           {!search.rover && <option value=''>Select a rover</option>}
@@ -64,7 +64,7 @@ export default function SearchBar({
       </label>
 
       <label
-        className='flex flex-col xs:flex-row gap-1 xs:gap-2 xs:items-center w-full h-full bg-no-repeat bg-center'
+        className='flex h-full w-full flex-col gap-1 bg-center bg-no-repeat xs:flex-row xs:items-center xs:gap-2'
         style={search.isFetchingManifest ? getBackgroundImageStyle() : {}}
       >
         <p className='w-20 xs:text-right'>Sol:</p>
@@ -77,7 +77,7 @@ export default function SearchBar({
           min={roverData?.photos[0].sol ?? 0}
           max={roverData?.max_sol}
           className={combineClassNames(
-            'w-full px-2 py-1 focus-visible:ring peer',
+            'peer w-full px-2 py-1 focus-visible:ring dark:bg-slate-800',
             search.isFetchingManifest ? 'invisible' : ''
           )}
           disabled={isDisabled}
@@ -92,7 +92,7 @@ export default function SearchBar({
       </label>
 
       <label
-        className='flex flex-col xs:flex-row gap-1 xs:gap-2 xs:items-center w-full h-full bg-no-repeat bg-center'
+        className='flex h-full w-full flex-col gap-1 bg-center bg-no-repeat xs:flex-row xs:items-center xs:gap-2'
         style={search.isFetchingManifest ? getBackgroundImageStyle() : {}}
       >
         <p className='w-20 xs:text-right'>Camera:</p>
@@ -102,7 +102,7 @@ export default function SearchBar({
           value={search.camera}
           onChange={updateSearch}
           className={combineClassNames(
-            'w-full px-1 py-1 focus-visible:ring',
+            'w-full px-1 py-1 focus-visible:ring dark:bg-slate-800',
             search.isFetchingManifest ? 'invisible' : ''
           )}
           disabled={isDisabled}
@@ -130,7 +130,7 @@ export default function SearchBar({
       </label>
 
       <button
-        className='bg-slate-200 rounded px-2 py-1 xs:mt-2 mx-auto select-none disabled:cursor-not-allowed focus-visible:ring'
+        className='mx-auto select-none rounded bg-slate-200 px-2 py-1 hover:underline focus-visible:ring disabled:cursor-not-allowed disabled:opacity-50 xs:mt-2 dark:bg-slate-800'
         onClick={() => getPhotos(search)}
         disabled={isDisabled || search.camera === ''}
       >
@@ -139,7 +139,7 @@ export default function SearchBar({
 
       <button
         onClick={showHelp}
-        className='cursor-pointer absolute top-1 right-1 focus-visible:ring'
+        className='absolute right-1 top-1 cursor-pointer hover:scale-125 focus-visible:ring'
       >
         <HelpIcon />
       </button>

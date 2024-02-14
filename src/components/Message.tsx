@@ -31,7 +31,7 @@ export default function Message({
   return (
     <div
       className={combineClassNames(
-        'relative p-6 font-semibold rounded-lg',
+        'relative rounded-lg p-6 font-semibold',
         COLORS[type],
         className
       )}
@@ -39,7 +39,7 @@ export default function Message({
     >
       <button
         onClick={handleDismiss}
-        className='cursor-pointer absolute top-2 right-2 focus-visible:ring'
+        className='absolute right-2 top-2 cursor-pointer hover:scale-125 focus-visible:ring'
       >
         <CloseIcon />
       </button>

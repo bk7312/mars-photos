@@ -7,12 +7,13 @@ import { combineClassNames } from '@/lib/utils';
 import GoogleIcon from './icons/GoogleIcon';
 import GithubIcon from './icons/GithubIcon';
 import useEscapeKey from '@/hooks/useEscapeKey';
+import icon from '@/app/icon.png';
+import HeartIcon from './icons/HeartIcon';
 
 export default function Header() {
-  console.log('header rendered');
-  const [showSignin, setShowSignin] = React.useState<boolean>(false);
+  type signInType = 'show' | 'hide' | 'loading';
+  const [showSignin, setShowSignin] = React.useState<signInType>('hide');
   const { data: session } = useSession();
-  console.log(session);
 
   React.useEffect(() => {
     const handleClick = (e: MouseEvent) => {
@@ -20,8 +21,8 @@ export default function Header() {
       const isPopup =
         target.id === 'signIn' || target.parentElement?.id === 'signIn';
 
-      if (showSignin && !isPopup) {
-        setShowSignin(false);
+      if (showSignin === 'show' && !isPopup) {
+        setShowSignin('hide');
       }
     };
     document.addEventListener('click', handleClick);
@@ -29,8 +30,8 @@ export default function Header() {
   }, [showSignin]);
 
   const handleEsc = React.useCallback(() => {
-    if (showSignin) {
-      setShowSignin(false);
+    if (showSignin === 'show') {
+      setShowSignin('hide');
     }
   }, [showSignin]);
   useEscapeKey(handleEsc);
@@ -41,68 +42,83 @@ export default function Header() {
   ) => {
     e.stopPropagation();
     signIn(provider);
-    setShowSignin(false);
+    setShowSignin('loading');
+  };
+
+  const handleSignOut = (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
+    e.stopPropagation();
+    signOut();
   };
 
   return (
-    <header className='mb-2 py-4 bg-slate-400 w-full'>
-      <div className='flex flex-col xs:flex-row justify-between items-center gap-4 max-w-screen-lg mx-auto px-8'>
-        <Link href='/'>
-          <h2 className='text-3xl font-semibold'>Mars Photo</h2>
+    <header className='mb-2 w-full bg-slate-400 py-4 dark:bg-slate-800'>
+      <div className='mx-auto flex max-w-screen-lg flex-col items-center justify-between gap-4 px-4 xs:flex-row xs:px-8'>
+        <Link href='/' className='flex items-center gap-2'>
+          <Image src={icon} alt='logo' height={42} width={42} className='' />
+          <h2 className='text-3xl font-semibold text-orange-700'>Mars Photo</h2>
         </Link>
-        <div className='flex items-center gap-4'>
+        <div className='flex items-center gap-3'>
           {session ? (
             <>
               <Link
                 href='/favorites'
-                className='underline underline-offset-2 rounded px-2 py-1 focus-visible:ring'
+                className='flex items-center gap-2 rounded bg-slate-300 px-2 py-1 hover:underline focus-visible:ring dark:bg-slate-600'
               >
-                Favorites
+                <HeartIcon isFavorite={true} />
+                <p className='hidden sm:block'>Favorites</p>
               </Link>
               <button
-                className='bg-slate-300 rounded px-2 py-1 focus-visible:ring'
-                onClick={() => signOut()}
+                className='rounded bg-slate-300 px-2 py-1 hover:underline focus-visible:ring dark:bg-slate-600'
+                onClick={handleSignOut}
               >
                 Sign out
               </button>
-              <div className='relative h-8 w-8 rounded-full overflow-clip border'>
+              <Link
+                href='/profile'
+                className='relative h-8 w-8 cursor-pointer overflow-clip rounded-full border hover:outline focus-visible:ring'
+              >
                 <Image
                   src={session?.user?.image ?? '/stock-user.jpg'}
-                  alt={session?.user?.name ?? 'User'}
-                  title={session?.user?.name ?? 'User'}
+                  alt={session?.user?.name ?? ''}
+                  title={session?.user?.name ?? ''}
                   fill={true}
                   sizes='300px'
                   className='object-cover'
                 />
-              </div>
+              </Link>
             </>
           ) : (
             <div className='relative'>
               <button
-                className='bg-slate-300 rounded px-2 py-1 focus-visible:ring'
-                onClick={() => setShowSignin((prev) => !prev)}
+                className='rounded bg-slate-300 px-2 py-1 hover:underline focus-visible:ring disabled:cursor-progress disabled:opacity-50 dark:bg-slate-600'
+                onClick={() =>
+                  setShowSignin((prev) => (prev === 'show' ? 'hide' : 'show'))
+                }
+                disabled={showSignin === 'loading'}
               >
-                Sign in
+                {showSignin === 'loading' ? 'Signing in...' : 'Sign in'}
               </button>
-              {showSignin && (
+              {showSignin === 'show' && (
                 <div
                   className={combineClassNames(
-                    'absolute -right-2 top-10 translate-x-1/3 xs:translate-x-0 z-10',
-                    'flex flex-col gap-2 justify-center',
-                    'bg-slate-200 w-56 rounded-lg p-2'
+                    'absolute -right-2 top-10 z-10 translate-x-1/3 xs:translate-x-0',
+                    'flex flex-col justify-center gap-2',
+                    'w-56 rounded-lg bg-slate-200 p-2 dark:bg-slate-600'
                   )}
                   id='signIn'
                 >
-                  <div className='absolute h-3 w-3 bg-slate-200 -top-1 right-28 xs:right-8 rotate-45 xs:-translate-x-1/2'></div>
+                  <div className='absolute -top-1 right-28 h-3 w-3 rotate-45 bg-slate-200 xs:right-8 xs:-translate-x-1/2 dark:bg-slate-600'></div>
                   <button
-                    className='relative flex justify-between items-center p-2 gap-2 border rounded-lg bg-slate-100 focus-visible:ring'
+                    className='relative flex items-center gap-3 rounded-lg border bg-slate-100 p-2 pl-3 hover:bg-slate-300 focus-visible:ring dark:bg-slate-700 dark:hover:bg-slate-900'
                     onClick={(e) => handleSignin(e, 'google')}
                   >
                     <GoogleIcon />
                     Sign in with Google
                   </button>
                   <button
-                    className='relative flex justify-between items-center p-2 gap-2 border rounded-lg bg-slate-100 focus-visible:ring'
+                    className='relative flex items-center gap-3 rounded-lg border bg-slate-100 p-2 pl-3 hover:bg-slate-300 focus-visible:ring dark:bg-slate-700 dark:hover:bg-slate-900'
                     onClick={(e) => handleSignin(e, 'github')}
                   >
                     <GithubIcon />
