@@ -9,12 +9,14 @@ import GithubIcon from './icons/GithubIcon';
 import useEscapeKey from '@/hooks/useEscapeKey';
 import icon from '@/app/icon.png';
 import HeartIcon from './icons/HeartIcon';
+import { useRouter } from 'next/navigation';
 
 export default function Header() {
   console.log('header rendered');
   type signInType = 'show' | 'hide' | 'loading';
   const [showSignin, setShowSignin] = React.useState<signInType>('hide');
   const { data: session } = useSession();
+  const router = useRouter();
   console.log(session);
 
   React.useEffect(() => {
@@ -47,14 +49,22 @@ export default function Header() {
     setShowSignin('loading');
   };
 
+  const handleSignOut = (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
+    e.stopPropagation();
+    router.push('/');
+    signOut();
+  };
+
   return (
     <header className='mb-2 w-full bg-slate-400 py-4'>
       <div className='mx-auto flex max-w-screen-lg flex-col items-center justify-between gap-4 px-4 xs:flex-row xs:px-8'>
         <Link href='/' className='flex items-center gap-2'>
           <Image src={icon} alt='logo' height={42} width={42} className='' />
-          <h2 className='text-3xl font-semibold text-orange-800'>Mars Photo</h2>
+          <h2 className='text-3xl font-semibold text-orange-700'>Mars Photo</h2>
         </Link>
-        <div className='flex items-center gap-4'>
+        <div className='flex items-center gap-3'>
           {session ? (
             <>
               <Link
@@ -62,24 +72,27 @@ export default function Header() {
                 className='flex items-center gap-2 rounded bg-slate-300 px-2 py-1 hover:underline focus-visible:ring'
               >
                 <HeartIcon isFavorite={true} />
-                Favorites
+                <p className='hidden sm:block'>Favorites</p>
               </Link>
               <button
                 className='rounded bg-slate-300 px-2 py-1 hover:underline focus-visible:ring'
-                onClick={() => signOut()}
+                onClick={handleSignOut}
               >
                 Sign out
               </button>
-              {/* <div className='hidden sm:block relative h-8 w-8 rounded-full overflow-clip border'>
+              <Link
+                href='/profile'
+                className='relative h-8 w-8 cursor-pointer overflow-clip rounded-full border hover:outline focus-visible:ring'
+              >
                 <Image
                   src={session?.user?.image ?? '/stock-user.jpg'}
-                  alt={session?.user?.name ?? 'User'}
-                  title={session?.user?.name ?? 'User'}
+                  alt={session?.user?.name ?? ''}
+                  title={session?.user?.name ?? ''}
                   fill={true}
                   sizes='300px'
                   className='object-cover'
                 />
-              </div> */}
+              </Link>
             </>
           ) : (
             <div className='relative'>

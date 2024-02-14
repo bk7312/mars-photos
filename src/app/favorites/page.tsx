@@ -12,14 +12,6 @@ import { useSession } from 'next-auth/react';
 import HelpIcon from '@/components/icons/HelpIcon';
 import CloseIcon from '@/components/icons/CloseIcon';
 
-// type PhotoResultsPropType = {
-//   photos: RoverPhotos;
-//   updatePhotosPerPage: (photoPerPage: number, totalPhotos: number) => void;
-//   updatePhotoPage: (page: number, maxPage: number) => void;
-//   className?: string;
-//   [key: string]: any;
-// };
-
 type FavoritesType = {
   photoid: number;
   src: string;
@@ -35,6 +27,7 @@ type PhotosType = {
   currentPage: number;
   photoPerPage: number;
   isFetching: boolean;
+  init: boolean;
 };
 
 type DisplayType =
@@ -57,7 +50,10 @@ export default function Favorites() {
     currentPage: 1,
     photoPerPage: 12,
     isFetching: false,
+    init: true,
   });
+
+  const [askConfirm, setAskConfirm] = React.useState<number | ''>('');
 
   const { addMessage } = React.useContext(MessageContext);
   const { data: session } = useSession();
@@ -99,7 +95,7 @@ export default function Favorites() {
         type: 'Error',
       });
     } finally {
-      setPhotos((prev) => ({ ...prev, isFetching: false }));
+      setPhotos((prev) => ({ ...prev, isFetching: false, init: false }));
     }
   }, [addMessage]);
 
@@ -140,6 +136,21 @@ export default function Favorites() {
   }, []);
 
   React.useEffect(() => {
+    const handleClick = (e: MouseEvent) => {
+      const target = e.target as Element;
+      const isPopup =
+        target.classList.contains('confirmDelete') ||
+        target.parentElement?.classList.contains('confirmDelete');
+
+      if (askConfirm !== '' && !isPopup) {
+        setAskConfirm('');
+      }
+    };
+    document.addEventListener('click', handleClick);
+    return () => document.removeEventListener('click', handleClick);
+  }, [askConfirm]);
+
+  React.useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       isDev && console.log('User pressed: ', e.key);
       if (display.fullscreen !== true) {
@@ -148,6 +159,11 @@ export default function Favorites() {
         } else if (e.key === 'ArrowLeft' && photos.currentPage > 1) {
           updatePhotoPage(photos.currentPage - 1, maxPage);
         }
+
+        if (e.key === 'Escape' && askConfirm !== '') {
+          setAskConfirm('');
+        }
+
         return;
       }
 
@@ -163,10 +179,16 @@ export default function Favorites() {
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
     };
-  }, [display.fullscreen, updatePhotoPage, photos.currentPage, maxPage]);
+  }, [
+    display.fullscreen,
+    updatePhotoPage,
+    photos.currentPage,
+    maxPage,
+    askConfirm,
+  ]);
 
   if (!photos.isFetching && totalPhotos === 0) {
-    return <>No photos yet</>;
+    return <>{photos.init ? 'Loading...' : 'No photos yet'}</>;
   }
 
   const toggleFullscreen = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -207,7 +229,7 @@ export default function Favorites() {
   const showHelp = () => {
     console.log('help');
     addMessage({
-      text: `Click on an image to view it in fullscreen, click on the fullscreen image or press the 'Esc' key to exit fullscreen. (Tip: You can use the left/right arrow keys to navigate between pages.)`,
+      text: `You can add notes to your favorited photos, just remember to click save once you're done. Note that removing a photo from favorites will delete your note.`,
       type: 'Info',
     });
   };
@@ -264,7 +286,6 @@ export default function Favorites() {
     e: React.FormEvent<HTMLFormElement>,
     photoId: number
   ) => {
-    // PUT request to /api/favorites
     e.preventDefault();
     const form = e.currentTarget;
     const formData = new FormData(form);
@@ -366,13 +387,16 @@ export default function Favorites() {
         out of {totalPhotos}
       </p>
 
-      <div className='m-2 flex flex-col justify-center gap-2'>
+      <div className='m-2 flex flex-col justify-center gap-6'>
         {photos.favorites
           .slice(photoStartIndex, photoStartIndex + photos.photoPerPage)
           .map((p) => {
             return (
-              <div className='flex h-60 w-full gap-4' key={p.photoid}>
-                <div className='relative aspect-square min-w-60'>
+              <div
+                className='flex min-h-60 w-full flex-col gap-2 sm:flex-row sm:gap-4 md:gap-6'
+                key={p.photoid}
+              >
+                <div className='relative aspect-square min-w-60 md:min-w-80 lg:min-w-96'>
                   <button
                     className={combineClassNames(
                       'relative aspect-square w-full max-w-lg cursor-zoom-in',
@@ -396,28 +420,52 @@ export default function Favorites() {
                     />
                   </button>
                   <button
-                    onClick={(e) => removeFromFavorites(e, p.photoid)}
+                    onClick={(e) =>
+                      setAskConfirm((prev) =>
+                        prev === p.photoid ? '' : p.photoid
+                      )
+                    }
                     className='absolute right-1 top-1 cursor-pointer rounded-xl border border-slate-600 bg-slate-300 p-0.5 hover:scale-125 focus-visible:ring'
                   >
                     <CloseIcon />
                   </button>
+                  {askConfirm === p.photoid && (
+                    <div className='confirm-delete absolute right-0 top-8'>
+                      <div className='absolute -top-1 right-3 h-2 w-2 translate-x-0.5 rotate-45 bg-red-600'></div>
+                      <button
+                        className='relative flex items-center gap-3 rounded-lg bg-red-600 p-2 text-white hover:scale-110 focus-visible:ring'
+                        onClick={(e) => removeFromFavorites(e, p.photoid)}
+                      >
+                        Confirm delete?
+                      </button>
+                    </div>
+                  )}
                 </div>
-                <form
-                  className='flex w-full flex-col gap-2'
-                  onSubmit={(e) => updateNote(e, p.photoid)}
-                  method='POST'
-                >
-                  <label className=''>
-                    Notes:
-                    <textarea
-                      rows={3}
-                      name='note'
-                      className='h-full w-full px-2 py-1'
-                      defaultValue={p.note ? p.note : ''}
-                    />
-                  </label>
-                  <button type='submit'>Update Note</button>
-                </form>
+                <div className='min-h-full w-full'>
+                  <p className='text-sm italic md:text-base'>{p.alt}</p>
+
+                  <form
+                    className='relative flex min-h-full w-full flex-col gap-2'
+                    onSubmit={(e) => updateNote(e, p.photoid)}
+                    method='POST'
+                  >
+                    <label className=''>
+                      <p className='my-1 text-lg'>Notes:</p>
+                      <textarea
+                        rows={3}
+                        name='note'
+                        className='w-full px-2 py-1 sm:h-28 md:h-48 lg:h-60'
+                        defaultValue={p.note ? p.note : ''}
+                      />
+                    </label>
+                    <button
+                      type='submit'
+                      className='absolute right-0 top-0 rounded bg-slate-200 px-2 py-1'
+                    >
+                      Save
+                    </button>
+                  </form>
+                </div>
               </div>
             );
           })}
