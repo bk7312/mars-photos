@@ -264,27 +264,6 @@ function useMarsData() {
     }));
   };
 
-  const updatePhotosPerPage = (photoPerPage: number, totalPhotos: number) => {
-    setPhotos((prev) => {
-      photoPerPage = setWithinRange(photoPerPage, 1);
-      const maxPage = Math.ceil(totalPhotos / photoPerPage);
-      return {
-        ...prev,
-        currentPage: setWithinRange(prev.currentPage, 1, maxPage),
-        photoPerPage,
-      };
-    });
-  };
-
-  const updatePhotoPage = React.useCallback((page: number, maxPage: number) => {
-    setPhotos((prev) => {
-      return {
-        ...prev,
-        currentPage: setWithinRange(page, 1, maxPage),
-      };
-    });
-  }, []);
-
   const getPhotos = (search: RoverSearch) => {
     const matchingRoverSol =
       photos.rover === search.rover && photos.sol === search.sol;
@@ -311,21 +290,12 @@ function useMarsData() {
     fetchPhotos(search, matchingRoverSol);
   };
 
-  const toggleIsFetching = () =>
-    setSearch((prev) => ({
-      ...prev,
-      isFetchingManifest: !prev.isFetchingManifest,
-    }));
-
   return {
     search,
     photos,
     roverData,
     updateSearch,
     getPhotos,
-    updatePhotosPerPage,
-    updatePhotoPage,
-    toggleIsFetching,
   };
 }
 
