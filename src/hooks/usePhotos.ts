@@ -1,6 +1,6 @@
 'use client';
 import React from 'react';
-import { Rover, CameraTypes, RoverPhotos } from '@/lib/types';
+import { Rover, CameraTypes, RoverPhotos, RoverPhotoSrc } from '@/lib/types';
 import { isDev } from '@/lib/constants';
 import { MessageContext } from '@/context/MessageContext';
 import { useSession } from 'next-auth/react';
@@ -21,18 +21,7 @@ function usePhotos(init: RoverPhotos) {
     fullscreen: false,
   });
 
-  const [photos, setPhotos] = React.useState<RoverPhotos>(
-    init ?? {
-      src: [],
-      currentPage: 1,
-      photoPerPage: 12,
-      cameraMap: {},
-      rover: '',
-      sol: '',
-      currentCamera: '',
-      isFetching: false,
-    }
-  );
+  const [photos, setPhotos] = React.useState<RoverPhotos>(init);
 
   const [favorites, setFavorites] = React.useState<number[]>([]);
   const { addMessage } = React.useContext(MessageContext);
@@ -52,7 +41,7 @@ function usePhotos(init: RoverPhotos) {
       const { data } = await res.json();
       isDev && console.log({ data });
       if (data) {
-        setFavorites(data.map((d: { photoid: number }) => d.photoid));
+        setFavorites(data.map((d: { photoId: number }) => d.photoId));
       }
     } catch (error) {
       isDev && console.log('caught error', error);
@@ -88,7 +77,7 @@ function usePhotos(init: RoverPhotos) {
   const photoArr =
     photos.currentCamera === 'ALL' || photos.currentCamera === undefined
       ? photos.src
-      : photos.src.filter((p) => p.camera.name === photos.currentCamera);
+      : photos.src.filter((p) => p.camera === photos.currentCamera);
 
   const totalPhotos = photoArr.length;
   const photoStartIndex = (photos.currentPage - 1) * photos.photoPerPage;
@@ -157,14 +146,7 @@ function usePhotos(init: RoverPhotos) {
 
   const toggleFavorites = async (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
-    photo: {
-      photoId: number;
-      src: string;
-      alt: string;
-      rover: Rover | '';
-      sol: number | '';
-      camera: CameraTypes;
-    },
+    photo: RoverPhotoSrc,
     isFavorite: boolean
   ) => {
     e.stopPropagation();

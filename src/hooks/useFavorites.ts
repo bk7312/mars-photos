@@ -4,42 +4,25 @@ import { setWithinRange } from '@/lib/utils';
 import { isDev } from '@/lib/constants';
 import { MessageContext } from '@/context/MessageContext';
 import { useSession } from 'next-auth/react';
+import { RoverPhotos } from '@/lib/types';
+
+type DisplayType =
+  | {
+      fullscreen: false;
+    }
+  | {
+      fullscreen: true;
+      src: string;
+      alt: string;
+    };
 
 function useFavorites() {
-  type FavoritesType = {
-    photoid: number;
-    src: string;
-    alt: string;
-    rover: string;
-    sol: number;
-    camera: string;
-    note?: string;
-  };
-
-  type PhotosType = {
-    favorites: FavoritesType[];
-    currentPage: number;
-    photoPerPage: number;
-    isFetching: boolean;
-    init: boolean;
-  };
-
-  type DisplayType =
-    | {
-        fullscreen: false;
-      }
-    | {
-        fullscreen: true;
-        src: string;
-        alt: string;
-      };
-
   const [display, setDisplay] = React.useState<DisplayType>({
     fullscreen: false,
   });
 
-  const [photos, setPhotos] = React.useState<PhotosType>({
-    favorites: [],
+  const [photos, setPhotos] = React.useState<RoverPhotos>({
+    src: [],
     currentPage: 1,
     photoPerPage: 12,
     isFetching: false,
@@ -68,7 +51,7 @@ function useFavorites() {
       if (data) {
         setPhotos((prev) => ({
           ...prev,
-          favorites: data,
+          src: data,
         }));
       }
     } catch (error) {
@@ -98,9 +81,9 @@ function useFavorites() {
     fetchFavorites();
   }, [fetchFavorites, session]);
 
-  isDev && console.log('logging favorites', photos.favorites);
+  isDev && console.log('logging favorites', photos.src);
 
-  const totalPhotos = photos.favorites.length;
+  const totalPhotos = photos.src.length;
   const photoStartIndex = (photos.currentPage - 1) * photos.photoPerPage;
   const maxPage = Math.ceil(totalPhotos / photos.photoPerPage);
 

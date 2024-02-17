@@ -95,13 +95,13 @@ export default function Favorites() {
       </p>
 
       <div className='m-2 flex flex-col justify-center gap-6'>
-        {photos.favorites
+        {photos.src
           .slice(photoStartIndex, photoStartIndex + photos.photoPerPage)
           .map((p) => {
             return (
               <div
                 className='flex min-h-60 w-full flex-col gap-2 sm:flex-row sm:gap-4 md:gap-6'
-                key={p.photoid}
+                key={p.photoId}
               >
                 <div className='relative aspect-square min-w-60 md:min-w-80 lg:min-w-96'>
                   <button
@@ -129,19 +129,19 @@ export default function Favorites() {
                   <button
                     onClick={(e) =>
                       setAskConfirm((prev) =>
-                        prev === p.photoid ? '' : p.photoid
+                        prev === p.photoId ? '' : p.photoId
                       )
                     }
                     className='absolute right-1 top-1 cursor-pointer rounded-xl border border-slate-600 bg-slate-300 p-0.5 hover:scale-125 focus-visible:ring dark:bg-slate-500'
                   >
                     <CloseIcon />
                   </button>
-                  {askConfirm === p.photoid && (
+                  {askConfirm === p.photoId && (
                     <div className='confirm-delete absolute right-0 top-8'>
                       <div className='absolute -top-1 right-3 h-2 w-2 translate-x-0.5 rotate-45 bg-red-600'></div>
                       <button
                         className='relative flex items-center gap-3 rounded-lg bg-red-600 p-2 text-white hover:scale-110 focus-visible:ring'
-                        onClick={(e) => removeFromFavorites(e, p.photoid)}
+                        onClick={(e) => removeFromFavorites(e, p.photoId)}
                       >
                         Confirm delete?
                       </button>
@@ -153,7 +153,7 @@ export default function Favorites() {
 
                   <form
                     className='relative flex min-h-full w-full flex-col gap-2'
-                    onSubmit={(e) => updateNote(e, p.photoid)}
+                    onSubmit={(e) => updateNote(e, p.photoId)}
                     method='POST'
                   >
                     <label className=''>

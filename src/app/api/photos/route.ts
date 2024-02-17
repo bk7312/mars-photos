@@ -49,13 +49,10 @@ export async function POST(request: Request) {
       ++cameraMap[p.camera.name];
 
       return {
-        img_id: p.id,
-        img_src: p.img_src,
-        img_alt: `Photo ${p.id} from ${p.rover.name}'s ${p.camera.full_name} (${p.camera.name}) on Sol ${p.sol} (Earth date: ${p.earth_date})`,
-        camera: {
-          name: p.camera.name,
-          full_name: p.camera.full_name,
-        },
+        photoId: p.id,
+        src: p.img_src,
+        alt: `Photo ${p.id} from ${p.rover.name}'s ${p.camera.full_name} (${p.camera.name}) on Sol ${p.sol} (Earth date: ${p.earth_date})`,
+        camera: p.camera.name,
       };
     });
 

@@ -115,17 +115,10 @@ export default function PhotoResults({
           photoArr
             .slice(photoStartIndex, photoStartIndex + photos.photoPerPage)
             .map((p) => {
-              const isFavorite = favorites.includes(p.img_id);
-              const photo = {
-                photoId: p.img_id,
-                src: p.img_src,
-                alt: p.img_alt,
-                rover: photos.rover,
-                sol: photos.sol,
-                camera: p.camera.name,
-              };
+              const isFavorite = favorites.includes(p.photoId);
+
               return (
-                <div className='relative' key={p.img_id}>
+                <div className='relative' key={p.photoId}>
                   <button
                     className={combineClassNames(
                       'relative aspect-square w-full max-w-lg cursor-zoom-in',
@@ -134,13 +127,13 @@ export default function PhotoResults({
                     )}
                     style={getBackgroundImageStyle()}
                     onClick={toggleFullscreen}
-                    data-img-src={p.img_src}
+                    data-img-src={p.src}
                     disabled={photos.isFetching || display.fullscreen}
                   >
                     <Image
-                      src={p.img_src}
-                      alt={p.img_alt}
-                      title={p.img_alt}
+                      src={p.src}
+                      alt={p.alt}
+                      title={p.alt}
                       onLoad={imageLoaded}
                       onError={imageError}
                       fill={true}
@@ -149,7 +142,7 @@ export default function PhotoResults({
                     />
                   </button>
                   <button
-                    onClick={(e) => toggleFavorites(e, photo, isFavorite)}
+                    onClick={(e) => toggleFavorites(e, p, isFavorite)}
                     className='absolute right-1 top-1 cursor-pointer rounded-xl border border-slate-600 bg-slate-300 p-0.5 hover:scale-125 focus-visible:ring'
                   >
                     <HeartIcon isFavorite={isFavorite} />
