@@ -12,7 +12,7 @@ export async function GET(request: Request) {
     }
 
     const data = await pool.query(
-      'SELECT photoId, src, alt, rover, sol, camera, note FROM favorites WHERE userId = (SELECT id FROM users WHERE email = $1)',
+      'SELECT "photoId", src, alt, rover, sol, camera, note FROM favorites WHERE "userId" = (SELECT id FROM users WHERE email = $1)',
       [session.user?.email]
     );
 
@@ -42,7 +42,7 @@ export async function POST(request: Request) {
     console.log('input', { photoId, src, alt, rover, sol, camera });
 
     const data = await pool.query(
-      'INSERT INTO favorites (userId, photoId, src, alt, rover, sol, camera) VALUES ((SELECT id FROM users WHERE email = $1), $2, $3, $4, $5, $6, $7)',
+      'INSERT INTO favorites ("userId", "photoId", src, alt, rover, sol, camera) VALUES ((SELECT id FROM users WHERE email = $1), $2, $3, $4, $5, $6, $7)',
       [session.user?.email, photoId, src, alt, rover, sol, camera]
     );
 
@@ -72,7 +72,7 @@ export async function PUT(request: Request) {
     console.log('input', { photoId, note });
 
     const data = await pool.query(
-      'UPDATE favorites SET note = $1 WHERE userId = (SELECT id FROM users WHERE email = $2) AND photoId = $3',
+      'UPDATE favorites SET note = $1 WHERE "userId" = (SELECT id FROM users WHERE email = $2) AND "photoId" = $3',
       [note, session.user?.email, photoId]
     );
 
@@ -101,7 +101,7 @@ export async function DELETE(request: Request) {
     const { photoId } = await request.json();
 
     const data = await pool.query(
-      'DELETE FROM favorites WHERE userId = (SELECT id FROM users WHERE email = $1) AND photoID = $2',
+      'DELETE FROM favorites WHERE "userId" = (SELECT id FROM users WHERE email = $1) AND "photoID" = $2',
       [session.user?.email, photoId]
     );
 

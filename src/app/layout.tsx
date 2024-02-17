@@ -9,6 +9,7 @@ import { auth } from '@/app/api/auth/auth';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import MessageList from '@/components/MessageList';
+import DevBox from '@/components/DevBox';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -38,6 +39,7 @@ export default async function RootLayout({
             {children}
             <Footer />
             <MessageList />
+            <DevBox />
           </MessageProvider>
         </SessionProvider>
         <SpeedInsights />

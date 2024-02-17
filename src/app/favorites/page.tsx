@@ -11,325 +11,36 @@ import { MessageContext } from '@/context/MessageContext';
 import { useSession } from 'next-auth/react';
 import HelpIcon from '@/components/icons/HelpIcon';
 import CloseIcon from '@/components/icons/CloseIcon';
-
-type FavoritesType = {
-  photoid: number;
-  src: string;
-  alt: string;
-  rover: string;
-  sol: number;
-  camera: string;
-  note?: string;
-};
-
-type PhotosType = {
-  favorites: FavoritesType[];
-  currentPage: number;
-  photoPerPage: number;
-  isFetching: boolean;
-  init: boolean;
-};
-
-type DisplayType =
-  | {
-      fullscreen: false;
-    }
-  | {
-      fullscreen: true;
-      src: string;
-      alt: string;
-    };
+import useFavorites from '@/hooks/useFavorites';
+import { imageError, imageLoaded } from '@/lib/imageHelper';
 
 export default function Favorites() {
-  const [display, setDisplay] = React.useState<DisplayType>({
-    fullscreen: false,
-  });
-
-  const [photos, setPhotos] = React.useState<PhotosType>({
-    favorites: [],
-    currentPage: 1,
-    photoPerPage: 12,
-    isFetching: false,
-    init: true,
-  });
-
-  const [askConfirm, setAskConfirm] = React.useState<number | ''>('');
+  const {
+    photos,
+    totalPhotos,
+    updatePhotoPage,
+    updatePhotosPerPage,
+    maxPage,
+    display,
+    toggleFullscreen,
+    photoStartIndex,
+    askConfirm,
+    setAskConfirm,
+    removeFromFavorites,
+    updateNote,
+  } = useFavorites();
 
   const { addMessage } = React.useContext(MessageContext);
-  const { data: session } = useSession();
-
-  const fetchFavorites = React.useCallback(async () => {
-    setPhotos((prev) => ({ ...prev, isFetching: true }));
-    isDev && console.log('fetch favorites favpage');
-    try {
-      const res = await fetch('/api/favorites/');
-
-      if (!res.ok) {
-        const { error } = await res.json();
-        isDev && console.error('error received:', error);
-        throw new Error(error);
-      }
-
-      const { data } = await res.json();
-      isDev && console.log({ data });
-      if (data) {
-        setPhotos((prev) => ({
-          ...prev,
-          favorites: data,
-        }));
-      }
-    } catch (error) {
-      isDev && console.log('caught error', error);
-      const err = error as Error;
-      isDev && console.log(err.name, err.message);
-
-      let errMsg = err?.message ?? 'Something went wrong';
-
-      if (err.message === 'Failed to fetch') {
-        errMsg = 'Failed to fetch, possibly no internet connection.';
-      }
-
-      addMessage({
-        text: errMsg,
-        type: 'Error',
-      });
-    } finally {
-      setPhotos((prev) => ({ ...prev, isFetching: false, init: false }));
-    }
-  }, [addMessage]);
-
-  React.useEffect(() => {
-    if (!session) {
-      return;
-    }
-    fetchFavorites();
-  }, [fetchFavorites, session]);
-
-  isDev && console.log('logging favorites', photos.favorites);
-
-  const totalPhotos = photos.favorites.length;
-
-  const photoStartIndex = (photos.currentPage - 1) * photos.photoPerPage;
-  const maxPage = Math.ceil(totalPhotos / photos.photoPerPage);
-
-  const updatePhotosPerPage = (photoPerPage: number, totalPhotos: number) => {
-    setPhotos((prev) => {
-      photoPerPage = setWithinRange(photoPerPage, 1);
-      const maxPage = Math.ceil(totalPhotos / photoPerPage);
-      return {
-        ...prev,
-        currentPage: setWithinRange(prev.currentPage, 1, maxPage),
-        photoPerPage,
-      };
-    });
-  };
-
-  const updatePhotoPage = React.useCallback((page: number, maxPage: number) => {
-    setPhotos((prev) => {
-      return {
-        ...prev,
-        currentPage: setWithinRange(page, 1, maxPage),
-      };
-    });
-  }, []);
-
-  React.useEffect(() => {
-    const handleClick = (e: MouseEvent) => {
-      const target = e.target as Element;
-      const isPopup =
-        target.classList.contains('confirmDelete') ||
-        target.parentElement?.classList.contains('confirmDelete');
-
-      if (askConfirm !== '' && !isPopup) {
-        setAskConfirm('');
-      }
-    };
-    document.addEventListener('click', handleClick);
-    return () => document.removeEventListener('click', handleClick);
-  }, [askConfirm]);
-
-  React.useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      isDev && console.log('User pressed: ', e.key);
-      if (display.fullscreen !== true) {
-        if (e.key === 'ArrowRight' && photos.currentPage < maxPage) {
-          updatePhotoPage(photos.currentPage + 1, maxPage);
-        } else if (e.key === 'ArrowLeft' && photos.currentPage > 1) {
-          updatePhotoPage(photos.currentPage - 1, maxPage);
-        }
-
-        if (e.key === 'Escape' && askConfirm !== '') {
-          setAskConfirm('');
-        }
-
-        return;
-      }
-
-      // preventDefault to block keyboard tab navigation while fullscreen
-      e.preventDefault();
-      if (e.key === 'Escape') {
-        setDisplay({ fullscreen: false });
-      }
-    };
-
-    document.addEventListener('keydown', handleKeyDown);
-
-    return () => {
-      document.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [
-    display.fullscreen,
-    updatePhotoPage,
-    photos.currentPage,
-    maxPage,
-    askConfirm,
-  ]);
 
   if (!photos.isFetching && totalPhotos === 0) {
     return <>{photos.init ? 'Loading...' : 'No photos yet'}</>;
   }
-
-  const toggleFullscreen = (e: React.MouseEvent<HTMLButtonElement>) => {
-    if (display.fullscreen === true) {
-      setDisplay({ fullscreen: false });
-      return;
-    }
-
-    const child = e.currentTarget.children[0] as HTMLImageElement;
-    setDisplay({
-      fullscreen: true,
-      src: e.currentTarget.dataset.imgSrc ?? '',
-      alt: child.alt,
-    });
-  };
-
-  const imageLoaded = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
-    if (!e.currentTarget.parentElement) {
-      return;
-    }
-    e.currentTarget.parentElement.style.backgroundImage = '';
-  };
-
-  const imageError = (
-    e: React.SyntheticEvent<HTMLImageElement, Event>,
-    url: string = 'img-not-found.png',
-    contain: boolean = false
-  ) => {
-    if (!e.currentTarget.parentElement) {
-      return;
-    }
-    if (contain) {
-      e.currentTarget.parentElement.classList.add('bg-contain');
-    }
-    e.currentTarget.parentElement.style.backgroundImage = `url(${url})`;
-  };
 
   const showHelp = () => {
     addMessage({
       text: `You can add notes to your favorited photos, just remember to click save once you're done. Note that removing a photo from favorites will delete your note.`,
       type: 'Info',
     });
-  };
-
-  const removeFromFavorites = async (
-    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
-    photoId: number
-  ) => {
-    e.stopPropagation();
-
-    if (!session) {
-      addMessage({
-        text: 'Please login first.',
-        type: 'Warning',
-      });
-      return;
-    }
-
-    try {
-      const res = await fetch('/api/favorites', {
-        method: 'DELETE',
-        body: JSON.stringify({ photoId }),
-      });
-
-      if (!res.ok) {
-        const { error } = await res.json();
-        isDev && console.error('error received:', error);
-        throw new Error(error);
-      }
-
-      const { data } = await res.json();
-      isDev && console.log({ data });
-    } catch (error) {
-      isDev && console.log('caught error', error);
-      const err = error as Error;
-      isDev && console.log(err.name, err.message);
-
-      let errMsg = err?.message ?? 'Something went wrong';
-
-      if (err.message === 'Failed to fetch') {
-        errMsg = 'Failed to fetch, possibly no internet connection.';
-      }
-
-      addMessage({
-        text: errMsg,
-        type: 'Error',
-      });
-    } finally {
-      fetchFavorites();
-    }
-  };
-
-  const updateNote = async (
-    e: React.FormEvent<HTMLFormElement>,
-    photoId: number
-  ) => {
-    e.preventDefault();
-    const form = e.currentTarget;
-    const formData = new FormData(form);
-    const note = formData.get('note');
-
-    if (!session) {
-      addMessage({
-        text: 'Please login first.',
-        type: 'Warning',
-      });
-      return;
-    }
-
-    try {
-      const res = await fetch('/api/favorites', {
-        method: 'PUT',
-        body: JSON.stringify({ photoId, note }),
-      });
-
-      if (!res.ok) {
-        const { error } = await res.json();
-        isDev && console.error('error received:', error);
-        throw new Error(error);
-      }
-
-      const { data } = await res.json();
-      isDev && console.log({ data });
-      addMessage({
-        text: 'Note saved!',
-        type: 'Info',
-      });
-    } catch (error) {
-      isDev && console.log('caught error', error);
-      const err = error as Error;
-      isDev && console.log(err.name, err.message);
-
-      let errMsg = err?.message ?? 'Something went wrong';
-
-      if (err.message === 'Failed to fetch') {
-        errMsg = 'Failed to fetch, possibly no internet connection.';
-      }
-
-      addMessage({
-        text: errMsg,
-        type: 'Error',
-      });
-    }
   };
 
   return (
@@ -384,13 +95,13 @@ export default function Favorites() {
       </p>
 
       <div className='m-2 flex flex-col justify-center gap-6'>
-        {photos.favorites
+        {photos.src
           .slice(photoStartIndex, photoStartIndex + photos.photoPerPage)
           .map((p) => {
             return (
               <div
                 className='flex min-h-60 w-full flex-col gap-2 sm:flex-row sm:gap-4 md:gap-6'
-                key={p.photoid}
+                key={p.photoId}
               >
                 <div className='relative aspect-square min-w-60 md:min-w-80 lg:min-w-96'>
                   <button
@@ -418,19 +129,19 @@ export default function Favorites() {
                   <button
                     onClick={(e) =>
                       setAskConfirm((prev) =>
-                        prev === p.photoid ? '' : p.photoid
+                        prev === p.photoId ? '' : p.photoId
                       )
                     }
                     className='absolute right-1 top-1 cursor-pointer rounded-xl border border-slate-600 bg-slate-300 p-0.5 hover:scale-125 focus-visible:ring dark:bg-slate-500'
                   >
                     <CloseIcon />
                   </button>
-                  {askConfirm === p.photoid && (
+                  {askConfirm === p.photoId && (
                     <div className='confirm-delete absolute right-0 top-8'>
                       <div className='absolute -top-1 right-3 h-2 w-2 translate-x-0.5 rotate-45 bg-red-600'></div>
                       <button
                         className='relative flex items-center gap-3 rounded-lg bg-red-600 p-2 text-white hover:scale-110 focus-visible:ring'
-                        onClick={(e) => removeFromFavorites(e, p.photoid)}
+                        onClick={(e) => removeFromFavorites(e, p.photoId)}
                       >
                         Confirm delete?
                       </button>
@@ -442,7 +153,7 @@ export default function Favorites() {
 
                   <form
                     className='relative flex min-h-full w-full flex-col gap-2'
-                    onSubmit={(e) => updateNote(e, p.photoid)}
+                    onSubmit={(e) => updateNote(e, p.photoId)}
                     method='POST'
                   >
                     <label className=''>

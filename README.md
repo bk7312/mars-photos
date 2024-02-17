@@ -15,6 +15,10 @@ Live version: https://mars-photos-five.vercel.app/
 - Users can choose the number of photos to display per page and navigate between pages using the left/right arrow keys.
 - Users can click on any photo to view in fullscreen mode, clicking on the photo again or pressing the 'Esc' key to exit fullscreen mode.
 - Users can click the question mark icon to get a help message.
+- Users can login using Google/Github and save/favorite the photos they like.
+- Users can add their own notes to their saved/favorited photos.
+
+TODO - Add screenshots for illustration?
 
 ## How to run locally
 

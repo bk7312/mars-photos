@@ -1,4 +1,3 @@
-'use client';
 import { combineClassNames } from '@/lib/utils';
 import React from 'react';
 
@@ -19,8 +18,8 @@ export default function Spinner({
       )}
       {...delegated}
     >
-      <div className='mx-auto h-5 w-5 bg-slate-500 motion-safe:animate-spin motion-reduce:hidden'></div>
-      <div className='ml-2 motion-safe:hidden'>Loading...</div>
+      <div className='mx-auto h-5 w-5 animate-spin bg-slate-500 motion-reduce:hidden'></div>
+      <div className='hidden motion-reduce:block'>Loading...</div>
     </div>
   );
 }

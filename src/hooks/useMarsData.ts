@@ -14,8 +14,11 @@ import { MessageContext } from '@/context/MessageContext';
 function useMarsData() {
   const [search, setSearch] = React.useState<RoverSearch>({
     rover: '',
+    prevRover: '',
     sol: '',
+    prevSol: '',
     camera: '',
+    cameraMap: {},
     photoIndex: -1,
     isFetchingManifest: false,
   });
@@ -24,9 +27,6 @@ function useMarsData() {
     src: [],
     currentPage: 1,
     photoPerPage: 12,
-    cameraMap: {},
-    rover: '',
-    sol: '',
     currentCamera: '',
     isFetching: false,
   });
@@ -127,12 +127,6 @@ function useMarsData() {
             ...prev,
             src: [...prev.src, ...data],
             currentPage: 1,
-            cameraMap: {
-              ...prev.cameraMap,
-              ...cameraMap,
-            },
-            rover: search.rover,
-            sol: search.sol,
             currentCamera: search.camera,
           };
         }
@@ -142,9 +136,28 @@ function useMarsData() {
           src: data,
           currentPage: 1,
           cameraMap,
-          rover: search.rover,
-          sol: search.sol,
           currentCamera: search.camera,
+        };
+      });
+
+      setSearch((prev) => {
+        if (matchingRoverSol && search.camera !== 'ALL') {
+          return {
+            ...prev,
+            cameraMap: {
+              ...prev.cameraMap,
+              ...cameraMap,
+            },
+            prevRover: search.rover,
+            prevSol: search.sol,
+          };
+        }
+
+        return {
+          ...prev,
+          cameraMap,
+          prevRover: search.rover,
+          prevSol: search.sol,
         };
       });
     } catch (error) {
@@ -264,40 +277,20 @@ function useMarsData() {
     }));
   };
 
-  const updatePhotosPerPage = (photoPerPage: number, totalPhotos: number) => {
-    setPhotos((prev) => {
-      photoPerPage = setWithinRange(photoPerPage, 1);
-      const maxPage = Math.ceil(totalPhotos / photoPerPage);
-      return {
-        ...prev,
-        currentPage: setWithinRange(prev.currentPage, 1, maxPage),
-        photoPerPage,
-      };
-    });
-  };
-
-  const updatePhotoPage = React.useCallback((page: number, maxPage: number) => {
-    setPhotos((prev) => {
-      return {
-        ...prev,
-        currentPage: setWithinRange(page, 1, maxPage),
-      };
-    });
-  }, []);
-
   const getPhotos = (search: RoverSearch) => {
     const matchingRoverSol =
-      photos.rover === search.rover && photos.sol === search.sol;
+      search.prevRover === search.rover && search.prevSol === search.sol;
 
     const cameraAvailable =
-      (search.camera && search.camera in photos.cameraMap) ||
+      (search.camera && search.camera in search.cameraMap) ||
       (search.camera === 'ALL' &&
         roverData &&
         isArrayStringInObjectKey(
           roverData.photos[search.photoIndex].cameras,
-          photos.cameraMap
+          search.cameraMap
         ));
-
+    isDev &&
+      console.log({ matchingRoverSol, cameraAvailable }, search.cameraMap);
     if (matchingRoverSol && cameraAvailable) {
       isDev && console.log('data already available, no need to refetch');
       setPhotos((prev) => ({
@@ -311,21 +304,12 @@ function useMarsData() {
     fetchPhotos(search, matchingRoverSol);
   };
 
-  const toggleIsFetching = () =>
-    setSearch((prev) => ({
-      ...prev,
-      isFetchingManifest: !prev.isFetchingManifest,
-    }));
-
   return {
     search,
     photos,
     roverData,
     updateSearch,
     getPhotos,
-    updatePhotosPerPage,
-    updatePhotoPage,
-    toggleIsFetching,
   };
 }
 

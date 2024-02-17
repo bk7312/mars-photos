@@ -8,222 +8,53 @@ import { MessageContext } from '@/context/MessageContext';
 import { useSession } from 'next-auth/react';
 import HeartIcon from './icons/HeartIcon';
 import HelpIcon from './icons/HelpIcon';
+import useFavorites from '@/hooks/useFavorites';
+import usePhotos from '@/hooks/usePhotos';
+import { imageError, imageLoaded } from '@/lib/imageHelper';
 
 type PhotoResultsPropType = {
-  photos: RoverPhotos;
-  updatePhotosPerPage: (photoPerPage: number, totalPhotos: number) => void;
-  updatePhotoPage: (page: number, maxPage: number) => void;
+  initPhotos: RoverPhotos;
+  // updatePhotosPerPage: (photoPerPage: number, totalPhotos: number) => void;
+  // updatePhotoPage: (page: number, maxPage: number) => void;
   className?: string;
   [key: string]: any;
 };
 
-type DisplayType =
-  | {
-      fullscreen: false;
-    }
-  | {
-      fullscreen: true;
-      src: string;
-      alt: string;
-    };
-
 export default function PhotoResults({
-  photos,
-  updatePhotosPerPage,
-  updatePhotoPage,
+  initPhotos,
+  // updatePhotosPerPage,
+  // updatePhotoPage,
   className = '',
   ...delegated
 }: PhotoResultsPropType) {
-  const [display, setDisplay] = React.useState<DisplayType>({
-    fullscreen: false,
-  });
+  const {
+    totalPhotos,
+    display,
+    maxPage,
+    updatePhotoPage,
+    updatePhotosPerPage,
+    photoStartIndex,
+    photos,
+    photoArr,
+    favorites,
+    toggleFullscreen,
+    toggleFavorites,
+  } = usePhotos(initPhotos);
 
-  const [favorites, setFavorites] = React.useState<number[]>([]);
   const { addMessage } = React.useContext(MessageContext);
-  const { data: session } = useSession();
 
-  const fetchFavorites = React.useCallback(async () => {
-    isDev && console.log('fetch favorites photoresults');
-    try {
-      const res = await fetch('/api/favorites/');
-
-      if (!res.ok) {
-        const { error } = await res.json();
-        isDev && console.error('error received:', error);
-        throw new Error(error);
-      }
-
-      const { data } = await res.json();
-      isDev && console.log({ data });
-      if (data) {
-        setFavorites(data.map((d: { photoid: number }) => d.photoid));
-      }
-    } catch (error) {
-      isDev && console.log('caught error', error);
-      const err = error as Error;
-      isDev && console.log(err.name, err.message);
-
-      let errMsg = err?.message ?? 'Something went wrong';
-
-      if (err.message === 'Failed to fetch') {
-        errMsg = 'Failed to fetch, possibly no internet connection.';
-      }
-
-      addMessage({
-        text: errMsg,
-        type: 'Error',
-      });
-    }
-  }, [addMessage]);
-
-  React.useEffect(() => {
-    if (!session) {
-      return;
-    }
-    fetchFavorites();
-  }, [fetchFavorites, session]);
-
-  isDev && console.log(favorites);
-
-  const photoArr =
-    photos.currentCamera === 'ALL' || photos.currentCamera === undefined
-      ? photos.src
-      : photos.src.filter((p) => p.camera.name === photos.currentCamera);
-  const totalPhotos = photoArr.length;
-
-  const photoStartIndex = (photos.currentPage - 1) * photos.photoPerPage;
-  const maxPage = Math.ceil(totalPhotos / photos.photoPerPage);
-
-  React.useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      isDev && console.log('User pressed: ', e.key);
-      if (display.fullscreen !== true) {
-        if (e.key === 'ArrowRight' && photos.currentPage < maxPage) {
-          updatePhotoPage(photos.currentPage + 1, maxPage);
-        } else if (e.key === 'ArrowLeft' && photos.currentPage > 1) {
-          updatePhotoPage(photos.currentPage - 1, maxPage);
-        }
-        return;
-      }
-
-      // preventDefault to block keyboard tab navigation while fullscreen
-      e.preventDefault();
-      if (e.key === 'Escape') {
-        setDisplay({ fullscreen: false });
-      }
-    };
-
-    document.addEventListener('keydown', handleKeyDown);
-
-    return () => {
-      document.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [display.fullscreen, updatePhotoPage, photos.currentPage, maxPage]);
+  isDev && console.log('photoresults', { initPhotos, photos, photoArr });
 
   if (!photos.isFetching && totalPhotos === 0) {
     isDev && console.log('Skipped rendering, no photos and not fetching');
     return <></>;
   }
 
-  const toggleFullscreen = (e: React.MouseEvent<HTMLButtonElement>) => {
-    if (display.fullscreen === true) {
-      setDisplay({ fullscreen: false });
-      return;
-    }
-
-    const child = e.currentTarget.children[0] as HTMLImageElement;
-    setDisplay({
-      fullscreen: true,
-      src: e.currentTarget.dataset.imgSrc ?? '',
-      alt: child.alt,
-    });
-  };
-
-  const imageLoaded = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
-    if (!e.currentTarget.parentElement) {
-      return;
-    }
-    e.currentTarget.parentElement.style.backgroundImage = '';
-  };
-
-  const imageError = (
-    e: React.SyntheticEvent<HTMLImageElement, Event>,
-    url: string = 'img-not-found.png',
-    contain: boolean = false
-  ) => {
-    if (!e.currentTarget.parentElement) {
-      return;
-    }
-    if (contain) {
-      e.currentTarget.parentElement.classList.add('bg-contain');
-    }
-    e.currentTarget.parentElement.style.backgroundImage = `url(${url})`;
-  };
-
   const showHelp = () => {
     addMessage({
       text: `Click on an image to view it in fullscreen, click on the fullscreen image or press the 'Esc' key to exit fullscreen. (Tip: You can use the left/right arrow keys to navigate between pages.)`,
       type: 'Info',
     });
-  };
-
-  const toggleFavorites = async (
-    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
-    photo: {
-      photoId: number;
-      src: string;
-      alt: string;
-      rover: Rover | '';
-      sol: number | '';
-      camera: CameraTypes;
-    },
-    isFavorite: boolean
-  ) => {
-    e.stopPropagation();
-
-    if (!session) {
-      addMessage({
-        text: 'Please login first.',
-        type: 'Warning',
-      });
-      return;
-    }
-
-    const { photoId } = photo;
-
-    try {
-      const options = isFavorite
-        ? { method: 'DELETE', body: JSON.stringify({ photoId }) }
-        : { method: 'POST', body: JSON.stringify(photo) };
-
-      const res = await fetch('/api/favorites', options);
-
-      if (!res.ok) {
-        const { error } = await res.json();
-        isDev && console.error('error received:', error);
-        throw new Error(error);
-      }
-
-      const { data } = await res.json();
-      isDev && console.log({ data });
-    } catch (error) {
-      isDev && console.log('caught error', error);
-      const err = error as Error;
-      isDev && console.log(err.name, err.message);
-
-      let errMsg = err?.message ?? 'Something went wrong';
-
-      if (err.message === 'Failed to fetch') {
-        errMsg = 'Failed to fetch, possibly no internet connection.';
-      }
-
-      addMessage({
-        text: errMsg,
-        type: 'Error',
-      });
-    } finally {
-      fetchFavorites();
-    }
   };
 
   return (
@@ -284,17 +115,10 @@ export default function PhotoResults({
           photoArr
             .slice(photoStartIndex, photoStartIndex + photos.photoPerPage)
             .map((p) => {
-              const isFavorite = favorites.includes(p.img_id);
-              const photo = {
-                photoId: p.img_id,
-                src: p.img_src,
-                alt: p.img_alt,
-                rover: photos.rover,
-                sol: photos.sol,
-                camera: p.camera.name,
-              };
+              const isFavorite = favorites.includes(p.photoId);
+
               return (
-                <div className='relative' key={p.img_id}>
+                <div className='relative' key={p.photoId}>
                   <button
                     className={combineClassNames(
                       'relative aspect-square w-full max-w-lg cursor-zoom-in',
@@ -303,13 +127,13 @@ export default function PhotoResults({
                     )}
                     style={getBackgroundImageStyle()}
                     onClick={toggleFullscreen}
-                    data-img-src={p.img_src}
+                    data-img-src={p.src}
                     disabled={photos.isFetching || display.fullscreen}
                   >
                     <Image
-                      src={p.img_src}
-                      alt={p.img_alt}
-                      title={p.img_alt}
+                      src={p.src}
+                      alt={p.alt}
+                      title={p.alt}
                       onLoad={imageLoaded}
                       onError={imageError}
                       fill={true}
@@ -318,7 +142,7 @@ export default function PhotoResults({
                     />
                   </button>
                   <button
-                    onClick={(e) => toggleFavorites(e, photo, isFavorite)}
+                    onClick={(e) => toggleFavorites(e, p, isFavorite)}
                     className='absolute right-1 top-1 cursor-pointer rounded-xl border border-slate-600 bg-slate-300 p-0.5 hover:scale-125 focus-visible:ring'
                   >
                     <HeartIcon isFavorite={isFavorite} />

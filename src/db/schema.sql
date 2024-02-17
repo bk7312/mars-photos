@@ -48,14 +48,14 @@ CREATE TABLE IF NOT EXISTS users
 
 CREATE TABLE IF NOT EXISTS favorites
 (
-  userId INTEGER NOT NULL,
-  photoId INTEGER NOT NULL,
+  "userId" INTEGER NOT NULL,
+  "photoId" INTEGER NOT NULL,
   src TEXT NOT NULL,
   alt TEXT NOT NULL,
   rover VARCHAR(15) NOT NULL,
   sol INTEGER NOT NULL,
   camera VARCHAR(25),
   note TEXT,
-  PRIMARY KEY (userId, photoId)
+  PRIMARY KEY ("userId", "photoId")
 );
 

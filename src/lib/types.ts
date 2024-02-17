@@ -2,8 +2,11 @@ export type Rover = 'Perseverance' | 'Curiosity' | 'Opportunity' | 'Spirit';
 
 export type RoverSearch = {
   rover: Rover | '';
+  prevRover: Rover | '';
   sol: number | '';
+  prevSol: number | '';
   camera: CameraTypes | 'ALL' | '';
+  cameraMap: GenericStringNumberObj;
   photoIndex: number;
   isFetchingManifest: boolean;
 };
@@ -88,20 +91,23 @@ export type RoverPhotosResponse = {
   img_src: string;
 }[];
 
+export type RoverPhotoSrc = {
+  photoId: number;
+  src: string;
+  alt: string;
+  rover: Rover;
+  sol: number;
+  camera: CameraTypes;
+  note?: string;
+};
+
 export type RoverPhotos = {
-  src: {
-    img_id: number;
-    img_src: string;
-    img_alt: string;
-    camera: CameraNameAndFullName;
-  }[];
+  src: RoverPhotoSrc[];
   currentPage: number;
   photoPerPage: number;
-  cameraMap: GenericStringNumberObj;
-  rover: Rover | '';
-  sol: number | '';
-  currentCamera: CameraTypes | 'ALL' | '';
+  currentCamera?: CameraTypes | 'ALL' | '';
   isFetching: boolean;
+  init?: boolean;
 };
 
 export type MessageType = {
