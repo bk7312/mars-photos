@@ -110,6 +110,11 @@ export type RoverPhotos = {
   init?: boolean;
 };
 
+export type PageControlType = {
+  currentPage: number;
+  photoPerPage: number;
+};
+
 export type MessageType = {
   id: string;
   text: string;

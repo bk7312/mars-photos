@@ -52,6 +52,8 @@ export async function POST(request: Request) {
         photoId: p.id,
         src: p.img_src,
         alt: `Photo ${p.id} from ${p.rover.name}'s ${p.camera.full_name} (${p.camera.name}) on Sol ${p.sol} (Earth date: ${p.earth_date})`,
+        rover: p.rover.name,
+        sol: p.sol,
         camera: p.camera.name,
       };
     });

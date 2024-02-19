@@ -101,7 +101,7 @@ export async function DELETE(request: Request) {
     const { photoId } = await request.json();
 
     const data = await pool.query(
-      'DELETE FROM favorites WHERE "userId" = (SELECT id FROM users WHERE email = $1) AND "photoID" = $2',
+      'DELETE FROM favorites WHERE "userId" = (SELECT id FROM users WHERE email = $1) AND "photoId" = $2',
       [session.user?.email, photoId]
     );
 

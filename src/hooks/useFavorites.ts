@@ -21,7 +21,7 @@ function useFavorites() {
     fullscreen: false,
   });
 
-  const [photos, setPhotos] = React.useState<RoverPhotos>({
+  const [favorites, setFavorites] = React.useState<RoverPhotos>({
     src: [],
     currentPage: 1,
     photoPerPage: 12,
@@ -35,7 +35,7 @@ function useFavorites() {
   const { data: session } = useSession();
 
   const fetchFavorites = React.useCallback(async () => {
-    setPhotos((prev) => ({ ...prev, isFetching: true }));
+    setFavorites((prev) => ({ ...prev, isFetching: true }));
     isDev && console.log('fetch favorites favpage');
     try {
       const res = await fetch('/api/favorites/');
@@ -49,7 +49,7 @@ function useFavorites() {
       const { data } = await res.json();
       isDev && console.log({ data });
       if (data) {
-        setPhotos((prev) => ({
+        setFavorites((prev) => ({
           ...prev,
           src: data,
         }));
@@ -70,7 +70,7 @@ function useFavorites() {
         type: 'Error',
       });
     } finally {
-      setPhotos((prev) => ({ ...prev, isFetching: false, init: false }));
+      setFavorites((prev) => ({ ...prev, isFetching: false, init: false }));
     }
   }, [addMessage]);
 
@@ -81,14 +81,14 @@ function useFavorites() {
     fetchFavorites();
   }, [fetchFavorites, session]);
 
-  isDev && console.log('logging favorites', photos.src);
+  isDev && console.log('logging favorites', favorites.src);
 
-  const totalPhotos = photos.src.length;
-  const photoStartIndex = (photos.currentPage - 1) * photos.photoPerPage;
-  const maxPage = Math.ceil(totalPhotos / photos.photoPerPage);
+  const totalPhotos = favorites.src.length;
+  const photoStartIndex = (favorites.currentPage - 1) * favorites.photoPerPage;
+  const maxPage = Math.ceil(totalPhotos / favorites.photoPerPage);
 
   const updatePhotosPerPage = (photoPerPage: number, totalPhotos: number) => {
-    setPhotos((prev) => {
+    setFavorites((prev) => {
       photoPerPage = setWithinRange(photoPerPage, 1);
       const maxPage = Math.ceil(totalPhotos / photoPerPage);
       return {
@@ -100,7 +100,7 @@ function useFavorites() {
   };
 
   const updatePhotoPage = React.useCallback((page: number, maxPage: number) => {
-    setPhotos((prev) => {
+    setFavorites((prev) => {
       return {
         ...prev,
         currentPage: setWithinRange(page, 1, maxPage),
@@ -112,10 +112,10 @@ function useFavorites() {
     const handleKeyDown = (e: KeyboardEvent) => {
       isDev && console.log('User pressed: ', e.key);
       if (display.fullscreen !== true) {
-        if (e.key === 'ArrowRight' && photos.currentPage < maxPage) {
-          updatePhotoPage(photos.currentPage + 1, maxPage);
-        } else if (e.key === 'ArrowLeft' && photos.currentPage > 1) {
-          updatePhotoPage(photos.currentPage - 1, maxPage);
+        if (e.key === 'ArrowRight' && favorites.currentPage < maxPage) {
+          updatePhotoPage(favorites.currentPage + 1, maxPage);
+        } else if (e.key === 'ArrowLeft' && favorites.currentPage > 1) {
+          updatePhotoPage(favorites.currentPage - 1, maxPage);
         }
 
         if (e.key === 'Escape' && askConfirm !== '') {
@@ -140,7 +140,7 @@ function useFavorites() {
   }, [
     display.fullscreen,
     updatePhotoPage,
-    photos.currentPage,
+    favorites.currentPage,
     maxPage,
     askConfirm,
   ]);
@@ -275,19 +275,19 @@ function useFavorites() {
     }
   };
   return {
+    favorites,
     fetchFavorites,
-    photos,
+    removeFromFavorites,
+    updateNote,
     totalPhotos,
-    display,
     maxPage,
     photoStartIndex,
-    toggleFullscreen,
     updatePhotoPage,
     updatePhotosPerPage,
-    updateNote,
-    removeFromFavorites,
-    setAskConfirm,
+    display,
+    toggleFullscreen,
     askConfirm,
+    setAskConfirm,
   };
 }
 

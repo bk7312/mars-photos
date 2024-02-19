@@ -16,14 +16,15 @@ type DisplayType =
       alt: string;
     };
 
-function usePhotos(init: RoverPhotos) {
+function usePhotos(initPhotos: RoverPhotos) {
   const [display, setDisplay] = React.useState<DisplayType>({
     fullscreen: false,
   });
 
-  const [photos, setPhotos] = React.useState<RoverPhotos>(init);
+  const [photos, setPhotos] = React.useState<RoverPhotos>(initPhotos);
 
   const [favorites, setFavorites] = React.useState<number[]>([]);
+
   const { addMessage } = React.useContext(MessageContext);
   const { data: session } = useSession();
 
@@ -69,10 +70,10 @@ function usePhotos(init: RoverPhotos) {
   }, [fetchFavorites, session]);
 
   React.useEffect(() => {
-    setPhotos(init);
-  }, [init]);
+    setPhotos(initPhotos);
+  }, [initPhotos]);
 
-  isDev && console.log('uesphoto', { init, photos });
+  isDev && console.log('uesphoto', { initPhotos, photos });
 
   const photoArr =
     photos.currentCamera === 'ALL' || photos.currentCamera === undefined
@@ -197,16 +198,16 @@ function usePhotos(init: RoverPhotos) {
   };
 
   return {
+    photos,
     totalPhotos,
-    display,
+    photoArr,
     maxPage,
+    photoStartIndex,
     updatePhotoPage,
     updatePhotosPerPage,
-    photoStartIndex,
-    photos,
-    photoArr,
-    favorites,
+    display,
     toggleFullscreen,
+    favorites,
     toggleFavorites,
   };
 }

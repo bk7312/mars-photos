@@ -16,7 +16,7 @@ import { imageError, imageLoaded } from '@/lib/imageHelper';
 
 export default function Favorites() {
   const {
-    photos,
+    favorites,
     totalPhotos,
     updatePhotoPage,
     updatePhotosPerPage,
@@ -32,8 +32,8 @@ export default function Favorites() {
 
   const { addMessage } = React.useContext(MessageContext);
 
-  if (!photos.isFetching && totalPhotos === 0) {
-    return <>{photos.init ? 'Loading...' : 'No photos yet'}</>;
+  if (!favorites.isFetching && totalPhotos === 0) {
+    return <>{favorites.init ? 'Loading...' : 'No favorites yet'}</>;
   }
 
   const showHelp = () => {
@@ -49,7 +49,7 @@ export default function Favorites() {
         'h-full w-full max-w-screen-xl grow bg-center bg-no-repeat p-4',
         'relative flex flex-col rounded border-2 border-slate-400'
       )}
-      style={photos.isFetching ? getBackgroundImageStyle() : {}}
+      style={favorites.isFetching ? getBackgroundImageStyle() : {}}
     >
       <div className='mx-auto flex w-full max-w-lg flex-row justify-between gap-8 px-2'>
         <label className='my-2 flex flex-col items-center justify-center gap-2 xs:flex-row'>
@@ -59,10 +59,10 @@ export default function Favorites() {
             name='currentPage'
             id='currentPage'
             onChange={(e) => updatePhotoPage(e.target.valueAsNumber, maxPage)}
-            value={photos.currentPage}
+            value={favorites.currentPage}
             min={1}
             className='w-16 px-2 py-1 focus-visible:ring dark:bg-slate-800'
-            disabled={photos.isFetching || display.fullscreen}
+            disabled={favorites.isFetching || display.fullscreen}
           />
         </label>
 
@@ -75,28 +75,28 @@ export default function Favorites() {
             onChange={(e) =>
               updatePhotosPerPage(e.target.valueAsNumber, totalPhotos)
             }
-            value={photos.photoPerPage}
+            value={favorites.photoPerPage}
             min={1}
             className='w-16 px-2 py-1 focus-visible:ring dark:bg-slate-800'
-            disabled={photos.isFetching || display.fullscreen}
+            disabled={favorites.isFetching || display.fullscreen}
           />
         </label>
       </div>
 
       <p className='m-2 text-center'>
         Showing photo number {photoStartIndex + 1}{' '}
-        {photos.photoPerPage > 1 &&
+        {favorites.photoPerPage > 1 &&
           totalPhotos > 1 &&
           `to ${Math.min(
-            photoStartIndex + photos.photoPerPage,
+            photoStartIndex + favorites.photoPerPage,
             totalPhotos
           )}`}{' '}
         out of {totalPhotos}
       </p>
 
       <div className='m-2 flex flex-col justify-center gap-6'>
-        {photos.src
-          .slice(photoStartIndex, photoStartIndex + photos.photoPerPage)
+        {favorites.src
+          .slice(photoStartIndex, photoStartIndex + favorites.photoPerPage)
           .map((p) => {
             return (
               <div
@@ -113,7 +113,7 @@ export default function Favorites() {
                     style={getBackgroundImageStyle()}
                     onClick={toggleFullscreen}
                     data-img-src={p.src}
-                    disabled={photos.isFetching || display.fullscreen}
+                    disabled={favorites.isFetching || display.fullscreen}
                   >
                     <Image
                       src={p.src}
@@ -181,11 +181,13 @@ export default function Favorites() {
       <div className='flex items-center justify-center gap-4'>
         <label>
           <button
-            onClick={() => updatePhotoPage(photos.currentPage - 1, maxPage)}
-            value={photos.currentPage}
+            onClick={() => updatePhotoPage(favorites.currentPage - 1, maxPage)}
+            value={favorites.currentPage}
             className='cursor-pointer focus-visible:ring disabled:cursor-not-allowed'
             disabled={
-              photos.isFetching || display.fullscreen || photos.currentPage <= 1
+              favorites.isFetching ||
+              display.fullscreen ||
+              favorites.currentPage <= 1
             }
           >
             ←
@@ -199,23 +201,23 @@ export default function Favorites() {
             name='currentPage'
             id='currentPage-2'
             onChange={(e) => updatePhotoPage(e.target.valueAsNumber, maxPage)}
-            value={photos.currentPage}
+            value={favorites.currentPage}
             min={1}
             className='w-16 px-2 py-1 focus-visible:ring dark:bg-slate-800'
-            disabled={photos.isFetching || display.fullscreen}
+            disabled={favorites.isFetching || display.fullscreen}
           />{' '}
           / {maxPage}
         </label>
 
         <label>
           <button
-            onClick={() => updatePhotoPage(photos.currentPage + 1, maxPage)}
-            value={photos.currentPage}
+            onClick={() => updatePhotoPage(favorites.currentPage + 1, maxPage)}
+            value={favorites.currentPage}
             className='cursor-pointer focus-visible:ring disabled:cursor-not-allowed'
             disabled={
-              photos.isFetching ||
+              favorites.isFetching ||
               display.fullscreen ||
-              photos.currentPage >= maxPage
+              favorites.currentPage >= maxPage
             }
           >
             →
